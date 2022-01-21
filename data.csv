@@ -1,0 +1,4 @@
+screenWidth 1920;screenHeight 1147;cornerX 467;cornerY 80;centerX 960;centerY 573;externalRadius 493;internalRadius 413;borderRadius 1;cursorRadius 16;indexOfDifficulty 60.49236918082474;taskRadius 452.5;taskTolerance 47;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];autoStart 3600;cycleMaxNumber 6;cycleDuration 20;software LSL-mouse;version 1.2.0rc6;task CircularTarget;isWithLSL true
+2022-01-21 18:09:23.833
+
+timestamp,mouseX,mouseY,mouseInTarget
