@@ -15,11 +15,15 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
 import fr.lgi2p.digit.Main;
+import fr.lgi2p.digit.MainWindow;
 import fr.lgi2p.digit.util.Util;
+import fr.lgi2p.digit.output.OutputMouse;
 
 public class Configuration {
 
@@ -54,6 +58,10 @@ public class Configuration {
 	// tasks 
     private CircularTask circularTask; 
 	private LinearTask linearTask; 
+
+	// Auditory Rhythm
+	private AuditoryRhythm auditoryRhythm;
+	private int halfPeriod = 2000; 		
 
 	// default task values (Guigon 2019 https://pubmed.ncbi.nlm.nih.gov/30649981/)
 	private int interLineDistance_mm = 150;  
@@ -268,6 +276,62 @@ public class Configuration {
 		}
 	}
 
+	public void writeBeep() {
+		if (MainWindow.getInstance() != null){
+			OutputMouse outputMouse = MainWindow.getInstance().getOutputMouse(); 
+			if (outputMouse != null) {
+				if (MainWindow.getInstance().isRecording()){
+					outputMouse.writeMarker("Beep");
+				}
+			}
+		}
+	}
+
+	public class AuditoryRhythm {
+		private Timer beepBeep = null; 
+		private TimerTask playBeep = null;
+
+		public  AuditoryRhythm () {
+			beepBeep = new Timer();
+			playBeep = new TimerTask() {
+				@Override
+				public void run() {
+				java.awt.Toolkit.getDefaultToolkit().beep();
+				writeBeep(); 
+				}
+			};
+			startBeep();
+		}
+
+		public void startBeep() {
+			long initialDelay = 3000L; // we need sometimes to initialize the app 
+			beepBeep.scheduleAtFixedRate(playBeep, initialDelay, halfPeriod);
+		}
+
+		public void stopBeep() {
+			if (beepBeep != null) {
+				beepBeep.cancel();
+			}
+		}
+
+	}
+
+	private void setAuditoryRhythm() {
+		auditoryRhythm = new AuditoryRhythm(); 
+		}
+
+	public AuditoryRhythm getAuditoryRhythm() {
+		return auditoryRhythm;
+	}
+
+	public void setHalfPeriod(int halfPeriod) {
+		this.halfPeriod = halfPeriod;
+		if (auditoryRhythm != null) {
+			auditoryRhythm.stopBeep(); 
+		}
+		setAuditoryRhythm() ; 
+	}
+
 	public class LinearTask {
 		private Line lineRight = null; 
 		private Line lineLeft = null; 
@@ -306,8 +370,6 @@ public class Configuration {
 			// diagonal = new Line( -drawSize.width, 0, drawSize.width,  0,  Color.RED); 
 			// diagonal.rotate(alpha);
 			// diagonal.translate(centerX, centerY);
-
-
 		}
 	
 		public Line getLineLeft() {
@@ -631,7 +693,7 @@ public class Configuration {
 		+";borderColor "+borderColor+";backgroundColor "+backgroundColor+";cursorColorRecord "+cursorColorRecord+";cursorColorWait "+cursorColorWait
 		+";autoStart "+autoStart+";cycleMaxNumber "+cycleMaxNumber+";cycleDuration "+cycleDuration
 		+";software "+Main.name+";version "+Main.version+";task "+taskString+";isWithLSL "+isWithLSL
-		+";interLineDistance_mm "+interLineDistance_mm+";lineHeight_mm "+lineHeight_mm+";mm2px "+mm2px
+		+";interLineDistance_mm "+interLineDistance_mm+";lineHeight_mm "+lineHeight_mm+";mm2px "+mm2px+";halfPeriod "+halfPeriod
 		;
 
 	//:System.out.println(Txt);

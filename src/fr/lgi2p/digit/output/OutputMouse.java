@@ -153,12 +153,12 @@ public class OutputMouse {
 
 	public void writeNumericMarker(int number) {
 
-		if (false) {
-			long currentTimeMillisec = System.currentTimeMillis(); 
-			String currentTimeTxt = timeToString( currentTimeMillisec) ; 
-			System.out.print(currentTimeTxt);
-			System.out.print(" Lsl string : NumericMarker = "+ number + " \n");
-		}
+		// if (false) {
+		// 	long currentTimeMillisec = System.currentTimeMillis(); 
+		// 	String currentTimeTxt = timeToString( currentTimeMillisec) ; 
+		// 	System.out.print(currentTimeTxt);
+		// 	System.out.print(" Lsl string : NumericMarker = "+ number + " \n");
+		// }
 
 		if (isWithLSL) {
 			int[] sample = new int[1];

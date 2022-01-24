@@ -123,6 +123,10 @@ public class Main {
 				double value = Double.parseDouble(arguments.get(key));
 				configuration.setMm2px(value);
 			}		
+			if ( "-halfPeriod".equalsIgnoreCase(key) ) {	
+				int value = Util.toInt(arguments.get(key));
+				configuration.setHalfPeriod(value);
+			}
 		}
 	}
 

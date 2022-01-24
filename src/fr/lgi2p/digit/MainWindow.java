@@ -90,10 +90,18 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 
 	private OutputMouse outputMouse = null;	
 
+	public OutputMouse getOutputMouse() {
+		return outputMouse;
+	}
+
 	public static MainWindow getInstance(Configuration configuration) {
 		if (instance == null) {
 			instance = new MainWindow(configuration);
 		}
+		return instance;
+	}
+
+	public static MainWindow getInstance() {
 		return instance;
 	}
 
@@ -330,7 +338,7 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 		if (performanceAtTask != null) performanceAtTask.resetHasReachedThePath();
 	}
 
-	private void mousMovedOrDragged(MouseEvent mouseEvent){
+	private void mouseMovedOrDragged(MouseEvent mouseEvent){
 		// if the user presses the stylus, then we get a drag, not a move
 		// and we must process both cases 
 		
@@ -389,12 +397,12 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 
 	public void mouseMoved(MouseEvent mouseEvent) {
 		logger.info("mouseMoved");
-		mousMovedOrDragged( mouseEvent);
+		mouseMovedOrDragged( mouseEvent);
 	}
 
 	public void mouseDragged(MouseEvent mouseEvent) {
 		logger.info("mouseDragged");
-		mousMovedOrDragged( mouseEvent);
+		mouseMovedOrDragged( mouseEvent);
 	}
 
 	public void mouseClicked(MouseEvent mouseEvent) {		

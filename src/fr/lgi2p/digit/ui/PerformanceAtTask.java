@@ -442,19 +442,19 @@ public class PerformanceAtTask {
 
 
 	private void updateMouse (long time, int X, int Y, boolean isInside, double radius) {
-		double dX = X - previousX; 
-		double dY = Y - previousY; 
-		double euclidianDistance = Math.sqrt(dX*dX + dY*dY);
-		double anglularDistance = phaseAngle(X, Y, previousX, previousY); 
+		// double dX = X - previousX; 
+		// double dY = Y - previousY; 
+		//double euclidianDistance = Math.sqrt(dX*dX + dY*dY);
+		double angularDistance = phaseAngle(X, Y, previousX, previousY); 
 
 		int currentTrial = MainWindow.getInstance(configuration).NbRecDone - 1; // arrays are indexed to zero
 
 		if (time > fistTimeIn){
-			angleTotalTable[currentTrial] += anglularDistance;
+			angleTotalTable[currentTrial] += angularDistance;
 			if  ( !isInside) { 
-				angleOutsideTable[currentTrial] +=  anglularDistance; 
+				angleOutsideTable[currentTrial] +=  angularDistance; 
 			}
-			//System.out.println(time +", "+ X +","+ Y + "," + anglularDistance + "," + angleTotalTable[currentTrial] + "," + angleOutsideTable[currentTrial] );
+			//System.out.println(time +", "+ X +","+ Y + "," + angularDistance + "," + angleTotalTable[currentTrial] + "," + angleOutsideTable[currentTrial] );
 		}
 
 		double MTe = (time - fistTimeIn) ;  
