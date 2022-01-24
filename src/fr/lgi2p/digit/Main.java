@@ -13,9 +13,9 @@ public class Main {
 
 	private static final Logger logger = Util.getLogger(Main.class);
 
-	public static String name = "LSL-mouse";
+	public static String name = "mouseReMoCo";
 	public static String task = "CircularTarget";
-	public static String version = "1.2.0rc6"; 
+	public static String version = "1.0.1"; 
 
 
 	public static void main(String[] args) {
@@ -107,9 +107,23 @@ public class Main {
 				double value = Double.parseDouble(arguments.get(key));
 				configuration.setIndexOfDifficulty(value);
 			}
-
+			if ( "-task".equalsIgnoreCase(key) ) {	
+				String value = arguments.get(key);
+				configuration.setTaskString(value);
+			}
+			if ( "-interLineDistance_mm".equalsIgnoreCase(key) ) {	
+				int value = Util.toInt(arguments.get(key));
+				configuration.setInterLineDistance_mm(value);
+			}
+			if ( "-lineHeight_mm".equalsIgnoreCase(key) ) {	
+				int value = Util.toInt(arguments.get(key));
+				configuration.setLineHeight_mm(value);
+			}
+			if ( "-mm2px".equalsIgnoreCase(key) ) {	
+				double value = Double.parseDouble(arguments.get(key));
+				configuration.setMm2px(value);
+			}		
 		}
-
 	}
 
 	private static LinkedHashMap<String, String> buildArgumentsHashMap(String[] args) {
@@ -141,6 +155,7 @@ public class Main {
 	private static void usage(String argument) {
 
 		System.out.println("Usage: java -jar LSL-Mouse.jar ");
+		System.out.println("           -task : linear or circular");
 		System.out.println("           -cornerX : topleft corner of circles, from toplef of window (pixel)");
 		System.out.println("           -cornerY : topleft corner of circles, from toplef of window (pixel)");
 		System.out.println("           -centerX : center of circles !supersedes cornerX! (pixel) ");

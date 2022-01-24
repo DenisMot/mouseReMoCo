@@ -12,6 +12,7 @@ import javax.swing.JComponent;
 
 import fr.lgi2p.digit.MainWindow;
 import fr.lgi2p.digit.conf.Configuration;
+import fr.lgi2p.digit.conf.Configuration.Line;
 import fr.lgi2p.digit.util.Util;
 
 public class DoubleCircle  extends JComponent {
@@ -133,6 +134,10 @@ public class DoubleCircle  extends JComponent {
 				hideCenterTarget(g);
 			}
 		}
+		if (configuration.getTaskString().equals("linear") ) {
+			hideCircularTarget( g );
+			showLinearTarget(g); 
+		}
 	}
 
 	private void hideCircularTarget(Graphics g ) {
@@ -140,6 +145,27 @@ public class DoubleCircle  extends JComponent {
 				, configuration.getExternalRadius() 
 				, configuration.getBackgroundColor()
 				);
+	}
+
+	private void drawOneLine(Graphics g , Line line) {
+        g.setColor(line.color);
+        g.drawLine(line.x1, line.y1, line.x2, line.y2);
+
+		// to show a dot at the beginning of the line 
+		// int r = 5;
+		// g.fillOval(line.x1 - r, line.y1 -r , 2*r, 2*r);
+	}
+
+	private void showLinearTarget(Graphics g ) {
+		// draw diagonal 
+		drawOneLine(g, configuration.getLinearTask().getDiagonal()); 
+		fillCenteredCircle(	g 
+			, 10
+			, configuration.getLinearTask().getDiagonal().color 
+		);
+		// draw target lines 
+		drawOneLine(g, configuration.getLinearTask().getLineLeft()); 
+		drawOneLine(g, configuration.getLinearTask().getLineRight()); 
 	}
 
 	// double circle with adjustable border width

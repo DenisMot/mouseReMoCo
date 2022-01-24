@@ -23,7 +23,19 @@ import fr.lgi2p.digit.util.Util;
 
 public class Configuration {
 
-    // screen configuration (for multiple screens)
+	// task 
+
+	private String taskString = "circular"; 
+
+    public String getTaskString() {
+		return taskString;
+	}
+
+	public void setTaskString(String taskString) {
+		this.taskString = taskString;
+	}
+
+	// screen configuration (for multiple screens)
     private Dimension drawSize;
     private Dimension frameSize;
     private Point frameLocation;
@@ -39,8 +51,16 @@ public class Configuration {
     private int internalRadius;
     private int borderRadius;
 
-    // radius limit without cursor size 
+	// tasks 
     private CircularTask circularTask; 
+	private LinearTask linearTask; 
+
+	// default task values (Guigon 2019 https://pubmed.ncbi.nlm.nih.gov/30649981/)
+	private int interLineDistance_mm = 150;  
+	private int lineHeight_mm = 100;
+	private double mm2px = 6.173633; 
+
+
     //    private int radiusInternalLimit; 	
     //    private int radiusExternalLimit; 	
 
@@ -206,11 +226,112 @@ public class Configuration {
 	setCursorWait();
 	// and set index of difficulty corresponding to the defaults
 	setCircularTask(); 
+
+	setLinearTask(); 
     }
 
+	public static class Line{
+		 public int x1; 
+		 public int y1;
+		 public int x2;
+		 public int y2;   
+		 public Color color;
+	
+		public Line(int x1, int y1, int x2, int y2, Color color) {
+			this.x1 = x1;
+			this.y1 = y1;
+			this.x2 = x2;
+			this.y2 = y2;
+			this.color = color;
+		}           
+		
+		public void rotate(double alpha ) {
+			double cos_ = Math.cos(alpha); 	// shorter
+			double sin_ = Math.sin(alpha); 
+
+			double X1 = x1 * cos_ - y1 * sin_; 
+			double Y1 = x1 * sin_ + y1 * cos_; 
+			double X2 = x2 * cos_ - y2 * sin_; 
+			double Y2 = x2 * sin_ + y2 * cos_; 
+
+			x1 = (int) Math.round(X1); 
+			y1 = (int) Math.round(Y1); 
+			x2 = (int) Math.round(X2); 
+			y2 = (int) Math.round(Y2); 
+		}
+
+		public void translate(int dx, int dy  ) {
+			x1 = x1 + dx; 
+			y1 = y1 + dy; 
+			x2 = x2 + dx; 
+			y2 = y2 + dy; 
+		}
+	}
+
+	public class LinearTask {
+		private Line lineRight = null; 
+		private Line lineLeft = null; 
+		private Line diagonal = null; 
+
+		public LinearTask () {
+		// the elements on the screen are all relative to the center
+		//   DECISION: the center of the screen is the origin of the coordinates on the screen
+		// the diagonal is a rotation around the center of the screen 
+		//   DECISION: we compute the display as horizontal, then rotate it to the diagonal 
+		// distances in mm (tablet) must be translated into pixels to display (screen)  
+		//   DECISION: we multiply distances in mm by the gain (mm2px: same along x and y)
+
+			Double lineHalfHeight = mm2px * lineHeight_mm / 2.0; 
+			Double lineHalfDistance = mm2px * interLineDistance_mm / 2.0; 
+
+			int x1 = (int) Math.round(lineHalfDistance); 
+			int y1 = (int) Math.round(lineHalfHeight) ;
+
+			lineRight = new Line( x1,  y1,  x1,  -y1,  borderColor); 
+			lineLeft  = new Line(-x1,  y1, -x1,  -y1,  borderColor); 
+
+			int H = -drawSize.height; 			// Y axis is reversed in java
+			int W = drawSize.width; 
+
+			double alpha =  Math.atan2(H, W); 	// diagonal angle 
+			lineLeft.rotate(alpha);
+			lineRight.rotate(alpha);
+
+			lineLeft.translate(centerX, centerY);
+			lineRight.translate(centerX, centerY);	
+
+			// direct computation of coordinates of diagonal
+			diagonal = new Line( 0, drawSize.height, drawSize.width,  0,  Color.GRAY); 
+			// computation of coordinates as for the left and right lines 
+			// diagonal = new Line( -drawSize.width, 0, drawSize.width,  0,  Color.RED); 
+			// diagonal.rotate(alpha);
+			// diagonal.translate(centerX, centerY);
 
 
-    public class CircularTask {
+		}
+	
+		public Line getLineLeft() {
+			return lineLeft;
+		}
+
+		public Line getLineRight() {
+			return lineRight;
+		}
+
+		public Line getDiagonal() {
+			return diagonal;
+		}	
+	}
+
+    private void setLinearTask() {
+		linearTask = new LinearTask(); 
+		}
+
+    public LinearTask getLinearTask() {
+		return linearTask;
+	}
+
+	public class CircularTask {
 	public double radius; 
 	public int tolerance; 	// must be integer (pixel)
 	public double ID ; 
@@ -282,10 +403,6 @@ public class Configuration {
     public void setIndexOfDifficulty(double indexOfDifficulty) {
 	// TODO : direct call to circularTask ? 
 	circularTask.setIndexOfDifficulty(indexOfDifficulty);
-    }
-
-    public int getTnternalRadius() {
-	return internalRadius;
     }
 
     public int getCycleDuration() {
@@ -513,7 +630,9 @@ public class Configuration {
 		+";indexOfDifficulty "+circularTask.ID+";taskRadius "+circularTask.radius +";taskTolerance "+circularTask.tolerance
 		+";borderColor "+borderColor+";backgroundColor "+backgroundColor+";cursorColorRecord "+cursorColorRecord+";cursorColorWait "+cursorColorWait
 		+";autoStart "+autoStart+";cycleMaxNumber "+cycleMaxNumber+";cycleDuration "+cycleDuration
-		+";software "+Main.name+";version "+Main.version+";task "+Main.task+";isWithLSL "+isWithLSL;
+		+";software "+Main.name+";version "+Main.version+";task "+taskString+";isWithLSL "+isWithLSL
+		+";interLineDistance_mm "+interLineDistance_mm+";lineHeight_mm "+lineHeight_mm+";mm2px "+mm2px
+		;
 
 	//:System.out.println(Txt);
 	return Txt;
@@ -545,4 +664,16 @@ public class Configuration {
 	return isWithPauseTarget;
     }
 
+	public void setInterLineDistance_mm(int interLineDistance_mm) {
+		this.interLineDistance_mm = interLineDistance_mm ;
+		setLinearTask();
+	}	
+	public void setLineHeight_mm(int lineHeight_mm) {
+		this.lineHeight_mm = lineHeight_mm ;
+		setLinearTask();
+	}
+	public void setMm2px(Double mm2px) {
+		this.mm2px = mm2px ;
+		setLinearTask();
+	}
 }

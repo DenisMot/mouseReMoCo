@@ -4,25 +4,16 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        
         {
             "type": "java",
             "name": "Launch Main",
             "request": "launch",
             "mainClass": "fr.lgi2p.digit.Main",
-            "projectName": "mouseReMoCo_acd3101"
+            "projectName": "mouseReMoCo_acd3101",
+            "args": "-task linear -lineHeight_mm 50 -interLineDistance_mm 80"
         },
-        {
-            "type": "java",
-            "name": "Launch Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "Launch Main",
-            "request": "launch",
-            "mainClass": "fr.lgi2p.digit.Main",
-            "projectName": "mouseReMoCo_3939a470"
-        }
+        
+
     ]
 }

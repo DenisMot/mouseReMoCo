@@ -1,8 +1,11 @@
-screenWidth 1920;screenHeight 1147;cornerX 467;cornerY 80;centerX 960;centerY 573;externalRadius 493;internalRadius 413;borderRadius 1;cursorRadius 16;indexOfDifficulty 60.49236918082474;taskRadius 452.5;taskTolerance 47;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];autoStart 3600;cycleMaxNumber 6;cycleDuration 20;software LSL-mouse;version 1.2.0rc6;task CircularTarget;isWithLSL true
-2022-01-21 18:09:23.833
+screenWidth 1920;screenHeight 1147;cornerX 467;cornerY 80;centerX 960;centerY 573;externalRadius 493;internalRadius 413;borderRadius 1;cursorRadius 16;indexOfDifficulty 60.49236918082474;taskRadius 452.5;taskTolerance 47;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];autoStart 3600;cycleMaxNumber 6;cycleDuration 20;software mouseReMoCo;version 1.0.1;task linear;isWithLSL true;interLineDistance_mm 80;lineHeight_mm 50;mm2px 6.173633
+2022-01-24 10:08:39.469
 
-2022-01-21 18:09:30.650,1642784970650,KeyTyped=113 WINDOW_CLOSING
-2022-01-21 18:09:30.652,1642784970652,
+2022-01-24 10:08:45.054,1643015325054,KeyTyped=32 DoCycleChange
+2022-01-24 10:08:45.056,1643015325056,DoCycleChange:DoStartCycleTimedSequence
+2022-01-24 10:08:45.056,1643015325056,DoCycleChange:DoRecord RecordDone=0 PauseDone=0 ToDo=6
+2022-01-24 10:08:46.653,1643015326653,KeyTyped=113 WINDOW_CLOSING
+2022-01-24 10:08:46.654,1643015326654,
     Var , nLaps ,      Re ,      Te ,   error ,  MT/lap , IDe/lap ,      Be ,     IPe ,
    unit ,   lap ,   pixel ,   pixel ,       % ,   s/lap , bit/lap ,  double ,   bit/s ,
  Theory ,  1.00 ,  452.50 ,   47.00 ,    3.88 ,         ,         ,    1.00 ,         ,
