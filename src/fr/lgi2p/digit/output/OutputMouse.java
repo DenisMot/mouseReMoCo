@@ -113,9 +113,9 @@ public class OutputMouse {
 		// meta info : acquisition  
 		info.desc().append_child("acquisition")
 		.append_child_value("manufacturer","EuroMov")
-		.append_child_value("software",Main.name)
-		.append_child_value("verrsion",Main.version)
-		.append_child_value("task",Main.task);
+		.append_child_value("software",Main.appName)
+		.append_child_value("version",Main.appVersion)
+		.append_child_value("task",configuration.getTaskString());
 
 		// meta info : configuration   
 		LSL.XMLElement config = info.desc().append_child("configuration");

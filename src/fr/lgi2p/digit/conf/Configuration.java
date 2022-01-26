@@ -26,27 +26,13 @@ import fr.lgi2p.digit.util.Util;
 import fr.lgi2p.digit.output.OutputMouse;
 
 public class Configuration {
-
-	// task 
+	
+	// command line parameters (with default value)
 
 	private String taskString = "circular"; 
 
-    public String getTaskString() {
-		return taskString;
-	}
-
-	public void setTaskString(String taskString) {
-		this.taskString = taskString;
-	}
-
-	// screen configuration (for multiple screens)
-    private Dimension drawSize;
-    private Dimension frameSize;
-    private Point frameLocation;
-    private boolean frameUndecorated; 
-    private Insets frameInsets;
-
-    // double circle configuration 
+    // CircularTask 
+	private CircularTask circularTask; 
     private int centerX; 
     private int centerY; 
     private int cornerX; 
@@ -55,26 +41,15 @@ public class Configuration {
     private int internalRadius;
     private int borderRadius;
 
-	// tasks 
-    private CircularTask circularTask; 
-	private LinearTask linearTask; 
-
 	// Auditory Rhythm
 	private AuditoryRhythm auditoryRhythm;
 	private int halfPeriod = 2000; 		
 
-	// default task values (Guigon 2019 https://pubmed.ncbi.nlm.nih.gov/30649981/)
+	// Linear Task (Guigon 2019 https://pubmed.ncbi.nlm.nih.gov/30649981/)
+	private LinearTask linearTask; 
 	private int interLineDistance_mm = 150;  
 	private int lineHeight_mm = 100;
 	private double mm2px = 6.173633; 
-
-
-    //    private int radiusInternalLimit; 	
-    //    private int radiusExternalLimit; 	
-
-    //    private double taskRadius; 	
-    //    private double taskTolerance; 	
-    //    private double taskIndexOfDifficulty; 
 
     // background and border configuration 
     private Color borderColor;
@@ -94,17 +69,22 @@ public class Configuration {
     private int cycleMaxNumber; // Move-Rest cycle number 
     private int cycleDuration;	// seconds for a Move or Rest (half-cycle duration, in fact...)
 
-    private boolean isWithPauseTarget = false; 
 
-    // LSL flag 
+    // flags 
     private boolean isWithLSL = false; 
-
+	private boolean isWithPauseTarget = false; 
 
     // state machine 
     private String step;
 
+	// screen configuration (for multiple screens)
+	private Dimension drawSize;
+	private Dimension frameSize;
+	private Point frameLocation;
+	private boolean frameUndecorated; 
+	private Insets frameInsets;
 
-
+	///////////////////////////////////////////////////////////////////
     public Configuration() {
 
 	printMonitorSizes() ;
@@ -116,6 +96,8 @@ public class Configuration {
 	// identify screens 
 	int MainScreen = 0; 
 	int LastScreen = 0; 
+
+	LastScreen = MainScreen; 
 	for ( int i=0; i < gs.length; i++){
 	    int x = gs[i].getDefaultConfiguration().getBounds().x;
 	    int y = gs[i].getDefaultConfiguration().getBounds().y;
@@ -287,11 +269,12 @@ public class Configuration {
 		}
 	}
 
-	public class AuditoryRhythm {
+	public class AuditoryRhythm {		
 		private Timer beepBeep = null; 
 		private TimerTask playBeep = null;
 
-		public  AuditoryRhythm () {
+		public  AuditoryRhythm (int x) {
+			halfPeriod = x; 
 			beepBeep = new Timer();
 			playBeep = new TimerTask() {
 				@Override
@@ -316,20 +299,15 @@ public class Configuration {
 
 	}
 
-	private void setAuditoryRhythm() {
-		auditoryRhythm = new AuditoryRhythm(); 
-		}
-
 	public AuditoryRhythm getAuditoryRhythm() {
 		return auditoryRhythm;
 	}
 
 	public void setHalfPeriod(int halfPeriod) {
-		this.halfPeriod = halfPeriod;
 		if (auditoryRhythm != null) {
 			auditoryRhythm.stopBeep(); 
 		}
-		setAuditoryRhythm() ; 
+		auditoryRhythm = new AuditoryRhythm(halfPeriod); 
 	}
 
 	public class LinearTask {
@@ -686,16 +664,28 @@ public class Configuration {
     public String toString() {
 	// we separate field-value pairs using ; and field from value using space
 	// REASON : we cannot use , and = that appear in java colors : java.awt.Color[r=255,g=255,b=255]
-	String Txt =  "screenWidth "+drawSize.width+";screenHeight "+drawSize.height
-		+";cornerX "+cornerX+";cornerY "+cornerY+";centerX "+centerX+";centerY "+centerY
-		+";externalRadius "+externalRadius+";internalRadius "+internalRadius+";borderRadius "+borderRadius+";cursorRadius "+cursorRadius
-		+";indexOfDifficulty "+circularTask.ID+";taskRadius "+circularTask.radius +";taskTolerance "+circularTask.tolerance
-		+";borderColor "+borderColor+";backgroundColor "+backgroundColor+";cursorColorRecord "+cursorColorRecord+";cursorColorWait "+cursorColorWait
+	String Txt =  
+		"software "+Main.appName+";version "+Main.appVersion+";isWithLSL "+isWithLSL
+		+ ";screenWidth "+drawSize.width+";screenHeight "+drawSize.height
 		+";autoStart "+autoStart+";cycleMaxNumber "+cycleMaxNumber+";cycleDuration "+cycleDuration
-		+";software "+Main.name+";version "+Main.version+";task "+taskString+";isWithLSL "+isWithLSL
-		+";interLineDistance_mm "+interLineDistance_mm+";lineHeight_mm "+lineHeight_mm+";mm2px "+mm2px+";halfPeriod "+halfPeriod
+		+";borderColor "+borderColor+";backgroundColor "+backgroundColor
+		+";cursorColorRecord "+cursorColorRecord+";cursorColorWait "+cursorColorWait
+		+";task "+taskString
 		;
-
+		if (taskString.equals("circular")) {
+			Txt = Txt +";cornerX "+cornerX+";cornerY "+cornerY+";centerX "+centerX+";centerY "+centerY
+			+";externalRadius "+externalRadius+";internalRadius "+internalRadius+";borderRadius "+borderRadius+";cursorRadius "+cursorRadius
+			+";indexOfDifficulty "+circularTask.ID+";taskRadius "+circularTask.radius +";taskTolerance "+circularTask.tolerance
+			;
+		}
+		if (taskString.equals("linear")) {
+			Txt = Txt +";interLineDistance_mm "+interLineDistance_mm+";lineHeight_mm "+lineHeight_mm+";mm2px "+mm2px
+			; 
+		}
+		if (auditoryRhythm != null) {
+			Txt = Txt + ";halfPeriod "+halfPeriod
+			; 
+		}
 	//:System.out.println(Txt);
 	return Txt;
     }
@@ -737,5 +727,13 @@ public class Configuration {
 	public void setMm2px(Double mm2px) {
 		this.mm2px = mm2px ;
 		setLinearTask();
+	}
+
+	public String getTaskString() {
+		return taskString;
+	}
+
+	public void setTaskString(String taskString) {
+		this.taskString = taskString;
 	}
 }

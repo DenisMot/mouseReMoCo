@@ -13,9 +13,9 @@ public class Main {
 
 	private static final Logger logger = Util.getLogger(Main.class);
 
-	public static String name = "mouseReMoCo";
-	public static String task = "CircularTarget";
-	public static String version = "1.0.1"; 
+	// 
+	public static String appName = "mouseReMoCo";
+	public static String appVersion = "1.0.1"; 
 
 
 	public static void main(String[] args) {
@@ -158,8 +158,8 @@ public class Main {
 
 	private static void usage(String argument) {
 
-		System.out.println("Usage: java -jar LSL-Mouse.jar ");
-		System.out.println("           -task : linear or circular");
+		System.out.println("Usage: java -jar "+appName+".jar ");
+		System.out.println("           -task circular : task to display (circular|linear)");
 		System.out.println("           -cornerX : topleft corner of circles, from toplef of window (pixel)");
 		System.out.println("           -cornerY : topleft corner of circles, from toplef of window (pixel)");
 		System.out.println("           -centerX : center of circles !supersedes cornerX! (pixel) ");
