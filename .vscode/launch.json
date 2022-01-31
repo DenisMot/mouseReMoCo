@@ -11,10 +11,11 @@
             "request": "launch",
             "mainClass": "fr.lgi2p.digit.Main",
             "projectName": "mouseReMoCo_acd3101",
-            "args": "-task linear -lineHeight_mm 50 -interLineDistance_mm 80"
+//            "args": "-task linear -lineHeight_mm 50 -interLineDistance_mm 80"
 //            "args": "-task linear -halfPeriod 750",
 //            "args": "-halfPeriod 750",
-//            "args": "-h",      
+//            "args": "-h",     
+            "args": "-tabletSize_mm 5000,4000"
 
         },
         

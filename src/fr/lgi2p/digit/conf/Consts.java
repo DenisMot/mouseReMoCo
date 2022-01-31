@@ -2,8 +2,8 @@ package fr.lgi2p.digit.conf;
 
 public final class Consts {
 
-	public static final String APP_NAME = "LSL-Mouse";
-	public static final String VERSION = "v0.1";
+	public static final String APP_NAME = "mouseReMoCo";
+	public static final String APP_VERSION = "1.0.2";
 	
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 

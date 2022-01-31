@@ -5,6 +5,7 @@ package fr.lgi2p.digit;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import fr.lgi2p.digit.conf.Calibration;
 import fr.lgi2p.digit.conf.Configuration;
 import fr.lgi2p.digit.conf.Consts;
 import fr.lgi2p.digit.util.Util;
@@ -13,14 +14,10 @@ public class Main {
 
 	private static final Logger logger = Util.getLogger(Main.class);
 
-	// 
-	public static String appName = "mouseReMoCo";
-	public static String appVersion = "1.0.1"; 
-
-
 	public static void main(String[] args) {
 		logBasicSystemInfo();
 		Configuration configuration = new Configuration();
+
 		parseArguments(args, configuration);
 		showMainWindow( configuration );
 		logger.info("End of Main...");
@@ -127,6 +124,14 @@ public class Main {
 				int value = Util.toInt(arguments.get(key));
 				configuration.setHalfPeriod(value);
 			}
+			if ( "-tabletSize_mm".equalsIgnoreCase(key) ) {	
+				String value = arguments.get(key);
+				String[] txt = value.toString().split(",");
+				int w = Util.toInt(txt[0]); 
+				int h = Util.toInt(txt[1]); 
+
+				configuration.calibration.setTabletSize_mm(w, h); 
+			}
 		}
 	}
 
@@ -158,7 +163,7 @@ public class Main {
 
 	private static void usage(String argument) {
 
-		System.out.println("Usage: java -jar "+appName+".jar ");
+		System.out.println("Usage: java -jar "+Consts.APP_NAME+".jar ");
 		System.out.println("           -task circular : task to display (circular|linear)");
 		System.out.println("           -cornerX : topleft corner of circles, from toplef of window (pixel)");
 		System.out.println("           -cornerY : topleft corner of circles, from toplef of window (pixel)");
@@ -202,7 +207,7 @@ public class Main {
 		logger.info("Java Launched From: " + System.getProperty("java.home"));
 		logger.config("Class Path: " + System.getProperty("java.class.path"));
 		logger.config("Library Path: " + System.getProperty("java.library.path"));
-		logger.config("Application Name: " + Consts.APP_NAME + " " + Consts.VERSION);
+		logger.config("Application Name: " + Consts.APP_NAME + " " + Consts.APP_VERSION);
 		logger.config("User Home Directory: " + System.getProperty("user.home"));
 		logger.config("User Working Directory: " + System.getProperty("user.dir"));
 		logger.info("Test INFO logging.");

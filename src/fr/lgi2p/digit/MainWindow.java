@@ -130,9 +130,6 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 			frame.setSize(configuration.getFrameSize().width - D , configuration.getFrameSize().height );
 		}
 
-		// get frame insets and modify configuration 
-		configuration.setFrameInsetsAndDrawSize(frame);
-
 		// move the frame at the right position and size 
 		frame.setLocation(configuration.getFrameLocation());		
 
@@ -167,12 +164,13 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 			actionPerformed( new ActionEvent( this , ActionEvent.ACTION_PERFORMED , "record") );
 		}
 
+		// the next lines seems useless, I should investigate that later. 
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 	// done AFTER  the content is drawn ?? looks better... indeed
 		frame.setVisible(true);
 	}
 
 
-	// Controleur
+	// Controller
 	@Override
 	public void actionPerformed(ActionEvent actionEvent) {
 

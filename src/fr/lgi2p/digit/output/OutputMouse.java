@@ -9,10 +9,10 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
 
-import fr.lgi2p.digit.Main;
 import fr.lgi2p.digit.LSL.LSL;
 //import fr.lgi2p.digit.LSL.simple.LSLSendData;
 import fr.lgi2p.digit.conf.Configuration;
+import fr.lgi2p.digit.conf.Consts;
 import fr.lgi2p.digit.util.Util;
 
 
@@ -72,7 +72,7 @@ public class OutputMouse {
 	private boolean isLSLpresent( ){
 		boolean withLSL; 
 		try {
-			LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL,"MoCap",3,100,LSL.ChannelFormat.float32,"MouseCircularData");
+			LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL,"MoCap",3,100,LSL.ChannelFormat.float32, Consts.APP_NAME);
 			info.destroy();
 			withLSL = true;
 			System.out.println("CSV + LSL output...");
@@ -87,7 +87,7 @@ public class OutputMouse {
 	private void SetDataOutlet(Configuration configuration) {
 		// We make a stream of type MoCap with 3 channels 
 		// StreamInfo(name, type, channel_count, nominal_srate, channel_format, source_id)
-		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL,"MoCap",3,100,LSL.ChannelFormat.float32,"MouseCircularData");
+		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL,"MoCap",3,100,LSL.ChannelFormat.float32, Consts.APP_NAME);
 
 		// meta info : channels 
 		// https://github.com/sccn/xdf/wiki/MoCap-Meta-Data 
@@ -113,8 +113,8 @@ public class OutputMouse {
 		// meta info : acquisition  
 		info.desc().append_child("acquisition")
 		.append_child_value("manufacturer","EuroMov")
-		.append_child_value("software",Main.appName)
-		.append_child_value("version",Main.appVersion)
+		.append_child_value("software",Consts.APP_NAME)
+		.append_child_value("version",Consts.APP_VERSION)
 		.append_child_value("task",configuration.getTaskString());
 
 		// meta info : configuration   
@@ -132,12 +132,12 @@ public class OutputMouse {
 	private void SetMarkerOutlet(Configuration configuration) {
 		// We make a stream of type Marker 
 		// StreamInfo(name, type, channel_count, nominal_srate, channel_format, source_id)
-		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL, "Markers", 1, LSL.IRREGULAR_RATE, LSL.ChannelFormat.string, "MouseCircularMarkers");
+		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL, "Markers", 1, LSL.IRREGULAR_RATE, LSL.ChannelFormat.string, Consts.APP_NAME+"Markers");
 		// create the stream with all the preceding information
 		markerOutlet = new LSL.StreamOutlet(info);
 
 		// we make a second stream for sync with numeric makers 
-		LSL.StreamInfo infoN = new LSL.StreamInfo(streamNameLSL+"ToNIC", "Markers", 1, LSL.IRREGULAR_RATE, LSL.ChannelFormat.int32, "MouseCircularMarkersNumeric");
+		LSL.StreamInfo infoN = new LSL.StreamInfo(streamNameLSL+"ToNIC", "Markers", 1, LSL.IRREGULAR_RATE, LSL.ChannelFormat.int32, Consts.APP_NAME+"MarkersNumeric");
 		numericMarkerOutlet = new LSL.StreamOutlet(infoN);
 	}
 
