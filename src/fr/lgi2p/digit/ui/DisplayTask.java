@@ -15,15 +15,12 @@ import fr.lgi2p.digit.conf.Configuration;
 import fr.lgi2p.digit.conf.Configuration.Line;
 import fr.lgi2p.digit.util.Util;
 
-public class DoubleCircle  extends JComponent {
+public class DisplayTask  extends JComponent {
 
-	private static final Logger logger = Util.getLogger(DoubleCircle.class);
+	private static final Logger logger = Util.getLogger(DisplayTask.class);
 
 	private static final long serialVersionUID = 226525982964421713L;
 	private Configuration configuration;
-
-	private int fontSize = 20; 
-	private Font defaultFont = new Font("Courier", Font.PLAIN, fontSize); ; 
 
 	private boolean isDisplayEffectiveToleranceOn = false; 
 
@@ -36,23 +33,14 @@ public class DoubleCircle  extends JComponent {
 		this.isDisplayEffectiveToleranceOn = !isDisplayEffectiveToleranceOn;
 	}
 
-	public DoubleCircle(Configuration configuration) {
+	public DisplayTask(Configuration configuration) {
 		this.configuration = configuration;
-		// set cursors  
-		this.configuration.setCursorRecord();
-		this.configuration.setCursorWait();
-		setDefaultFont(); 
-	}
-
-	private void setDefaultFont() {
-		fontSize = configuration.getCenterX()/36; 
-		defaultFont = new Font("Courier", Font.PLAIN, fontSize); 
-		this.setFont(defaultFont);
+		this.setFont(configuration.getDefaultFont()); // font size proportional to display size
 	}
 
 	public void paintComponent(Graphics g){		
-		//int fontSize = 20; 			// size of font for start/stop message 
-		Point PosMessage = new Point(fontSize, fontSize); 	// position of the start/stop message
+		int fontSize = configuration.getDefaultFont().getSize(); 			// size of font for start/stop message 
+		Point PosMessage = new Point(fontSize, fontSize); 		// position of the start/stop message
 		Point PosMessageCycle = new Point(configuration.getFrameSize().width - 20, fontSize); 		//  cycle message (on the right) 
 		Point PosPercentMessage = new Point(20, configuration.getFrameSize().height - (fontSize*2)); 	// error rate message (on the left) 
 
@@ -92,8 +80,6 @@ public class DoubleCircle  extends JComponent {
 		if (isDisplayEffectiveToleranceOn) {
 			drawEffectiveTolerance(g);
 			drawPercentMessage(g, PosPercentMessage );
-
-
 		}
 
 		logger.info("paintComponent " + configuration.getStep());     
@@ -116,6 +102,7 @@ public class DoubleCircle  extends JComponent {
 		g.drawString(" ► Recording ('q' to quit, 'space' to toggle record/pause)", PosMessage.x, PosMessage.y  );
 	}
 
+	// 
 	private void drawTarget(Graphics g ) {
 		if (MainWindow.getInstance(configuration).isCycling()) {
 			if (MainWindow.getInstance(configuration).isRecording()) {
@@ -322,8 +309,9 @@ public class DoubleCircle  extends JComponent {
 
 	private void drawPercentMessage(Graphics g, Point PosMessagePercent ){
 		Font currFont = g.getFont(); 
-
-		g.setFont(new Font("Courier", Font.PLAIN, 16)); 
+		int fontSize = configuration.getDefaultFont().getSize() * 2/3; 
+		
+		g.setFont(new Font("Courier", Font.PLAIN, fontSize)); 
 
 		drawRadiusMeanTable     (g, PosMessagePercent); 
 		drawAdviceMessage       (g, PosMessagePercent); 

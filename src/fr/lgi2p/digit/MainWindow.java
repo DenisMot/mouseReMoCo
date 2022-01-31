@@ -23,7 +23,7 @@ import javax.swing.Timer;
 import fr.lgi2p.digit.conf.Configuration;
 import fr.lgi2p.digit.conf.Consts;
 import fr.lgi2p.digit.output.OutputMouse;
-import fr.lgi2p.digit.ui.DoubleCircle;
+import fr.lgi2p.digit.ui.DisplayTask;
 import fr.lgi2p.digit.ui.PerformanceAtTask;
 import fr.lgi2p.digit.util.Util;
 
@@ -86,7 +86,7 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 	}
 
 
-	private DoubleCircle twoCircles = null;
+	private DisplayTask displayTask = null;
 
 	private OutputMouse outputMouse = null;	
 
@@ -139,9 +139,9 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 		performanceAtTask = new PerformanceAtTask(configuration); 
 
 		// build the content (AFTER setting the configuration)
-		twoCircles = new DoubleCircle(configuration);
-		frame.getContentPane().add(twoCircles);	
-		frame.setFont(twoCircles.getFont());
+		displayTask = new DisplayTask(configuration);
+		frame.getContentPane().add(displayTask);	
+		frame.setFont(displayTask.getFont());
 		startClock();
 
 		// Exit code		
@@ -210,7 +210,7 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 	private void UpdateClock(){
 		// called by the clock timer 
 		elapsedSeconds = elapsedSeconds + 1; 
-		twoCircles.repaint();
+		displayTask.repaint();
 		if (performanceAtTask != null) performanceAtTask.repaint();
 	}
 
@@ -221,7 +221,7 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 		if ( ! this.recording  ) {
 			configuration.setStep("END_PAUSE");
 			timer.stop();
-			twoCircles.repaint();
+			displayTask.repaint();
 		}else {
 			logger.info("Ask to end pause but running");
 		}
@@ -298,7 +298,7 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 		configuration.setStep("2_START_REMOVE_TEXT");		
 		logger.info("state2RemoveText");			
 		timer.stop();
-		twoCircles.repaint();
+		displayTask.repaint();
 	}
 
 	private void DoPause  () {
@@ -306,7 +306,7 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 			configuration.setStep("3_PAUSE");
 			toggleRecordPause();			
 			timer.stop();
-			twoCircles.repaint();
+			displayTask.repaint();
 		}else {
 			logger.info("Asked to pause, but already in pause");
 		}
@@ -316,7 +316,7 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 		if ( this.recording == false ) {
 			configuration.setStep("4_RESUME");
 			toggleRecordPause();
-			twoCircles.repaint();
+			displayTask.repaint();
 		}else {
 			logger.info("Asked to record, but already recording");
 		}
@@ -370,9 +370,9 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 		boolean isInside = (d < externalLimit & d > internalLimit );
 
 		if (isInside) {
-			twoCircles.setCursor(configuration.getCursorRecord());
+			displayTask.setCursor(configuration.getCursorRecord());
 		}else{
-			twoCircles.setCursor(configuration.getCursorOut());
+			displayTask.setCursor(configuration.getCursorOut());
 		}
 		// pass the job to output and performance analysis 
 		if ( this.recording ) {
@@ -426,7 +426,7 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 	}
 
 	private void DoToggleDisplayEffectiveTolerance() {
-		twoCircles.toggleDisplayEffectiveToleranceOn();
+		displayTask.toggleDisplayEffectiveToleranceOn();
 	}
 
 

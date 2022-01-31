@@ -5,6 +5,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -19,6 +20,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JFrame;
+// import javax.swing.text.AttributeSet.FontAttribute;
 
 import fr.lgi2p.digit.Main;
 import fr.lgi2p.digit.MainWindow;
@@ -28,7 +30,6 @@ import fr.lgi2p.digit.output.OutputMouse;
 public class Configuration {
 	
 	// command line parameters (with default value)
-
 	private String taskString = "circular"; 
 
     // CircularTask 
@@ -76,6 +77,10 @@ public class Configuration {
 
     // state machine 
     private String step;
+
+	// Display font
+	private int fontSize = 20; 
+	private Font defaultFont = new Font("Courier", Font.PLAIN, fontSize); ; 
 
 	// screen configuration (for multiple screens)
 	private Dimension drawSize;
@@ -126,6 +131,7 @@ public class Configuration {
 	this.frameLocation = new Point(bounds.x+insets.left, bounds.y+insets.top);
 	System.out.println("Frame on screen " + usedScreen + ": " + frameSize.width + "x" + frameSize.height +" at (" + frameLocation.x +","+frameLocation.y+")");
 	
+	setDefaultFont();
 	setDefaultDoubleCircle();
     }
 
@@ -735,5 +741,18 @@ public class Configuration {
 
 	public void setTaskString(String taskString) {
 		this.taskString = taskString;
+	}
+
+	public void setDefaultFont() {
+		// set a font proportional to screen size to preserve legibility
+		// take care of screen with different aspect ratio
+		fontSize = Math.min(frameSize.width/72, frameSize.height/45);
+
+		defaultFont = new Font("Courier", Font.PLAIN, fontSize); 
+		System.out.println("Default font: " +  defaultFont);
+	}
+
+	public Font getDefaultFont(){
+		return defaultFont;
 	}
 }
