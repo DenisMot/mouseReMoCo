@@ -76,6 +76,8 @@ public class DisplayTask  extends JComponent {
 		drawSquare(g); 
 		drawTarget(g); 
 
+		configuration.calibration.paint(g);
+
 		// last : should be on first plane
 		if (isDisplayEffectiveToleranceOn) {
 			drawEffectiveTolerance(g);

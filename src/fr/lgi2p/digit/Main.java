@@ -19,6 +19,8 @@ public class Main {
 		Configuration configuration = new Configuration();
 
 		parseArguments(args, configuration);
+
+		// configuration.calibration.toWindow();
 		showMainWindow( configuration );
 		logger.info("End of Main...");
 	}
@@ -44,12 +46,12 @@ public class Main {
 			if ( "-externalRadius".equalsIgnoreCase(key) ) {
 				int value = Util.toInt(arguments.get(key));
 				// Args.checkForRange(value, 1, configuration.getCornerX() * 2);
-				configuration.setExternalRadius(value * 2);
+				configuration.setExternalRadius(value);
 			}
 			if ( "-internalRadius".equalsIgnoreCase(key) ) {
 				int value = Util.toInt(arguments.get(key));
 				// Args.checkForRange(value, 1, configuration.getExternalRadius()*2);
-				configuration.setInternalRadius(value * 2);
+				configuration.setInternalRadius(value);
 			}
 			if ( "-borderRadius".equalsIgnoreCase(key) ) {
 				int value = Util.toInt(arguments.get(key));
@@ -124,13 +126,18 @@ public class Main {
 				int value = Util.toInt(arguments.get(key));
 				configuration.setHalfPeriod(value);
 			}
-			if ( "-tabletSize_mm".equalsIgnoreCase(key) ) {	
+			if ( "-tabletSize".equalsIgnoreCase(key) ) {	
 				String value = arguments.get(key);
-				String[] txt = value.toString().split(",");
-				int w = Util.toInt(txt[0]); 
-				int h = Util.toInt(txt[1]); 
-
-				configuration.calibration.setTabletSize_mm(w, h); 
+				// we treat x and = as equivalent separators (only order matters)
+				String[] txt = value.toString().split("=|x");
+				int w_mm = Util.toInt(txt[0]); 
+				int h_mm = Util.toInt(txt[1]); 
+				int w_px = Util.toInt(txt[2]); 
+				int h_px = Util.toInt(txt[3]); 
+				if (configuration.calibration != null) {
+					configuration.calibration.setTabletSize_mm(w_mm, h_mm); 
+					configuration.calibration.setTabletSize_px(w_px, h_px);
+				}
 			}
 		}
 	}
@@ -181,6 +188,9 @@ public class Main {
 		System.out.println("           -autoStart 3600 : delay before auto start recording, press space to start earlier (second)");
 		System.out.println("           -cycleMaxNumber 6 : Record+Pause cycles to run (number)");
 		System.out.println("           -cycleDuration 20: duration of one Record/Pause period (seconds)");
+		// System.out.println("           -tabletSize_mm 311x216: width and height of graphic tablet (mm) ");
+		// System.out.println("           -tabletSize_px 62200x43200: width and heigh of graphic tablet (pixel)");
+		System.out.println("           -tabletSize 311x216=62200x43200: width and heigh of graphic tablet (mm=pixel)");
 
 		if ( argument != null ) {
 			System.out.println("This argument is not clear : " + argument);

@@ -15,7 +15,10 @@
 //            "args": "-task linear -halfPeriod 750",
 //            "args": "-halfPeriod 750",
 //            "args": "-h",     
-            "args": "-tabletSize_mm 5000,4000"
+           "args": "-tabletSize 311x216=62200x43200 -task linear"
+//           "args": "-tabletSize 622x432=62200x43200 -task linear"
+//            "args": "-externalRadius 457 -internalRadius 457"
+//            "args": "-indexOfDifficulty 1000"
 
         },
         

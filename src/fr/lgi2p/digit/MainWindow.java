@@ -19,6 +19,8 @@ import javax.swing.JFrame;
 
 import javax.swing.Timer;
 
+import fr.lgi2p.digit.conf.Calibration;
+
 //import fr.lgi2p.digit.LSL.simple.LSLSendData;
 import fr.lgi2p.digit.conf.Configuration;
 import fr.lgi2p.digit.conf.Consts;
@@ -29,6 +31,8 @@ import fr.lgi2p.digit.util.Util;
 
 
 public final class MainWindow implements  MouseMotionListener, MouseListener, KeyListener, ActionListener {
+
+	Calibration calibration; 
 
 
 	static enum CyclingStatus { 
@@ -133,7 +137,10 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 		// move the frame at the right position and size 
 		frame.setLocation(configuration.getFrameLocation());		
 
-		performanceAtTask = new PerformanceAtTask(configuration); 
+		if (configuration.getCircularTask().ID > 1.0) {
+			performanceAtTask = new PerformanceAtTask(configuration);
+		}
+		 
 
 		// build the content (AFTER setting the configuration)
 		displayTask = new DisplayTask(configuration);
@@ -167,6 +174,9 @@ public final class MainWindow implements  MouseMotionListener, MouseListener, Ke
 		// the next lines seems useless, I should investigate that later. 
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 	// done AFTER  the content is drawn ?? looks better... indeed
 		frame.setVisible(true);
+
+		configuration.calibration.setScreenCalibration(frame);
+		configuration.calibration.toWindow();
 	}
 
 
