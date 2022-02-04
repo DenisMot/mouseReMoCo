@@ -5,7 +5,6 @@ package fr.lgi2p.digit;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
-import fr.lgi2p.digit.conf.Calibration;
 import fr.lgi2p.digit.conf.Configuration;
 import fr.lgi2p.digit.conf.Consts;
 import fr.lgi2p.digit.util.Util;
@@ -20,7 +19,6 @@ public class Main {
 
 		parseArguments(args, configuration);
 
-		// configuration.calibration.toWindow();
 		showMainWindow( configuration );
 		logger.info("End of Main...");
 	}
@@ -118,10 +116,10 @@ public class Main {
 				int value = Util.toInt(arguments.get(key));
 				configuration.setLineHeight_mm(value);
 			}
-			if ( "-mm2px".equalsIgnoreCase(key) ) {	
-				double value = Double.parseDouble(arguments.get(key));
-				configuration.setMm2px(value);
-			}		
+			// if ( "-mm2px".equalsIgnoreCase(key) ) {	
+			// 	double value = Double.parseDouble(arguments.get(key));
+			// 	configuration.setMm2px(value);
+			// }		
 			if ( "-halfPeriod".equalsIgnoreCase(key) ) {	
 				int value = Util.toInt(arguments.get(key));
 				configuration.setHalfPeriod(value);
@@ -137,6 +135,12 @@ public class Main {
 				if (configuration.calibration != null) {
 					configuration.calibration.setTabletSize_mm(w_mm, h_mm); 
 					configuration.calibration.setTabletSize_px(w_px, h_px);
+				}
+			}
+			if ( "-screenDiagonal".equalsIgnoreCase(key) ) {	
+				int value = Util.toInt(arguments.get(key));
+				if (configuration.calibration != null) {
+					configuration.calibration.setScreenDiagonal_mm(value);
 				}
 			}
 		}
@@ -191,6 +195,9 @@ public class Main {
 		// System.out.println("           -tabletSize_mm 311x216: width and height of graphic tablet (mm) ");
 		// System.out.println("           -tabletSize_px 62200x43200: width and heigh of graphic tablet (pixel)");
 		System.out.println("           -tabletSize 311x216=62200x43200: width and heigh of graphic tablet (mm=pixel)");
+		System.out.println("           -screenDiagonal 400: diagonal of the screen (mm)");
+
+		
 
 		if ( argument != null ) {
 			System.out.println("This argument is not clear : " + argument);

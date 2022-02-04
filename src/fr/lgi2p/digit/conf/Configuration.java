@@ -53,7 +53,7 @@ public class Configuration {
 	private LinearTask linearTask;
 	private int interLineDistance_mm = 150;
 	private int lineHeight_mm = 100;
-	private double mm2px = 6.173633;
+	//private double mm2px = 6.173633;
 
 	// background and border configuration
 	private Color borderColor;
@@ -327,6 +327,8 @@ public class Configuration {
 		private Timer beepBeep = null;
 		private TimerTask playBeep = null;
 
+		private Line[] targetLines; 
+
 		public AuditoryRhythm(int x) {
 			halfPeriod = x;
 			beepBeep = new Timer();
@@ -338,6 +340,10 @@ public class Configuration {
 				}
 			};
 			startBeep();
+			if (taskString.equals("circular")) {
+				setTargetLines(); 
+			}
+			
 		}
 
 		public void startBeep() {
@@ -350,6 +356,24 @@ public class Configuration {
 				beepBeep.cancel();
 			}
 		}
+
+		private void setTargetLines() {
+			int w = 5 * cursorRadius; 
+
+			targetLines = new Line[2]; 
+			targetLines[0] = new Line(centerX, centerY - (externalRadius + w), 
+									  centerX, centerY - (internalRadius - w), 
+									  Color.GRAY); 
+			targetLines[1] = new Line(centerX, centerY + (externalRadius + w), 
+									  centerX, centerY + (internalRadius - w), 
+									  Color.GRAY);
+			w = w; 
+		}
+
+		public Line[] getTargetLines() {
+			return targetLines;
+		}
+
 	}
 
 	public AuditoryRhythm getAuditoryRhythm() {
@@ -377,6 +401,8 @@ public class Configuration {
 			// diagonal
 			// distances in mm (tablet) must be translated into pixels to display (screen)
 			// DECISION: we multiply distances in mm by the gain (mm2px: same along x and y)
+
+			double mm2px = calibration.screenResolution_ppi / 25.5; 
 
 			Double lineHalfHeight = mm2px * lineHeight_mm / 2.0;
 			Double lineHalfDistance = mm2px * interLineDistance_mm / 2.0;
@@ -760,7 +786,7 @@ public class Configuration {
 		}
 		if (taskString.equals("linear")) {
 			Txt = Txt + ";interLineDistance_mm " + interLineDistance_mm + ";lineHeight_mm " + lineHeight_mm + ";mm2px "
-					+ mm2px;
+					+ (25.4 *calibration.screenResolution_ppi) ;
 		}
 		if (auditoryRhythm != null) {
 			Txt = Txt + ";halfPeriod " + halfPeriod;
@@ -803,10 +829,10 @@ public class Configuration {
 		setLinearTask();
 	}
 
-	public void setMm2px(Double mm2px) {
-		this.mm2px = mm2px;
-		setLinearTask();
-	}
+	// public void setMm2px(Double mm2px) {
+	// 	this.mm2px = mm2px;
+	// 	setLinearTask();
+	// }
 
 	public String getTaskString() {
 		return taskString;
@@ -833,7 +859,7 @@ public class Configuration {
 
 	}
 
-	public void setMm2px(double mm2px) {
-		this.mm2px = mm2px;
-	}
+	// public void setMm2px(double mm2px) {
+	// 	this.mm2px = mm2px;
+	// }
 }

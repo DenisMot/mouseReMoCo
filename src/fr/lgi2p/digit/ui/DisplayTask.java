@@ -90,7 +90,7 @@ public class DisplayTask  extends JComponent {
 
 	private void drawPauseMessage(Graphics g, Point PosMessage, int fontSize) {
 		g.setColor(configuration.getBorderColor());
-		g.drawString(" ▌▌ In Pause ('q' to quit, 'space' to toggle record/pause)", PosMessage.x, PosMessage.y  );
+		g.drawString("In Pause ('q' to quit, 'space' to toggle record/pause)", PosMessage.x, PosMessage.y  );
 	}
 
 	private void drawEndPauseMessage(Graphics g, Point PosMessage, int fontSize) {
@@ -101,7 +101,7 @@ public class DisplayTask  extends JComponent {
 	private void drawRecordMessage(Graphics g, Point PosMessage, int fontSize) {
 		//g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize)); 
 		g.setColor(configuration.getBorderColor());
-		g.drawString(" ► Recording ('q' to quit, 'space' to toggle record/pause)", PosMessage.x, PosMessage.y  );
+		g.drawString("Recording ('q' to quit, 'space' to toggle record/pause)", PosMessage.x, PosMessage.y  );
 	}
 
 	// 
@@ -126,6 +126,16 @@ public class DisplayTask  extends JComponent {
 		if (configuration.getTaskString().equals("linear") ) {
 			hideCircularTarget( g );
 			showLinearTarget(g); 
+		}
+
+		if (configuration.getAuditoryRhythm() != null ) {
+			Line targets[] = configuration.getAuditoryRhythm().getTargetLines(); 
+
+			if (targets != null) {
+				for (int i = 0; i < targets.length; i++) {
+					drawOneLine( g , targets[i]); 
+				}
+			}
 		}
 	}
 
