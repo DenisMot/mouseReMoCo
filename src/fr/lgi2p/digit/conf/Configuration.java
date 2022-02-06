@@ -53,7 +53,7 @@ public class Configuration {
 	private LinearTask linearTask;
 	private int interLineDistance_mm = 150;
 	private int lineHeight_mm = 100;
-	//private double mm2px = 6.173633;
+	// private double mm2px = 6.173633;
 
 	// background and border configuration
 	private Color borderColor;
@@ -89,28 +89,27 @@ public class Configuration {
 	private int lastScreenID;
 	private int usedScreenID;
 
-
 	// frame configuration
 	private Point frameLocation;
 	private boolean frameUndecorated;
-	private Insets frameInsets;		// non drawable part 
-	private Dimension drawingSize; 	// usable part of the window
-	private Dimension frameSize; 	// full window size 
-	private Dimension screenSize; 	// full used screen size 
+	private Insets frameInsets; // non drawable part
+	private Dimension drawingSize; // usable part of the window
+	private Dimension frameSize; // full window size
+	private Dimension screenSize; // full used screen size
 
 	///////////////////////////////////////////////////////////////////
 	public Configuration() {
 		screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-		lastScreenID = screenDevices.length - 1; 	// zero based index in java
+		lastScreenID = screenDevices.length - 1; // zero based index in java
 		mainScreenID = getMainScreen(screenDevices);
 
 		printMonitorSizes();
 
 		// choose screen and set window on this screen
-		usedScreenID = lastScreenID; 
+		usedScreenID = lastScreenID;
 		setWindowSizeAndLocation();
-		printWindowSizeAndLocation(); 
-		setDrawSize();	
+		printWindowSizeAndLocation();
+		setDrawSize();
 
 		calibration = new Calibration(this);
 
@@ -126,7 +125,7 @@ public class Configuration {
 		int w = bounds.width;
 		int h = bounds.height;
 
-		this.screenSize = new Dimension(w, h); 
+		this.screenSize = new Dimension(w, h);
 
 		w -= (insets.left + insets.right);
 		h -= (insets.top + insets.bottom);
@@ -137,10 +136,10 @@ public class Configuration {
 	}
 
 	private void printWindowSizeAndLocation() {
-		System.out.println("Window on screen " + usedScreenID + ": " + frameSize.width + "x" + frameSize.height + " at ("
-		+ frameLocation.x + "," + frameLocation.y + ")");
+		System.out
+				.println("Window on screen " + usedScreenID + ": " + frameSize.width + "x" + frameSize.height + " at ("
+						+ frameLocation.x + "," + frameLocation.y + ")");
 	}
-
 
 	private boolean isMainScreen(GraphicsConfiguration gc) {
 		// the main screen is located at (0,0) = (top, left)
@@ -154,7 +153,7 @@ public class Configuration {
 	}
 
 	private int getMainScreen(GraphicsDevice gd[]) {
-		int mainScreen = -1; 
+		int mainScreen = -1;
 		for (int i = 0; i < screenDevices.length; i++) {
 			if (isMainScreen(screenDevices[i].getDefaultConfiguration())) {
 				mainScreen = i;
@@ -218,23 +217,16 @@ public class Configuration {
 		// build a test frame to get (eventual) insets
 		JFrame frame = new JFrame(Consts.APP_NAME);
 		frame.setUndecorated(frameUndecorated);
-		frame.setVisible(true); 	// frame must be visible to get insets
+		frame.setVisible(true); // frame must be visible to get insets
 
 		this.frameInsets = frame.getInsets();
-		this.drawingSize = frame.getSize();		// to create drawSize
+		this.drawingSize = frame.getSize(); // to create drawSize
 
 		drawingSize.width = frameSize.width - (frameInsets.left + frameInsets.right);
 		drawingSize.height = frameSize.height - (frameInsets.top + frameInsets.bottom);
 
-
-
-
 		// setFrameInsetsAndDrawSize(frame);
 		frame.dispose();
-
-
-
-
 
 	}
 
@@ -327,7 +319,7 @@ public class Configuration {
 		private Timer beepBeep = null;
 		private TimerTask playBeep = null;
 
-		private Line[] targetLines; 
+		private Line[] targetLines;
 
 		public AuditoryRhythm(int x) {
 			halfPeriod = x;
@@ -341,9 +333,9 @@ public class Configuration {
 			};
 			startBeep();
 			if (taskString.equals("circular")) {
-				setTargetLines(); 
+				setTargetLines();
 			}
-			
+
 		}
 
 		public void startBeep() {
@@ -358,16 +350,16 @@ public class Configuration {
 		}
 
 		private void setTargetLines() {
-			int w = 5 * cursorRadius; 
+			int w = 5 * cursorRadius;
 
-			targetLines = new Line[2]; 
-			targetLines[0] = new Line(centerX, centerY - (externalRadius + w), 
-									  centerX, centerY - (internalRadius - w), 
-									  Color.GRAY); 
-			targetLines[1] = new Line(centerX, centerY + (externalRadius + w), 
-									  centerX, centerY + (internalRadius - w), 
-									  Color.GRAY);
-			w = w; 
+			targetLines = new Line[2];
+			targetLines[0] = new Line(centerX, centerY - (externalRadius + w),
+					centerX, centerY - (internalRadius - w),
+					Color.GRAY);
+			targetLines[1] = new Line(centerX, centerY + (externalRadius + w),
+					centerX, centerY + (internalRadius - w),
+					Color.GRAY);
+			w = w;
 		}
 
 		public Line[] getTargetLines() {
@@ -402,7 +394,7 @@ public class Configuration {
 			// distances in mm (tablet) must be translated into pixels to display (screen)
 			// DECISION: we multiply distances in mm by the gain (mm2px: same along x and y)
 
-			double mm2px = calibration.screenResolution_ppi / 25.5; 
+			double mm2px = calibration.screenResolution_ppi / 25.5;
 
 			Double lineHalfHeight = mm2px * lineHeight_mm / 2.0;
 			Double lineHalfDistance = mm2px * interLineDistance_mm / 2.0;
@@ -414,15 +406,15 @@ public class Configuration {
 			lineLeft = new Line(-x1, y1, -x1, -y1, borderColor);
 
 			// default to use the diagonal of the drawing
-			int H = drawingSize.height;  
+			int H = drawingSize.height;
 			int W = drawingSize.width;
 
-			// if a tablet is calibrated, then use it 
+			// if a tablet is calibrated, then use it
 			if (calibration != null & calibration.tabletSize_mm != null) {
-				H = calibration.tabletSize_mm.height; 
-				W = calibration.tabletSize_mm.width; 
+				H = calibration.tabletSize_mm.height;
+				W = calibration.tabletSize_mm.width;
 			}
-			H = -H; // Y axis is reversed in java 
+			H = -H; // Y axis is reversed in java
 
 			double alpha = Math.atan2(H, W); // diagonal angle
 			lineLeft.rotate(alpha);
@@ -432,7 +424,7 @@ public class Configuration {
 			lineRight.translate(centerX, centerY);
 
 			// computation of coordinates as for the left and right lines
-			diagonal = new Line( -drawingSize.width, 0, drawingSize.width, 0, Color.GRAY);
+			diagonal = new Line(-drawingSize.width, 0, drawingSize.width, 0, Color.GRAY);
 			diagonal.rotate(alpha);
 			diagonal.translate(centerX, centerY);
 		}
@@ -534,8 +526,8 @@ public class Configuration {
 
 	public double getIndexOfDifficulty() {
 		return circularTask.ID;
-	}	
-	
+	}
+
 	public int getCycleDuration() {
 		return cycleDuration;
 	}
@@ -786,7 +778,7 @@ public class Configuration {
 		}
 		if (taskString.equals("linear")) {
 			Txt = Txt + ";interLineDistance_mm " + interLineDistance_mm + ";lineHeight_mm " + lineHeight_mm + ";mm2px "
-					+ (25.4 *calibration.screenResolution_ppi) ;
+					+ (25.4 * calibration.screenResolution_ppi);
 		}
 		if (auditoryRhythm != null) {
 			Txt = Txt + ";halfPeriod " + halfPeriod;
@@ -830,8 +822,8 @@ public class Configuration {
 	}
 
 	// public void setMm2px(Double mm2px) {
-	// 	this.mm2px = mm2px;
-	// 	setLinearTask();
+	// this.mm2px = mm2px;
+	// setLinearTask();
 	// }
 
 	public String getTaskString() {
@@ -860,6 +852,6 @@ public class Configuration {
 	}
 
 	// public void setMm2px(double mm2px) {
-	// 	this.mm2px = mm2px;
+	// this.mm2px = mm2px;
 	// }
 }
