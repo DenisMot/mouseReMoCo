@@ -95,7 +95,6 @@ public class Configuration {
 	private Insets frameInsets; // non drawable part
 	private Dimension drawingSize; // usable part of the window
 	private Dimension frameSize; // full window size
-	//private Dimension screenSize; // full used screen size
 
 	///////////////////////////////////////////////////////////////////
 	public Configuration() {
@@ -124,8 +123,6 @@ public class Configuration {
 		int w = bounds.width;
 		int h = bounds.height;
 
-		//screenSize = new Dimension(w, h);
-
 		w -= (insets.left + insets.right);
 		h -= (insets.top + insets.bottom);
 		this.frameSize = new Dimension(w, h);
@@ -151,15 +148,15 @@ public class Configuration {
 		}
 	}
 
-	private int getMainScreen(GraphicsDevice gd[]) {
-		int mainScreen = -1;
-		for (int i = 0; i < screenDevices.length; i++) {
-			if (isMainScreen(screenDevices[i].getDefaultConfiguration())) {
-				mainScreen = i;
-			}
-		}
-		return mainScreen;
-	}
+	// private int getMainScreen(GraphicsDevice gd[]) {
+	// 	int mainScreen = -1;
+	// 	for (int i = 0; i < screenDevices.length; i++) {
+	// 		if (isMainScreen(screenDevices[i].getDefaultConfiguration())) {
+	// 			mainScreen = i;
+	// 		}
+	// 	}
+	// 	return mainScreen;
+	// }
 
 	private String printMonitorSizes() {
 		StringBuilder sb = new StringBuilder();
@@ -514,36 +511,38 @@ public class Configuration {
 		}
 
 		private void setCirclePerimeter() {
-			perimeter = (double) Configuration.this.circlePerimeter_mm;
-			perimeter = perimeter * calibration.screenResolution_ppi / Consts.INCH_PER_MM;
-			radius = perimeter / (2.0 * Math.PI);
-			double tolerance = perimeter / ID;
-
-			double externalLimit_ = radius + tolerance / 2.0;
-			double internalLimit_ = radius - tolerance / 2.0;
-
-			double externalRadius_ = externalLimit_ + cursorRadius;
-			double internalRadius_ = internalLimit_ - cursorRadius;
-
-			// border is inside the circle
-			externalRadius_ = externalRadius_ + borderRadius;
-
-			externalRadius = (int) Math.round(externalRadius_);
-			internalRadius = (int) Math.round(internalRadius_);
-
-			setCornerX(drawingSize.width / 2 - externalRadius);
-			setCornerY(drawingSize.height / 2 - externalRadius);
-
-			externalLimit = (int) Math.round(externalLimit_);
-			internalLimit = (int) Math.round(internalLimit_);
-
-			tolerance_px = externalLimit - internalLimit;
-
-			ID = perimeter / (double) tolerance_px;
-
-			if (auditoryRhythm != null) {
-				auditoryRhythm.stopBeep();
-				auditoryRhythm = new AuditoryRhythm(halfPeriod);
+			if (Configuration.this.circlePerimeter_mm > 0) {
+				perimeter = (double) Configuration.this.circlePerimeter_mm;
+				perimeter = perimeter * calibration.screenResolution_ppi / Consts.INCH_PER_MM;
+				radius = perimeter / (2.0 * Math.PI);
+				double tolerance = perimeter / ID;
+	
+				double externalLimit_ = radius + tolerance / 2.0;
+				double internalLimit_ = radius - tolerance / 2.0;
+	
+				double externalRadius_ = externalLimit_ + cursorRadius;
+				double internalRadius_ = internalLimit_ - cursorRadius;
+	
+				// border is inside the circle
+				externalRadius_ = externalRadius_ + borderRadius;
+	
+				externalRadius = (int) Math.round(externalRadius_);
+				internalRadius = (int) Math.round(internalRadius_);
+	
+				setCornerX(drawingSize.width / 2 - externalRadius);
+				setCornerY(drawingSize.height / 2 - externalRadius);
+	
+				externalLimit = (int) Math.round(externalLimit_);
+				internalLimit = (int) Math.round(internalLimit_);
+	
+				tolerance_px = externalLimit - internalLimit;
+	
+				ID = perimeter / (double) tolerance_px;
+	
+				if (auditoryRhythm != null) {
+					auditoryRhythm.stopBeep();
+					auditoryRhythm = new AuditoryRhythm(halfPeriod);
+				}
 			}
 		}
 	}

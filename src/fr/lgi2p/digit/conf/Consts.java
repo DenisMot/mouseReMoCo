@@ -3,7 +3,7 @@ package fr.lgi2p.digit.conf;
 public final class Consts {
 
 	public static final String APP_NAME = "mouseReMoCo";
-	public static final String APP_VERSION = "1.0.2";
+	public static final String APP_VERSION = "1.0.3";
 
 	public static final double INCH_PER_MM = 25.4;
 	
