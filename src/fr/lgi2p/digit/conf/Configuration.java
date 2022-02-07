@@ -55,7 +55,6 @@ public class Configuration {
 	private LinearTask linearTask;
 	private int interLineDistance_mm = 150;
 	private int lineHeight_mm = 100;
-	// private double mm2px = 6.173633;
 
 	// background and border configuration
 	private Color borderColor;
@@ -87,7 +86,6 @@ public class Configuration {
 
 	// screen configuration (for multiple screens)
 	private GraphicsDevice screenDevices[];
-	private int mainScreenID;
 	private int lastScreenID;
 	private int usedScreenID;
 
@@ -97,13 +95,12 @@ public class Configuration {
 	private Insets frameInsets; // non drawable part
 	private Dimension drawingSize; // usable part of the window
 	private Dimension frameSize; // full window size
-	private Dimension screenSize; // full used screen size
+	//private Dimension screenSize; // full used screen size
 
 	///////////////////////////////////////////////////////////////////
 	public Configuration() {
 		screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		lastScreenID = screenDevices.length - 1; // zero based index in java
-		mainScreenID = getMainScreen(screenDevices);
 
 		printMonitorSizes();
 
@@ -127,7 +124,7 @@ public class Configuration {
 		int w = bounds.width;
 		int h = bounds.height;
 
-		this.screenSize = new Dimension(w, h);
+		//screenSize = new Dimension(w, h);
 
 		w -= (insets.left + insets.right);
 		h -= (insets.top + insets.bottom);
@@ -184,8 +181,11 @@ public class Configuration {
 			sb.append(", usable: " + w + "x" + h);
 			sb.append(", Insets: " + screenInsets.top + ", " + screenInsets.left + ", " + screenInsets.bottom + ", "
 					+ screenInsets.right);
+			
+			if (isMainScreen(gc)) {
+				sb.append(" (Main screen)");
+			}
 			sb.append("\n");
-
 		}
 		System.out.print(sb);
 		return sb.toString();
