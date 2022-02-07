@@ -112,6 +112,10 @@ public class Main {
 			if ("-lineHeight_mm".equalsIgnoreCase(key)) {
 				int value = Util.toInt(arguments.get(key));
 				configuration.setLineHeight_mm(value);
+			}			
+			if ("-circlePerimeter_mm".equalsIgnoreCase(key)) {
+				int value = Util.toInt(arguments.get(key));
+				configuration.setCirclePerimeter_mm(value);
 			}
 			// if ( "-mm2px".equalsIgnoreCase(key) ) {
 			// double value = Double.parseDouble(arguments.get(key));

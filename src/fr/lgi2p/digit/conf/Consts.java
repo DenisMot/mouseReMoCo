@@ -4,6 +4,8 @@ public final class Consts {
 
 	public static final String APP_NAME = "mouseReMoCo";
 	public static final String APP_VERSION = "1.0.2";
+
+	public static final double INCH_PER_MM = 25.4;
 	
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 

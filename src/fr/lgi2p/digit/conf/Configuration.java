@@ -45,6 +45,8 @@ public class Configuration {
 	private int internalRadius;
 	private int borderRadius;
 
+	private int circlePerimeter_mm;
+
 	// Auditory Rhythm
 	private AuditoryRhythm auditoryRhythm;
 	private int halfPeriod = 2000;
@@ -394,7 +396,7 @@ public class Configuration {
 			// distances in mm (tablet) must be translated into pixels to display (screen)
 			// DECISION: we multiply distances in mm by the gain (mm2px: same along x and y)
 
-			double mm2px = calibration.screenResolution_ppi / 25.5;
+			double mm2px = calibration.screenResolution_ppi / Consts.INCH_PER_MM;
 
 			Double lineHalfHeight = mm2px * lineHeight_mm / 2.0;
 			Double lineHalfDistance = mm2px * interLineDistance_mm / 2.0;
@@ -425,7 +427,7 @@ public class Configuration {
 
 			// computation of coordinates as for the left and right lines
 			diagonal = new Line(-drawingSize.width, 0, drawingSize.width, 0, Color.GRAY);
-			diagonal.rotate(alpha);
+			diagonal.rotate(alpha); 
 			diagonal.translate(centerX, centerY);
 		}
 
@@ -452,9 +454,10 @@ public class Configuration {
 
 	public class CircularTask {
 		public double radius;
-		public int tolerance; // must be integer (pixel)
+
+		public int tolerance_px; // must be integer (pixel)
 		public double ID;
-		public double distance;
+		public double perimeter;
 
 		public int internalLimit = internalRadius + cursorRadius;
 		public int externalLimit = externalRadius - cursorRadius - borderRadius;
@@ -471,9 +474,9 @@ public class Configuration {
 
 			// ID in the steering law (Accot & Zhai 1999)
 			radius = (internalLimit + externalLimit) / 2.0;
-			tolerance = externalLimit - internalLimit;
-			distance = 2.0 * Math.PI * radius;
-			ID = distance / (double) tolerance;
+			tolerance_px = externalLimit - internalLimit;
+			perimeter = 2.0 * Math.PI * radius;
+			ID = perimeter / (double) tolerance_px;
 		}
 
 		public void setIndexOfDifficulty(double indexOfDifficulty) {
@@ -508,6 +511,52 @@ public class Configuration {
 
 			// now, we can set the (novel) index of difficulty etc.
 			setPublicTaskValues();
+		}
+
+		private void setCirclePerimeter() {
+			perimeter = (double) Configuration.this.circlePerimeter_mm;
+			perimeter = perimeter * calibration.screenResolution_ppi / Consts.INCH_PER_MM;
+			radius = perimeter / (2.0 * Math.PI);
+			double tolerance = perimeter / ID;
+
+			double externalLimit_ = radius + tolerance / 2.0;
+			double internalLimit_ = radius - tolerance / 2.0;
+
+			double externalRadius_ = externalLimit_ + cursorRadius;
+			double internalRadius_ = internalLimit_ - cursorRadius;
+
+			// border is inside the circle
+			externalRadius_ = externalRadius_ + borderRadius;
+
+			externalRadius = (int) Math.round(externalRadius_);
+			internalRadius = (int) Math.round(internalRadius_);
+
+			setCornerX(drawingSize.width / 2 - externalRadius);
+			setCornerY(drawingSize.height / 2 - externalRadius);
+
+			externalLimit = (int) Math.round(externalLimit_);
+			internalLimit = (int) Math.round(internalLimit_);
+
+			tolerance_px = externalLimit - internalLimit;
+
+			ID = perimeter / (double) tolerance_px;
+
+			if (auditoryRhythm != null) {
+				auditoryRhythm.stopBeep();
+				auditoryRhythm = new AuditoryRhythm(halfPeriod);
+			}
+		}
+	}
+
+	public void setCircularTaskConfiguration() {
+		circularTask.setCirclePerimeter();
+	}
+
+	public void setCirclePerimeter_mm(int perimeter) {
+		this.circlePerimeter_mm = perimeter;
+		if (auditoryRhythm != null) {
+			auditoryRhythm.stopBeep();
+			auditoryRhythm = new AuditoryRhythm(halfPeriod);
 		}
 	}
 
@@ -774,11 +823,11 @@ public class Configuration {
 					+ ";externalRadius " + externalRadius + ";internalRadius " + internalRadius + ";borderRadius "
 					+ borderRadius + ";cursorRadius " + cursorRadius
 					+ ";indexOfDifficulty " + circularTask.ID + ";taskRadius " + circularTask.radius + ";taskTolerance "
-					+ circularTask.tolerance;
+					+ circularTask.tolerance_px;
 		}
 		if (taskString.equals("linear")) {
 			Txt = Txt + ";interLineDistance_mm " + interLineDistance_mm + ";lineHeight_mm " + lineHeight_mm + ";mm2px "
-					+ (25.4 * calibration.screenResolution_ppi);
+					+ (Consts.INCH_PER_MM * calibration.screenResolution_ppi);
 		}
 		if (auditoryRhythm != null) {
 			Txt = Txt + ";halfPeriod " + halfPeriod;

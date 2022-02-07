@@ -16,12 +16,13 @@
 //            "args": "-halfPeriod 750",
 //            "args": "-h",     
 //           "args": "-tabletSize 311x216=62200x43200 -task linear"
-// "args": "-screenDiagonal 800 -task linear -tabletSize 311x216=62200x43200 -halfPeriod 1750"
-            "args": "-screenDiagonal 585 -task linear -tabletSize 311x216=62200x43200 -halfPeriod 1750"
+//            "args": "-screenDiagonal 800 -task linear -tabletSize 311x216=62200x43200 -halfPeriod 1750"
+//            "args": "-screenDiagonal 585 -task linear -tabletSize 311x216=62200x43200 -halfPeriod 1750"
+//            "args": "-screenDiagonal 585 -circlePerimeter_mm 600 -tabletSize 311x216=62200x43200 -halfPeriod 1750"
 
-//           "args": "-tabletSize 622x432=62200x43200 -task linear"
+           "args": "-screenDiagonal 585 -tabletSize 311x216=62200x43200 -task linear -interLineDistance_mm 150 -halfPeriod 1750"
 //            "args": "-externalRadius 457 -internalRadius 457"
-//            "args": "-indexOfDifficulty 1000"
+//            "args": "-indexOfDifficulty 100"
 
         },
         

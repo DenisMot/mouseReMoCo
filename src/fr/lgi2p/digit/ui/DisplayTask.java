@@ -222,10 +222,11 @@ public class DisplayTask extends JComponent {
 				// ... add cursorRadius to match the path
 				Extern += configuration.getCursorRadius();
 				Intern -= configuration.getCursorRadius();
-
+				
 				// draw
 				drawCenteredCircle(g, (int) Extern, Util.toColor("blue"));
 				drawCenteredCircle(g, (int) Intern, Util.toColor("blue"));
+				// drawCenteredCircle(g, (int) R, Util.toColor("green"));
 			}
 
 			// tests to find the center of the circle in pixel

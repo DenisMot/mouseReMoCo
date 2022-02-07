@@ -189,7 +189,7 @@ public class PerformanceAtTask {
 		h[2]= " Theory ,  1.00 ,  291.50 ,   61.00 ,    3.88 ,         ,   30.03 ,    1.00 ,         ,"; 
 
 		double R = configuration.getCircularTask().radius; 
-		double T = configuration.getCircularTask().tolerance; 
+		double T = configuration.getCircularTask().tolerance_px; 
 		double ID = configuration.getCircularTask().ID; 
 		h[2]= String.format(" Theory ,  1.00 ,%8.2f ,%8.2f ,%8.2f ,    1.00 ,         ,", R, T, ID); 
 		h[2]= String.format(" Theory ,  1.00 ,%8.2f ,%8.2f ,    3.88 ,         ,         ,    1.00 ,         ,", R, T, ID); 
@@ -308,7 +308,7 @@ public class PerformanceAtTask {
 		//double taskRadius = (configuration.getCircularTask().externalLimit + configuration.getCircularTask().internalLimit) / 2.00 ;
 		//double IDe = Math.abs(effectiveAngle * taskRadius) / effectiveTolerance; 
 
-		double bias = effectiveTolerance / configuration.getCircularTask().tolerance; 
+		double bias = effectiveTolerance / configuration.getCircularTask().tolerance_px; 
 
 		// update 
 		nbSampleTrial = currentNbSample; 

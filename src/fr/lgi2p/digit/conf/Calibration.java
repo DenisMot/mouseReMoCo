@@ -33,7 +33,9 @@ public class Calibration {
     }
 
     int screenDiagonal = 0;
-    double screenResolution_ppi = 96.0; // default value for W10 (rather common )
+    double screenResolution_ppi = 72.0; // default value for W10 = 96 (rather common )
+    double tabletResolution_ppi; 
+
     Layout tabletInScreen;
     Layout screenInTablet;
     Layout screenToDrawing;
@@ -105,7 +107,7 @@ public class Calibration {
             double Wpx = screenConfiguration.getBounds().width;
             double Dmm = screenDiagonal;
             double Dpx = Math.sqrt(Wpx * Wpx + Hpx * Hpx);
-            screenResolution_ppi = 25.4 * Dpx / Dmm;
+            screenResolution_ppi = Consts.INCH_PER_MM * Dpx / Dmm;
         }
 
         // screen size in pixels
@@ -114,8 +116,8 @@ public class Calibration {
         screenSize_px = new Dimension(screenWidth, screenHeight);
 
         // corresponding screen size in mm
-        double w_mm = 25.4 * (double) screenSize_px.width / screenResolution_ppi;
-        double h_mm = 25.4 * (double) screenSize_px.height / screenResolution_ppi;
+        double w_mm = Consts.INCH_PER_MM * (double) screenSize_px.width / screenResolution_ppi;
+        double h_mm = Consts.INCH_PER_MM * (double) screenSize_px.height / screenResolution_ppi;
         w_mm = Math.round(w_mm);
         h_mm = Math.round(h_mm);
         screenSize_mm = new Dimension((int) w_mm, (int) h_mm);
@@ -128,14 +130,15 @@ public class Calibration {
         drawingSize_px = new Dimension(wd, hd);
 
         // corresponding drawing size in mm
-        w_mm = 25.4 * (double) drawingSize_px.width / screenResolution_ppi;
-        h_mm = 25.4 * (double) drawingSize_px.height / screenResolution_ppi;
+        w_mm = Consts.INCH_PER_MM * (double) drawingSize_px.width / screenResolution_ppi;
+        h_mm = Consts.INCH_PER_MM * (double) drawingSize_px.height / screenResolution_ppi;
         w_mm = Math.round(w_mm);
         h_mm = Math.round(h_mm);
         drawingSize_mm = new Dimension((int) w_mm, (int) h_mm);
 
         // rebuild the linear task with the new calibration
         configuration.setLinearTask();
+        configuration.setCircularTaskConfiguration();
     }
 
     public void paint(java.awt.Graphics g) {
@@ -178,15 +181,12 @@ public class Calibration {
         double tabletOnDrawing_heightMargin = ((double) drawingSize_px.height - tabletOnScreen_height) / 2.0;
         double tabletOnDrawing_widthMargin = ((double) drawingSize_px.width - tabletOnScreen_width) / 2.0;
 
-        int newScreenHeight = (int) tabletOnScreen_height;
-        int newScreenWidth = (int) tabletOnScreen_width;
-
         Layout tabletInScreen = new Layout(0, 0, 0, 0);
         // coordinates of the tablet in the drawing (in screen pixel)
-        tabletInScreen.top = (int) tabletOnDrawing_heightMargin;
-        tabletInScreen.left = (int) tabletOnDrawing_widthMargin;
-        tabletInScreen.bottom = tabletInScreen.top + newScreenHeight;
-        tabletInScreen.right = tabletInScreen.left + newScreenWidth;
+        tabletInScreen.top = (int) Math.round(tabletOnDrawing_heightMargin);
+        tabletInScreen.left = (int) Math.round(tabletOnDrawing_widthMargin);
+        tabletInScreen.bottom = (int) Math.round(tabletOnDrawing_heightMargin + tabletOnScreen_height);
+        tabletInScreen.right = (int) Math.round(tabletOnDrawing_widthMargin + tabletOnScreen_width);
 
         // coordinates in the screen
         tabletInScreen.top += screenToDrawing.top;
@@ -235,11 +235,13 @@ public class Calibration {
         // String.format("%s is %d years old, er, young", "Al", 45)
 
         double screenDiagonal_mm = diagonal(screenSize_mm); 
-        double screenDiagonal_inch = screenDiagonal_mm / 25.4;
+        double screenDiagonal_inch = screenDiagonal_mm / Consts.INCH_PER_MM;
+
         String dimensionMessage = ""
                 + ";screen (" + String.format("%5.2f\", %3.0fmm", screenDiagonal_inch, screenDiagonal_mm) + "): "
                 + "" + screenSize_mm.width + "x" + screenSize_mm.height + " mm"
                 + " = " + screenSize_px.width + " x " + screenSize_px.height + " (pixels)"
+                + String.format(" @ %5.2fdpi",screenResolution_ppi)
                 + ";drawing: "
                 + "" + drawingSize_mm.width + " x " + drawingSize_mm.height + " (mm)"
                 + " = " + drawingSize_px.width + " x " + drawingSize_px.height + " (pixels)";
@@ -251,12 +253,14 @@ public class Calibration {
             double ratioScreenInTablet = (double) (screenInTablet.getWidth()) / (double) (screenInTablet.getHeight());
 
             double tabletDiagonal_mm = diagonal(tabletSize_mm);
-            double tabletDiagonal_inch = tabletDiagonal_mm / 25.4;
-
+            double tabletDiagonal_inch = tabletDiagonal_mm / Consts.INCH_PER_MM;
+            tabletResolution_ppi = diagonal(tabletSize_px) / tabletDiagonal_inch; 
             calibrationMessage = ""
                     + ";tablet (" + String.format("%5.2f\", %3.0fmm", tabletDiagonal_inch, tabletDiagonal_mm) + "): "
                     + "" + tabletSize_mm.width + "x" + tabletSize_mm.height + " mm"
                     + " = " + tabletSize_px.width + " x " + tabletSize_px.height + " (pixels)"
+                    + String.format(" @ %5.2fdpi",tabletResolution_ppi)
+
                     + "; ------------------------------------------------------ "
                     + "; Area of the screen corresponding to the complete tablet:  "
                     + "; top = " + tabletInScreen.top + ", bottom = " + tabletInScreen.bottom
