@@ -10,6 +10,18 @@
             "name": "Launch Main",
             "request": "launch",
             "mainClass": "fr.lgi2p.digit.Main",
+            "projectName": "mouseReMoCo_66d1168e", 
+            
+            //"args": "-task linear", 
+            "args": "-screenDiagonal 800 -task linear -tabletSize 311x216=62200x43200 -halfPeriod 1750"
+
+        },
+        
+        {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "mainClass": "fr.lgi2p.digit.Main",
             "projectName": "mouseReMoCo_acd3101",
 //            "args": "-task linear -lineHeight_mm 50 -interLineDistance_mm 80"
 //            "args": "-task linear -halfPeriod 750",

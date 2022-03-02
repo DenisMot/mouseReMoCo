@@ -1,17 +1,12 @@
-software mouseReMoCo;version 1.0.2;isWithLSL true;screenWidth 1920;screenHeight 1147;autoStart 3600;cycleMaxNumber 6;cycleDuration 20;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];task circular;cornerX 467;cornerY 80;centerX 960;centerY 573;externalRadius 493;internalRadius 431;borderRadius 1;cursorRadius 16;indexOfDifficulty 99.98931100908203;taskRadius 461.5;taskTolerance 29
-2022-02-07 16:32:43.206
+software mouseReMoCo;version 1.0.4;isWithLSL true;screenWidth 1920;screenHeight 1147;centerX 960;centerY 573;autoStart 3600;cycleMaxNumber 6;cycleDuration 20;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];task linear;interLineDistance_mm 150;lineHeight_mm 100;mm2px 2.834645669291339;Diagonal_px2center [x1=136,y1=1065,x2=1784,y2=81];LineLeft_px2center [x1=850,y1=804,x2=704,y2=560];LineRight_px2center [x1=1216,y1=586,x2=1070,y2=342];halfPeriod 1750
+2022-03-02 17:06:56.755
 
-2022-02-07 16:33:08.345,1644247988345,KeyTyped=32 DoCycleChange
-2022-02-07 16:33:08.347,1644247988347,DoCycleChange:DoStartCycleTimedSequence
-2022-02-07 16:33:08.347,1644247988347,DoCycleChange:DoRecord RecordDone=0 PauseDone=0 ToDo=6
-2022-02-07 16:33:12.016,1644247992016,KeyTyped=119 
-2022-02-07 16:33:28.347,1644248008347,DoCycleChange:DoPause RecordDone=1 PauseDone=0 ToDo=6
-2022-02-07 16:33:48.347,1644248028347,DoCycleChange:DoRecord RecordDone=1 PauseDone=1 ToDo=6
-2022-02-07 16:34:01.824,1644248041824,
+2022-03-02 17:07:03.988,1646237223988,KeyTyped=113 WINDOW_CLOSING
+2022-03-02 17:07:03.998,1646237223998,
     Var , nLaps ,      Re ,      Te ,   error ,  MT/lap , IDe/lap ,      Be ,     IPe ,
    unit ,   lap ,   pixel ,   pixel ,       % ,   s/lap , bit/lap ,  double ,   bit/s ,
- Theory ,  1.00 ,  461.50 ,   29.00 ,    3.88 ,         ,         ,    1.00 ,         ,
- Rec001 , -3.11 ,  457.50 ,   62.13 ,   34.82 ,    6.35 ,   46.27 ,    2.14 ,    7.28 ,
+ Theory ,  1.00 ,  452.50 ,   47.00 ,    3.88 ,         ,         ,    1.00 ,         ,
+ Rec001 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
  Rec002 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
  Rec003 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
  Rec004 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
