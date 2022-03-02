@@ -301,6 +301,12 @@ public class Configuration {
 			x2 = x2 + dx;
 			y2 = y2 + dy;
 		}
+
+		@Override
+		public String toString() {
+			String  Txt = "[x1="+x1+",y1="+y1+",x2="+x2+",y2="+y2+"]" ; 
+			return Txt;
+		}
 	}
 
 	public void writeBeep() {
@@ -382,6 +388,7 @@ public class Configuration {
 		private Line lineRight = null;
 		private Line lineLeft = null;
 		private Line diagonal = null;
+		private double mm2px = 0; 
 
 		public LinearTask() {
 			// the elements on the screen are all relative to the center
@@ -393,7 +400,7 @@ public class Configuration {
 			// distances in mm (tablet) must be translated into pixels to display (screen)
 			// DECISION: we multiply distances in mm by the gain (mm2px: same along x and y)
 
-			double mm2px = calibration.screenResolution_ppi / Consts.INCH_PER_MM;
+			mm2px = calibration.screenResolution_ppi / Consts.INCH_PER_MM;
 
 			Double lineHalfHeight = mm2px * lineHeight_mm / 2.0;
 			Double lineHalfDistance = mm2px * interLineDistance_mm / 2.0;
@@ -423,7 +430,7 @@ public class Configuration {
 			lineRight.translate(centerX, centerY);
 
 			// computation of coordinates as for the left and right lines
-			diagonal = new Line(-drawingSize.width, 0, drawingSize.width, 0, Color.GRAY);
+			diagonal = new Line(-drawingSize.width / 2, 0, drawingSize.width / 2, 0, Color.GRAY);
 			diagonal.rotate(alpha); 
 			diagonal.translate(centerX, centerY);
 		}
@@ -438,6 +445,10 @@ public class Configuration {
 
 		public Line getDiagonal() {
 			return diagonal;
+		}
+
+		public double getMm2px() {
+			return mm2px;
 		}
 	}
 
@@ -813,20 +824,29 @@ public class Configuration {
 		// java.awt.Color[r=255,g=255,b=255]
 		String Txt = "software " + Consts.APP_NAME + ";version " + Consts.APP_VERSION + ";isWithLSL " + isWithLSL
 				+ ";screenWidth " + drawingSize.width + ";screenHeight " + drawingSize.height
+				+ ";centerX " + centerX + ";centerY " + centerY
 				+ ";autoStart " + autoStart + ";cycleMaxNumber " + cycleMaxNumber + ";cycleDuration " + cycleDuration
 				+ ";borderColor " + borderColor + ";backgroundColor " + backgroundColor
 				+ ";cursorColorRecord " + cursorColorRecord + ";cursorColorWait " + cursorColorWait
-				+ ";task " + taskString;
+				+ ";task " + taskString
+				;
 		if (taskString.equals("circular")) {
-			Txt = Txt + ";cornerX " + cornerX + ";cornerY " + cornerY + ";centerX " + centerX + ";centerY " + centerY
-					+ ";externalRadius " + externalRadius + ";internalRadius " + internalRadius + ";borderRadius "
-					+ borderRadius + ";cursorRadius " + cursorRadius
-					+ ";indexOfDifficulty " + circularTask.ID + ";taskRadius " + circularTask.radius + ";taskTolerance "
-					+ circularTask.tolerance_px;
+			Txt = Txt + ";cornerX " + cornerX + ";cornerY " + cornerY 
+					+ ";externalRadius " + externalRadius + ";internalRadius " + internalRadius 
+					+ ";borderRadius " + borderRadius + ";cursorRadius " + cursorRadius
+					+ ";indexOfDifficulty " + circularTask.ID 
+					+ ";taskRadius " + circularTask.radius 
+					+ ";taskTolerance " + circularTask.tolerance_px
+					;
 		}
 		if (taskString.equals("linear")) {
-			Txt = Txt + ";interLineDistance_mm " + interLineDistance_mm + ";lineHeight_mm " + lineHeight_mm + ";mm2px "
-					+ (Consts.INCH_PER_MM * calibration.screenResolution_ppi);
+			Txt = Txt + ";interLineDistance_mm " + interLineDistance_mm + ";lineHeight_mm " + lineHeight_mm 
+					+ ";mm2px " + linearTask.getMm2px()
+					+ ";Diagonal_px2center " + linearTask.getDiagonal() 
+					+ ";LineLeft_px2center " + linearTask.getLineLeft() 
+					+ ";LineRight_px2center " + linearTask.getLineRight(); 
+					;
+			
 		}
 		if (auditoryRhythm != null) {
 			Txt = Txt + ";halfPeriod " + halfPeriod;
@@ -869,11 +889,6 @@ public class Configuration {
 		setLinearTask();
 	}
 
-	// public void setMm2px(Double mm2px) {
-	// this.mm2px = mm2px;
-	// setLinearTask();
-	// }
-
 	public String getTaskString() {
 		return taskString;
 	}
@@ -899,7 +914,4 @@ public class Configuration {
 
 	}
 
-	// public void setMm2px(double mm2px) {
-	// this.mm2px = mm2px;
-	// }
 }
