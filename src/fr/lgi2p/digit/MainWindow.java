@@ -365,6 +365,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		X = X - configuration.getFrameInsets().left;
 		Y = Y - configuration.getFrameInsets().top;
 
+
 		// make event relative to center of circle
 		int dx = configuration.getCenterX() - X;
 		int dy = configuration.getCenterY() - Y;
@@ -376,11 +377,14 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		int internalLimit = configuration.getCircularTask().internalLimit;
 		boolean isInside = (d < externalLimit & d > internalLimit);
 
-		if (isInside) {
-			displayTask.setCursor(configuration.getCursorRecord());
-		} else {
-			displayTask.setCursor(configuration.getCursorOut());
+		if (configuration.getTaskString().equals("circular")) {
+			if (isInside & configuration.getTaskString().equals("circular")) {
+				displayTask.setCursor(configuration.getCursorRecord());
+			} else {
+				displayTask.setCursor(configuration.getCursorOut());
+			}
 		}
+
 		// pass the job to output and performance analysis
 		if (this.recording) {
 			// only if position changed, record and analyze the data
