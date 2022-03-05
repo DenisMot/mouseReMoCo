@@ -842,9 +842,9 @@ public class Configuration {
 		if (taskString.equals("linear")) {
 			Txt = Txt + ";interLineDistance_mm " + interLineDistance_mm + ";lineHeight_mm " + lineHeight_mm 
 					+ ";mm2px " + linearTask.getMm2px()
-					+ ";Diagonal_px2center " + linearTask.getDiagonal() 
-					+ ";LineLeft_px2center " + linearTask.getLineLeft() 
-					+ ";LineRight_px2center " + linearTask.getLineRight(); 
+					+ ";Diagonal " + linearTask.getDiagonal()
+					+ ";LineLeft " + linearTask.getLineLeft() 
+					+ ";LineRight " + linearTask.getLineRight(); 
 					;
 			
 		}
