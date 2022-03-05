@@ -151,4 +151,3 @@ return angle ;
 
 
 -----
-More detailed information: see in [DOC](../DOC).  
