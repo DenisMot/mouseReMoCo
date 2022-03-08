@@ -450,7 +450,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 	@Override
 	public void keyTyped(KeyEvent keyEvent) {
 		// 2 things to do : forward key pressed to the marker stream + do action
-		String message = "KeyTyped=" + (int) keyEvent.getKeyChar() + " ";
+		String message = "KeyTyped=" + (int) keyEvent.getKeyChar() + " ASCI=" + keyEvent.getKeyChar() +" ";
 
 		switch (keyEvent.getKeyChar()) {
 			// specific key => perform action + inform

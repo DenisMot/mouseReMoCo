@@ -14,20 +14,20 @@ https://labstreaminglayer.readthedocs.io
 
 ### Requirements :
 - Java 8 (or newer): https://www.java.com/fr/download/  
-- `MouseReMoCo.jar`: download the last release (see in [Releases](https://github.com/DenisMot/mouseReMoCo/releases))
+- `mouseReMoCo.jar`: download the last release (see in [Releases](https://github.com/DenisMot/mouseReMoCo/releases))
 * Optional, but necessary for LSL streaming
 	- go to https://github.com/sccn/liblsl/releases
 	- Select the `liblsl-.....` archive corresponding to your needs. A reasonable choice is the latest stable version corresponding to your operating system.   
 	- download the archive and expand it
-	- copy the necessary  `liblslxxx.zzz` file next to `MouseReMoCo.jar`
+	- copy the necessary  `liblslxxx.zzz` file next to `mouseReMoCo.jar`
 		- Windows 7:  `liblsl32.dll`
 		- Windows 10+: `liblsl64.dll`
 		- OSX: `liblsl64.dylib` (it works well under roseta for M1)
 		- Unix: `liblsl64.so`
-	- :warning: **Make sure you have `MouseReMoCo.jar` and `liblslxxx.zzz` in the same directory**
+	- :warning: **Make sure you have `mouseReMoCo.jar` and `liblslxxx.zzz` in the same directory**
 
 ### Launch
-- double click `MouseReMoCo.jar`, this should do it...
+- double click `mouseReMoCo.jar`, this should do it...
 
 ### Console use
 This is the **standard way to use mouseReMoCo**, as you will probably want to configure the software for your needs... 

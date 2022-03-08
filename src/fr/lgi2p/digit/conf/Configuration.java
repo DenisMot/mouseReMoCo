@@ -86,7 +86,6 @@ public class Configuration {
 
 	// screen configuration (for multiple screens)
 	private GraphicsDevice screenDevices[];
-	private int lastScreenID;
 	private int usedScreenID;
 
 	// frame configuration
@@ -99,12 +98,12 @@ public class Configuration {
 	///////////////////////////////////////////////////////////////////
 	public Configuration() {
 		screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-		lastScreenID = screenDevices.length - 1; // zero based index in java
 
 		printMonitorSizes();
 
 		// choose screen and set window on this screen
-		usedScreenID = lastScreenID;
+		usedScreenID = selectScreenID() ; 
+
 		setWindowSizeAndLocation();
 		printWindowSizeAndLocation();
 		setDrawSize();
@@ -113,6 +112,19 @@ public class Configuration {
 
 		setDefaultFont();
 		setDefaultDoubleCircle();
+	}
+
+	private int selectScreenID() {
+		// select the last screen that is not main screen (if multiple screens)
+		int screenID = 0; // default if only one screen
+		screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+		for (int i = 0; i < screenDevices.length; i++) {
+			GraphicsConfiguration gc = screenDevices[i].getDefaultConfiguration();
+			if (!isMainScreen(gc)) {
+				screenID = i;
+			}
+		}
+		return screenID; 
 	}
 
 	private void setWindowSizeAndLocation() {

@@ -8,6 +8,8 @@ import java.awt.Insets;
 
 import javax.swing.JFrame;
 
+import fr.lgi2p.digit.MainWindow;
+
 public class Calibration {
 
     public class Layout {
@@ -33,7 +35,7 @@ public class Calibration {
     }
 
     int screenDiagonal = 0;
-    double screenResolution_ppi = 72.0; // default value for W10 = 96 (rather common )
+    double screenResolution_ppi = 0; //72.0; // default value for W10 = 96 (rather common )
     double tabletResolution_ppi; 
 
     Layout tabletInScreen;
@@ -76,6 +78,9 @@ public class Calibration {
         this.screenDiagonal = screenDiagonal;
     }
 
+    public void setScreenSize_mm(int w, int h) {
+        screenSize_mm = new Dimension(w, h);
+    }
     public void setScreenCalibration(JFrame window) {
         // we need the nesting of the reference frames to determine the active area on
         // the screen: screen -> window -> drawing
@@ -97,8 +102,7 @@ public class Calibration {
 
         // screen resolution
         // the code below rarely works correctly... very rarely, indeed!
-        // screenResolution_ppi =
-        // java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
+        // screenResolution_ppi = java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
 
         // compute screen resolution (if we have the diagonal on the cli)
         if (screenDiagonal > 0) {
@@ -115,13 +119,6 @@ public class Calibration {
         int screenWidth = screenConfiguration.getBounds().width;
         screenSize_px = new Dimension(screenWidth, screenHeight);
 
-        // corresponding screen size in mm
-        double w_mm = Consts.INCH_PER_MM * (double) screenSize_px.width / screenResolution_ppi;
-        double h_mm = Consts.INCH_PER_MM * (double) screenSize_px.height / screenResolution_ppi;
-        w_mm = Math.round(w_mm);
-        h_mm = Math.round(h_mm);
-        screenSize_mm = new Dimension((int) w_mm, (int) h_mm);
-
         // subtract window insets to get drawing size
         int ww = window.getSize().width; // useful to debug
         int hw = window.getSize().height;
@@ -129,12 +126,21 @@ public class Calibration {
         int hd = hw - (windowInsets.top + windowInsets.bottom);
         drawingSize_px = new Dimension(wd, hd);
 
-        // corresponding drawing size in mm
-        w_mm = Consts.INCH_PER_MM * (double) drawingSize_px.width / screenResolution_ppi;
-        h_mm = Consts.INCH_PER_MM * (double) drawingSize_px.height / screenResolution_ppi;
-        w_mm = Math.round(w_mm);
-        h_mm = Math.round(h_mm);
-        drawingSize_mm = new Dimension((int) w_mm, (int) h_mm);
+        if (screenDiagonal > 0) {
+            // corresponding screen size in mm
+            double w_mm = Consts.INCH_PER_MM * (double) screenSize_px.width / screenResolution_ppi;
+            double h_mm = Consts.INCH_PER_MM * (double) screenSize_px.height / screenResolution_ppi;
+            w_mm = Math.round(w_mm);
+            h_mm = Math.round(h_mm);
+            screenSize_mm = new Dimension((int) w_mm, (int) h_mm);
+
+            // corresponding drawing size in mm
+            w_mm = Consts.INCH_PER_MM * (double) drawingSize_px.width / screenResolution_ppi;
+            h_mm = Consts.INCH_PER_MM * (double) drawingSize_px.height / screenResolution_ppi;
+            w_mm = Math.round(w_mm);
+            h_mm = Math.round(h_mm);
+            drawingSize_mm = new Dimension((int) w_mm, (int) h_mm);
+        }
 
         // rebuild the linear task with the new calibration
         configuration.setLinearTask();
@@ -231,23 +237,29 @@ public class Calibration {
     public void toWindow() {
         setMappingBetweenScreenAndTablet();
 
+        // set minimal information (if no calibration at all)
+        String displaySizeMessage = ""
+                + ";screen: " + screenSize_px.width + " x " + screenSize_px.height + " (pixels)"
+                + ";drawing: " + drawingSize_px.width + " x " + drawingSize_px.height + " (pixels)";
 
-        // String.format("%s is %d years old, er, young", "Al", 45)
-
-        double screenDiagonal_mm = diagonal(screenSize_mm); 
-        double screenDiagonal_inch = screenDiagonal_mm / Consts.INCH_PER_MM;
-
-        String dimensionMessage = ""
+        // if screen has been calibrated ( = we know the diagonal)
+        String screenCalibrationMessage = ";screen: no calibration";
+        if (screenSize_mm != null) {
+            double screenDiagonal_mm = diagonal(screenSize_mm); 
+            double screenDiagonal_inch = screenDiagonal_mm / Consts.INCH_PER_MM;
+            screenCalibrationMessage = ""
                 + ";screen (" + String.format("%5.2f\", %3.0fmm", screenDiagonal_inch, screenDiagonal_mm) + "): "
                 + "" + screenSize_mm.width + "x" + screenSize_mm.height + " mm"
-                + " = " + screenSize_px.width + " x " + screenSize_px.height + " (pixels)"
+                + ";screen = " + screenSize_px.width + " x " + screenSize_px.height + " (pixels)"
                 + String.format(" @ %5.2fdpi",screenResolution_ppi)
                 + ";drawing: "
                 + "" + drawingSize_mm.width + " x " + drawingSize_mm.height + " (mm)"
                 + " = " + drawingSize_px.width + " x " + drawingSize_px.height + " (pixels)";
+                ;
+        } 
 
-        String calibrationMessage = "";
-
+        // if tablet has been calibrated
+        String tabletCalibrationMessage = ";tablet: no calibration";
         if (tabletSize_px != null & tabletSize_mm != null) {
             double ratioTabletInScreen = (double) (tabletInScreen.getWidth()) / (double) (tabletInScreen.getHeight());
             double ratioScreenInTablet = (double) (screenInTablet.getWidth()) / (double) (screenInTablet.getHeight());
@@ -255,7 +267,7 @@ public class Calibration {
             double tabletDiagonal_mm = diagonal(tabletSize_mm);
             double tabletDiagonal_inch = tabletDiagonal_mm / Consts.INCH_PER_MM;
             tabletResolution_ppi = diagonal(tabletSize_px) / tabletDiagonal_inch; 
-            calibrationMessage = ""
+            tabletCalibrationMessage = ""
                     + ";tablet (" + String.format("%5.2f\", %3.0fmm", tabletDiagonal_inch, tabletDiagonal_mm) + "): "
                     + "" + tabletSize_mm.width + "x" + tabletSize_mm.height + " mm"
                     + " = " + tabletSize_px.width + " x " + tabletSize_px.height + " (pixels)"
@@ -276,11 +288,9 @@ public class Calibration {
                     + " x " + (screenInTablet.bottom - screenInTablet.top) + " (pixels)" + ", W/H = "
                     + String.format("%5.3f", ratioScreenInTablet)
                     ;
-        } else {
-            calibrationMessage = ";tablet: no information";
         }
 
-        String messageDialog = dimensionMessage + calibrationMessage;
+        String messageDialog =  screenCalibrationMessage + tabletCalibrationMessage;
 
         String[] info = messageDialog.split(";");
 
@@ -288,6 +298,13 @@ public class Calibration {
 
         // we can remove the display of the tablet on the screen
         flagPaintTabletInScreen = false;
+
+        // make the app window active 
+        // https://stackoverflow.com/questions/641172/how-to-focus-a-jframe
+        JFrame frame = MainWindow.getInstance().getFrame(); 
+        frame.setVisible(true);
+        frame.toFront();
+        frame.requestFocus();
     }
 
 }
