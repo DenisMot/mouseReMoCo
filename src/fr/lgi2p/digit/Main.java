@@ -117,10 +117,6 @@ public class Main {
 				int value = Util.toInt(arguments.get(key));
 				configuration.setCirclePerimeter_mm(value);
 			}
-			// if ( "-mm2px".equalsIgnoreCase(key) ) {
-			// double value = Double.parseDouble(arguments.get(key));
-			// configuration.setMm2px(value);
-			// }
 			if ("-halfPeriod".equalsIgnoreCase(key)) {
 				int value = Util.toInt(arguments.get(key));
 				configuration.setHalfPeriod(value);
@@ -176,32 +172,34 @@ public class Main {
 	private static void usage(String argument) {
 
 		System.out.println("Usage: java -jar " + Consts.APP_NAME + ".jar ");
-		System.out.println("           -task circular : task to display (circular|linear)");
-		System.out.println("           -cornerX : topleft corner of circles, from toplef of window (pixel)");
-		System.out.println("           -cornerY : topleft corner of circles, from toplef of window (pixel)");
-		System.out.println("           -centerX : center of circles !supersedes cornerX! (pixel) ");
-		System.out.println("           -centerY : center of circles !supersedes cornerY! (pixel)");
-		System.out.println("           -externalRadius : radius of external circle (pixel)");
-		System.out.println("           -internalRadius : radius of internal circle (pixel)");
-		System.out.println(
-				"           -indexOfDifficulty : index of difficulty !supersedes internalRadius! (google: steering law) ");
+		System.out.println("      general parameters");
 		System.out.println("           -borderRadius 1: width of the border of both circles (pixel) ");
 		System.out.println("           -cursorRadius 16 : radius of circle cursor (pixel)");
-		System.out.println(
-				"           -borderColor white : color of both circles (see: https://docs.oracle.com/javase/6/docs/api/java/awt/Color.html) ");
+		System.out.println("           -borderColor white : color of both circles (see: https://docs.oracle.com/javase/6/docs/api/java/awt/Color.html) ");
 		System.out.println("           -backgroundColor black  ");
 		System.out.println("           -cursorColorRecord red : name of cursor color when recording ");
 		System.out.println("           -cursorColorWait yellow : name of cursor color when waiting");
-		System.out.println(
-				"           -autoStart 3600 : delay before auto start recording, press space to start earlier (second)");
+		System.out.println("      experiment parameters");
 		System.out.println("           -cycleMaxNumber 6 : Record+Pause cycles to run (number)");
 		System.out.println("           -cycleDuration 20: duration of one Record/Pause period (seconds)");
-		// System.out.println(" -tabletSize_mm 311x216: width and height of graphic
-		// tablet (mm) ");
-		// System.out.println(" -tabletSize_px 62200x43200: width and heigh of graphic
-		// tablet (pixel)");
+		System.out.println("           -autoStart 3600 : delay before auto start recording, press space to start earlier (second)");
+		System.out.println("           -task circular : task to display (circular|linear)");
+	//	System.out.println("           -cornerX : topleft corner of circles, from toplef of window (pixel)");
+	//	System.out.println("           -cornerY : topleft corner of circles, from toplef of window (pixel)");
+	//	System.out.println("           -centerX : center of circles !supersedes cornerX! (pixel) ");
+	//	System.out.println("           -centerY : center of circles !supersedes cornerY! (pixel)");
+		System.out.println("      circular task parameters");
+		System.out.println("           -externalRadius : radius of external circle (pixel)");
+		System.out.println("           -internalRadius : radius of internal circle (pixel)");
+		System.out.println("           -indexOfDifficulty : index of difficulty !supersedes internalRadius! (google: steering law) ");
+		System.out.println("      calibration parameters: measured by user");
 		System.out.println("           -tabletSize 311x216=62200x43200: width and heigh of graphic tablet (mm=pixel)");
-		System.out.println("           -screenDiagonal 400: diagonal of the screen (mm)");
+		System.out.println("           -screenDiagonal 0: diagonal of the screen (mm)");
+		System.out.println("      linear task parameters");
+		System.out.println("           -interLineDistance_mm 150: distance between the (left and right) target lines (mm)");
+		System.out.println("           -lineHeight_mm 100: height of the (left and right) target lines (mm)");
+		System.out.println("      rhythmical beep parameters");
+		System.out.println("           -halfPeriod 0: duration between beeps (seconds) - 0 means no beep");
 
 		if (argument != null) {
 			System.out.println("This argument is not clear : " + argument);

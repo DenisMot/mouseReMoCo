@@ -471,10 +471,11 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 				break;
 
 			case 'w':
-
-				actionPerformed(
+				if (configuration.getTaskString().equals("circular")) {
+					actionPerformed(
 						new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "DoToggleDisplayEffectiveTolerance"));
-				// default => forward key pressed to the marker stream
+				}
+			// default => forward key pressed to the marker stream
 			default:
 				outputMouse.writeMarker(message);
 		}
