@@ -204,7 +204,7 @@ timestamp,mouseX,mouseY,mouseInTarget
 
 The `data_block` contains 4 columns of data (coma separated):
 - Line 1: column headers
-	- `timestamp` : recording date in [milliseconds](https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#currentTimeMillis--)
+	- `timestamp` : date of the [mouse motion event](https://docs.oracle.com/javase/7/docs/api/java/awt/event/MouseEvent.html), in [milliseconds](https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#currentTimeMillis--)
 	- `mouseX` and `mouseY`: coordinates of the center of the cursor **from top-left**
 	- `mouseInTarget`: 1 if the cursor is within the target limits (0 otherwise)  
 - Next lines : data
