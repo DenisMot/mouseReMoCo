@@ -30,23 +30,24 @@ Command line arguments are possible :
 java -jar mouseReMoCo.jar -borderColor blue -cycleDuration 10
 ```
 
-| Parameter   |  unit | comment |
-| ------------- |------------- | ------------ |
-|  autoStart        | second | time before automatic start of the sequence (default: 3600)
-|  cycleMaxNumber 	| int    | number of Record-Pause cycles in the sequence
-|  cycleDuration 		| second | duration of the Record (or Pause) phase
-|  borderRadius			|  pixel | radius of the border of elements 
-|  cursorRadius 		|  pixel | radius of the (circular) cursor
-|  borderColor 		  |  RGB   | color of the border of elements
-|  backgroundColor 	|  RGB   | default = black 
-|  cursorColorRecord|  RGB   | color during Record phase  (red)
-|  cursorColorWait 	|  RGB   | color during Pause phase (yellow)
-|  screenDiagonal 		| mm | diagonal of the screen, as measured for calibration
-|  tabletSize 			| mm=pixel | 	`311x216=62200x43200`: width and heigh of graphic tablet, as measured for calibration
-| indexOfDifficulty |  bit	 | from the [Steering Law](https://en.wikipedia.org/wiki/Steering_law)	**supersedes internalRadius**
-|  circlePerimeter_mm 	| mm | 	perimeter of the target circle (middle of external and internal radius)
-|  interLineDistance_mm  | mm | distance between the (left and right) target lines
-|  lineHeight_mm 		| mm | height of the (left and right) target lines 
+| Group  		| Parameter   			|  unit  | comment |
+| ----- 		| ------------- 		|------- | ------------ |
+| App 			|  autoStart        	| second | time before automatic start of the sequence (default: 3600)
+|  	  			|  cycleMaxNumber 		| int    | number of Record-Pause cycles in the sequence
+|  				|  cycleDuration 		| second | duration of the Record (or Pause) phase
+| Graphics		|  borderRadius			|  pixel | radius of the border of elements 
+| 				|  cursorRadius 		|  pixel | radius of the (circular) cursor
+| 				|  borderColor 		  	|  RGB   | color of the border of graphic elements
+| 				|  textColor 		  	|  RGB   | color of the text messages 
+| 				|  backgroundColor 		|  RGB   | default = black 
+| Record-Pause 	|  cursorColorRecord	|  RGB   | color during Record phase  (red)
+| 				|  cursorColorWait 		|  RGB   | color during Pause phase (yellow)
+| Calibration 	|  screenDiagonal 		| mm 	 | diagonal of the screen used for the display
+| 			  	|  tabletSize 			| mm=pixel | `311x216=62200x43200`: width and heigh of graphic tablet
+| Circular task | indexOfDifficulty 	|  bit	| from the [Steering Law](https://en.wikipedia.org/wiki/Steering_law)	**supersedes internalRadius**
+| 				|  circlePerimeter_mm 	| mm 	| 	perimeter of the target circle (middle of external and internal radius)
+| Linear task	|  interLineDistance_mm | mm 	| distance between the (left and right) target lines
+| 				| lineHeight_mm 		| mm 	| height of the (left and right) target lines 
 
 
 RGB should be a valid color name such as {blue, red, white, yellow}

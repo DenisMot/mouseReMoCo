@@ -91,18 +91,18 @@ public class DisplayTask extends JComponent {
 	}
 
 	private void drawPauseMessage(Graphics g, Point PosMessage, int fontSize) {
-		g.setColor(configuration.getBorderColor());
+		g.setColor(configuration.getTextColor());
 		g.drawString("In Pause ('q' to quit, 'space' to toggle record/pause)", PosMessage.x, PosMessage.y);
 	}
 
 	private void drawEndPauseMessage(Graphics g, Point PosMessage, int fontSize) {
-		g.setColor(configuration.getBorderColor());
+		g.setColor(configuration.getTextColor());
 		g.drawString(" Session ended ('q' to quit)", PosMessage.x, PosMessage.y);
 	}
 
 	private void drawRecordMessage(Graphics g, Point PosMessage, int fontSize) {
 		// g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
-		g.setColor(configuration.getBorderColor());
+		g.setColor(configuration.getTextColor());
 		g.drawString("Recording ('q' to quit, 'space' to toggle record/pause)", PosMessage.x, PosMessage.y);
 	}
 
@@ -279,7 +279,7 @@ public class DisplayTask extends JComponent {
 
 	private void drawCycleMessage(Graphics g, Point PosMessageCycle) {
 		String s = "Record " + MainWindow.getInstance(configuration).NbRecDone;
-		g.setColor(configuration.getBorderColor());
+		g.setColor(configuration.getTextColor());
 		g.drawString(s, PosMessageCycle.x - g.getFontMetrics().stringWidth(s), PosMessageCycle.y);
 
 	}
@@ -292,7 +292,7 @@ public class DisplayTask extends JComponent {
 		if (Cycling) {
 			s = (configuration.getCycleDuration() - Ticks) + " s";
 		}
-		g.setColor(configuration.getBorderColor());
+		g.setColor(configuration.getTextColor());
 		g.drawString(s, PosMessageCycle.x - g.getFontMetrics().stringWidth(s),
 				PosMessageCycle.y + g.getFontMetrics().getHeight());
 
@@ -343,7 +343,7 @@ public class DisplayTask extends JComponent {
 	}
 
 	private void drawStringShiftedByLineDown(String s, Graphics g, Point PosMessage, int nLines) {
-		g.setColor(configuration.getBorderColor());
+		g.setColor(configuration.getTextColor());
 		g.drawString(s, PosMessage.x // - g.getFontMetrics().stringWidth(s)
 				, PosMessage.y + g.getFontMetrics().getHeight() * nLines);
 	}
@@ -353,7 +353,7 @@ public class DisplayTask extends JComponent {
 		if (MainWindow.getInstance(configuration).NbRestDone <= configuration.getCycleMaxNumber()) {
 			s = "Rest " + MainWindow.getInstance(configuration).NbRestDone;
 		}
-		g.setColor(configuration.getBorderColor());
+		g.setColor(configuration.getTextColor());
 		g.drawString(s, PosMessageCycle.x - g.getFontMetrics().stringWidth(s), PosMessageCycle.y);
 	}
 

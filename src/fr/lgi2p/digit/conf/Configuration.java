@@ -59,6 +59,7 @@ public class Configuration {
 	// background and border configuration
 	private Color borderColor;
 	private Color backgroundColor;
+	private Color textColor; 
 
 	// cursor configuration
 	private int cursorRadius;
@@ -255,6 +256,7 @@ public class Configuration {
 		internalRadius = externalRadius - margin;
 		borderRadius = 1;
 		borderColor = Util.toColor("white");
+		textColor = Util.toColor("white");
 		backgroundColor = Util.toColor("black");
 		autoStart = 3600;
 		cycleDuration = 20;
@@ -769,6 +771,13 @@ public class Configuration {
 		this.borderColor = borderColor;
 	}
 
+	public Color getTextColor() {
+		return textColor;
+	}
+	
+	public void setTextColor(Color textColor) {
+		this.textColor = textColor;
+	}
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}

@@ -58,6 +58,10 @@ public class Main {
 				// Args.checkForColor(value);
 				configuration.setBorderColor(Util.toColor(value));
 			}
+			if ("-textColor".equalsIgnoreCase(key)) {
+				String value = arguments.get(key);
+				configuration.setTextColor(Util.toColor(value));
+			}
 			if ("-backgroundColor".equalsIgnoreCase(key)) {
 				String value = arguments.get(key);
 				// Args.checkForColor(value);
