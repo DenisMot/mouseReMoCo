@@ -876,6 +876,14 @@ public class Configuration {
 		return Txt;
 	}
 
+	public void printConfiguration() {
+		String[] configurationInfo = this.toString().split(";");
+		for (int i = 0; i < configurationInfo.length; i++) {
+			String[] configurationKeyValue = configurationInfo[i].split(" ");
+			System.out.println(configurationKeyValue[0] +" = "+ configurationKeyValue[1]);
+		}
+	}
+	
 	public Insets getFrameInsets() {
 		return frameInsets;
 	}

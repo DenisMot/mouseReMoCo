@@ -62,7 +62,9 @@ public class OutputMouse {
 			if (isWithLSL) {
 				SetDataOutlet(configuration);
 				SetMarkerOutlet(configuration);
-			}
+			} 
+			// in all cases, print in the console
+			configuration.printConfiguration();
 
 		} catch (Exception e) {
 			logger.warning("ERROR : " + e.getLocalizedMessage());
@@ -123,7 +125,7 @@ public class OutputMouse {
 		for (int i = 0; i < configurationInfo.length; i++) {
 			String[] configurationKeyValue = configurationInfo[i].split(" ");
 			config.append_child_value(configurationKeyValue[0], configurationKeyValue[1]);
-			System.out.println(configurationKeyValue[0] +" = "+ configurationKeyValue[1]);
+			//System.out.println(configurationKeyValue[0] +" = "+ configurationKeyValue[1]);
 		}
 
 		// create the stream with all the preceding information
