@@ -1,25 +1,16 @@
-software mouseReMoCo;version 1.1.0;isWithLSL true;screenWidth 1512;screenHeight 916;centerX 756;centerY 458;autoStart 3600;cycleMaxNumber 6;cycleDuration 20;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];task circular;cornerX 378;cornerY 80;externalRadius 378;internalRadius 302;borderRadius 1;cursorRadius 16;indexOfDifficulty 49.60793980901092;taskRadius 339.5;taskTolerance 43
-2022-03-05 21:33:16.690
+software mouseReMoCo;version 1.2.0;isWithLSL false;screenWidth 1352;screenHeight 815;centerX 676;centerY 407;autoStart 3600;cycleMaxNumber 6;cycleDuration 20;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];task circular;cornerX 349;cornerY 80;externalRadius 327;internalRadius 257;borderRadius 1;cursorRadius 16;indexOfDifficulty 49.501311271428364;taskRadius 291.5;taskTolerance 37
+2022-03-10 18:09:52.534
 
-2022-03-05 21:34:29.326,1646512469326,KeyTyped=32 DoCycleChange
-2022-03-05 21:34:29.339,1646512469339,DoCycleChange:DoStartCycleTimedSequence
-2022-03-05 21:34:29.340,1646512469340,DoCycleChange:DoRecord RecordDone=0 PauseDone=0 ToDo=6
-2022-03-05 21:34:37.560,1646512477560,KeyTyped=87 
-2022-03-05 21:34:41.346,1646512481346,KeyTyped=87 
-2022-03-05 21:34:44.732,1646512484732,KeyTyped=32 DoCycleChange
-2022-03-05 21:34:44.737,1646512484737,DoCycleChange:DoPause RecordDone=1 PauseDone=0 ToDo=6
-2022-03-05 21:34:53.028,1646512493028,KeyTyped=32 DoCycleChange
-2022-03-05 21:34:53.029,1646512493029,DoCycleChange:DoRecord RecordDone=1 PauseDone=1 ToDo=6
-2022-03-05 21:34:54.506,1646512494506,KeyTyped=119 
-2022-03-05 21:35:01.455,1646512501455,KeyTyped=32 DoCycleChange
-2022-03-05 21:35:01.461,1646512501461,DoCycleChange:DoPause RecordDone=2 PauseDone=1 ToDo=6
-2022-03-05 21:35:02.752,1646512502752,KeyTyped=113 WINDOW_CLOSING
-2022-03-05 21:35:02.762,1646512502762,
+2022-03-10 18:09:58.534,1646932198534,KeyTyped=32 ASCI=  DoCycleChange
+2022-03-10 18:09:58.542,1646932198542,DoCycleChange:DoStartCycleTimedSequence
+2022-03-10 18:09:58.543,1646932198543,DoCycleChange:DoRecord RecordDone=0 PauseDone=0 ToDo=6
+2022-03-10 18:09:59.827,1646932199827,KeyTyped=113 ASCI=q WINDOW_CLOSING
+2022-03-10 18:09:59.829,1646932199829,
     Var , nLaps ,      Re ,      Te ,   error ,  MT/lap , IDe/lap ,      Be ,     IPe ,
    unit ,   lap ,   pixel ,   pixel ,       % ,   s/lap , bit/lap ,  double ,   bit/s ,
- Theory ,  1.00 ,  339.50 ,   43.00 ,    3.88 ,         ,         ,    1.00 ,         ,
- Rec001 , -3.58 ,  330.99 ,  111.92 ,   35.71 ,    4.23 ,   18.58 ,    2.60 ,    4.40 ,
- Rec002 , -1.16 ,  337.54 ,   49.13 ,    8.80 ,    5.10 ,   43.17 ,    1.14 ,    8.46 ,
+ Theory ,  1.00 ,  291.50 ,   37.00 ,    3.88 ,         ,         ,    1.00 ,         ,
+ Rec001 , -0.08 ,  292.94 ,    7.53 ,   -0.00 ,    6.11 ,  244.40 ,    0.20 ,   39.98 ,
+ Rec002 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
  Rec003 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
  Rec004 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
  Rec005 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
