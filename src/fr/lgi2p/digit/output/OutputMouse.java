@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
 
 import fr.lgi2p.digit.LSL.LSL;
-//import fr.lgi2p.digit.LSL.simple.LSLSendData;
 import fr.lgi2p.digit.conf.Configuration;
 import fr.lgi2p.digit.conf.Consts;
 import fr.lgi2p.digit.util.Util;
@@ -72,21 +71,22 @@ public class OutputMouse {
 	}
 
 	private boolean isLSLpresent( ){
-		boolean withLSL; 
+		boolean withLSL = false; 
 		try {
 			LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL,"MoCap",3,100,LSL.ChannelFormat.float32, Consts.APP_NAME);
 			info.destroy();
 			withLSL = true;
 			System.out.println("CSV + LSL output...");
 		}
-		catch (java.lang.UnsatisfiedLinkError noLSLLibary) { 
+		catch (java.lang.UnsatisfiedLinkError noLSLLibrary) { 
 			System.out.println("No LSL library: CSV output only");
+			//System.out.println(noLSLLibrary); // a bit too verbose... 
 			withLSL = false;
 		}
 		return withLSL;
 	}
 
-	private void SetDataOutlet(Configuration configuration) {
+	private void SetDataOutlet(Configuration configuration) throws IOException {
 		// We make a stream of type MoCap with 3 channels 
 		// StreamInfo(name, type, channel_count, nominal_srate, channel_format, source_id)
 		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL,"MoCap",3,100,LSL.ChannelFormat.float32, Consts.APP_NAME);
@@ -131,7 +131,7 @@ public class OutputMouse {
 		// create the stream with all the preceding information
 		dataOutlet = new LSL.StreamOutlet(info);
 	}
-	private void SetMarkerOutlet(Configuration configuration) {
+	private void SetMarkerOutlet(Configuration configuration) throws IOException {
 		// We make a stream of type Marker 
 		// StreamInfo(name, type, channel_count, nominal_srate, channel_format, source_id)
 		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL, "Markers", 1, LSL.IRREGULAR_RATE, LSL.ChannelFormat.string, Consts.APP_NAME+"Markers");

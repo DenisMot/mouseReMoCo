@@ -22,10 +22,14 @@ https://labstreaminglayer.readthedocs.io
 	- copy the necessary  `liblslxxx.zzz` file next to `mouseReMoCo.jar`
 		- Windows 7:  `liblsl32.dll`
 		- Windows 10+: `liblsl64.dll`
-		- OSX: `liblsl64.dylib` (it works well under roseta for M1)
+		- OSX: `liblsl64.dylib` (it works well under roseta for M1) 
 		- Unix: `liblsl64.so`
 	- :warning: **Make sure you have `mouseReMoCo.jar` and `liblslxxx.zzz` in the same directory**
-
+	- :warning: **liblsl 1.13.1 works fine with JAVA 8, but not with JAVA 17**. Other configurations remains to be tested. 
+	- :warning: For OSX > 10, any dylib must be *explicitly* allowed. To do this, right-click on the dylib, select `Open`, then allow its use. 
+* Optional, but necessary for LSL stream recording to EDF
+	- The easiest way to record LSL streams into an EDF file [LabRecorder](https://github.com/labstreaminglayer/App-LabRecorder/releases)
+	- The easiest way to view an EDF file [SigViewer](https://github.com/cbrnr/sigviewer)
 ### Launch
 - double click `mouseReMoCo.jar`, this should do it...
 
