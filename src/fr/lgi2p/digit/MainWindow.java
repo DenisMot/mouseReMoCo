@@ -131,7 +131,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		// move the frame at the right position and size
 		frame.setLocation(configuration.getFrameLocation());
 
-		if (configuration.getCircularTask().ID > 1.0) {
+		if (configuration.getTaskString().equals("circular") & configuration.getCircularTask().ID > 1.0) {
 			performanceAtTask = new PerformanceAtTask(configuration);
 		}
 

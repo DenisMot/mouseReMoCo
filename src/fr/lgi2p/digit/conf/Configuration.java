@@ -416,6 +416,10 @@ public class Configuration {
 
 			mm2px = calibration.screenResolution_ppi / Consts.INCH_PER_MM;
 
+			// to draw something is no screen calibration is provided
+			if (calibration.screenResolution_ppi == 0)
+				mm2px = 96 / Consts.INCH_PER_MM;
+
 			Double lineHalfHeight = mm2px * lineHeight_mm / 2.0;
 			Double lineHalfDistance = mm2px * interLineDistance_mm / 2.0;
 
@@ -536,7 +540,7 @@ public class Configuration {
 		}
 
 		private void setCirclePerimeter() {
-			if (Configuration.this.circlePerimeter_mm > 0) {
+			if (Configuration.this.circlePerimeter_mm > 0 & calibration.screenResolution_ppi > 0.0) {
 				perimeter = (double) Configuration.this.circlePerimeter_mm;
 				perimeter = perimeter * calibration.screenResolution_ppi / Consts.INCH_PER_MM;
 				radius = perimeter / (2.0 * Math.PI);
