@@ -44,8 +44,8 @@ java -jar mouseReMoCo.jar -borderColor blue -cycleDuration 10
 | 				|  cursorColorWait 		|  RGB   | color during Pause phase (yellow)
 | Calibration 	|  screenDiagonal 		| mm 	 | diagonal of the screen used for the display
 | 			  	|  tabletSize 			| mm=pixel | `311x216=62200x43200`: width and heigh of graphic tablet
-| Circular task | indexOfDifficulty 	|  bit	| from the [Steering Law](https://en.wikipedia.org/wiki/Steering_law)	**supersedes internalRadius**
-| 				|  circlePerimeter_mm 	| mm 	| 	perimeter of the target circle (middle of external and internal radius)
+| Circular task | indexOfDifficulty 	|  bit	| from the [Steering Law](https://en.wikipedia.org/wiki/Steering_law). **NOTE:** A high ID value might result in tolerance = 0 pixel, hence an error rate = 100%.    
+| 				|  circlePerimeter_mm 	| mm 	| perimeter of the target circle (middle of external and internal radius)
 | Linear task	|  interLineDistance_mm | mm 	| distance between the (left and right) target lines
 | 				| lineHeight_mm 		| mm 	| height of the (left and right) target lines 
 
@@ -68,12 +68,19 @@ pause
 With *nix OS, a typical `mouseReMoCo.sh` file reads :
 
 ```
+#!/bin/sh
+
+# move to the chosen directory 
 cd ~/
+
+# run mouseReMoCo with command line parameters
 java -jar mouseReMoCo.jar -cycleDuration 20 -cursorRadius 20 -cycleMaxNumber 3
-cp marker.csv marker.$(date "+%Y.%m.%d-%H.%M.%S").csv
+
+# avoid overwriting output files on a future run 
+cp data.csv marker.$(date "+%Y.%m.%d-%H.%M.%S").csv
 cp marker.csv marker.$(date "+%Y.%m.%d-%H.%M.%S").csv
 ```
-
+**NOTE:** Do not forget to make your `.sh` file executable with   `chmod u+x mouseReMoCo.sh`
 
 # Output in CSV files
 CSV output consists in 2 files :
