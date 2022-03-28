@@ -113,8 +113,13 @@ public class DisplayTask extends JComponent {
 				showCircularTarget(g);
 				hideCenterTarget(g);
 			} else {
-				hideCircularTarget(g);
-				showCenterTarget(g);
+				if (configuration.isTargetHiddenDuringPause()) {
+					hideCircularTarget(g);
+					showCenterTarget(g);
+				} else {
+					showCircularTarget(g);
+					hideCenterTarget(g);
+				}
 			}
 		} else {
 			if (configuration.getStep() == "END_PAUSE") {

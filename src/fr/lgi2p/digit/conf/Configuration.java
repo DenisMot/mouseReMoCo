@@ -73,6 +73,7 @@ public class Configuration {
 	private int autoStart; // seconds before auto start
 	private int cycleMaxNumber; // Move-Rest cycle number
 	private int cycleDuration; // seconds for a Move or Rest (half-cycle duration, in fact...)
+	private boolean isTargetHiddenDuringPause = false; 
 
 	// flags
 	private boolean isWithLSL = false;
@@ -945,6 +946,10 @@ public class Configuration {
 
 	public void setTabletSize_mm(int w, int h) {
 
+	}
+
+	public boolean isTargetHiddenDuringPause() {
+		return isTargetHiddenDuringPause;
 	}
 
 }
