@@ -142,7 +142,7 @@ public class Calibration {
             drawingSize_mm = new Dimension((int) w_mm, (int) h_mm);
         }
 
-        // rebuild the linear task with the new calibration
+        // rebuild the task with the new calibration
         configuration.setLinearTask();
         configuration.setCircularTaskConfiguration();
     }
