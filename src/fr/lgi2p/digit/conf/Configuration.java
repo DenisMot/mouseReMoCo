@@ -92,7 +92,7 @@ public class Configuration {
 
 	// frame configuration
 	private Point frameLocation;
-	private boolean frameUndecorated;
+	private boolean frameUndecorated = false; // less screen, but can move the window
 	private Insets frameInsets; // non drawable part
 	private Dimension drawingSize; // usable part of the window
 	private Dimension frameSize; // full window size
@@ -202,45 +202,20 @@ public class Configuration {
 		return sb.toString();
 	}
 
-	public void setFrameInsetsAndDrawSize(JFrame frame) {
-
-		boolean isVisible = frame.isVisible();
-
-		// frame must be visible to get insets
-		frame.setVisible(true);
-
-		this.frameInsets = frame.getInsets();
-		this.drawingSize = frame.getSize();
-
-		drawingSize.width = frameSize.width - (frameInsets.left + frameInsets.right);
-		drawingSize.height = frameSize.height - (frameInsets.top + frameInsets.bottom);
-
-		System.out.print("window: " + frameSize.width + "x" + frameSize.height);
-		System.out.print(", usable = " + drawingSize.width + "x" + drawingSize.height);
-		System.out.print(", Insets: " + frameInsets.top + ", " + frameInsets.left + ", " + frameInsets.bottom + ", "
-				+ frameInsets.right);
-		System.out.println(" (top, left, bottom, right)");
-
-		frame.setVisible(isVisible);
-	}
-
 	private void setDrawSize() {
-		frameUndecorated = false; // more screen, but less flexibility to move the window..
-
 		// build a test frame to get (eventual) insets
 		JFrame frame = new JFrame(Consts.APP_NAME);
-		frame.setUndecorated(frameUndecorated);
+
+		frame.setUndecorated(this.frameUndecorated); // false = flexibility to move the window..
 		frame.setVisible(true); // frame must be visible to get insets
 
 		this.frameInsets = frame.getInsets();
 		this.drawingSize = frame.getSize(); // to create drawSize
 
-		drawingSize.width = frameSize.width - (frameInsets.left + frameInsets.right);
-		drawingSize.height = frameSize.height - (frameInsets.top + frameInsets.bottom);
+		drawingSize.width = this.frameSize.width - (frameInsets.left + frameInsets.right);
+		drawingSize.height = this.frameSize.height - (frameInsets.top + frameInsets.bottom);
 
-		// setFrameInsetsAndDrawSize(frame);
 		frame.dispose();
-
 	}
 
 	private void setDefaultDoubleCircle() {
