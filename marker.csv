@@ -1,15 +1,16 @@
-software mouseReMoCo;version 1.2.0;isWithLSL false;screenWidth 1352;screenHeight 815;centerX 676;centerY 407;autoStart 3600;cycleMaxNumber 6;cycleDuration 20;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];task circular;cornerX 349;cornerY 80;externalRadius 327;internalRadius 257;borderRadius 1;cursorRadius 16;indexOfDifficulty 49.501311271428364;taskRadius 291.5;taskTolerance 37
-2022-03-10 18:09:52.534
+software mouseReMoCo;version 1.2.2;isWithLSL true;screenWidth 1352;screenHeight 815;centerX 676;centerY 407;autoStart 3600;cycleMaxNumber 6;cycleDuration 20;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];task circular;cornerX 349;cornerY 80;externalRadius 327;internalRadius 247;borderRadius 1;cursorRadius 16;indexOfDifficulty 38.30069341504152;taskRadius 286.5;taskTolerance 47;halfPeriod 1750
+2022-03-31 19:40:32.578
 
-2022-03-10 18:09:58.534,1646932198534,KeyTyped=32 ASCI=  DoCycleChange
-2022-03-10 18:09:58.542,1646932198542,DoCycleChange:DoStartCycleTimedSequence
-2022-03-10 18:09:58.543,1646932198543,DoCycleChange:DoRecord RecordDone=0 PauseDone=0 ToDo=6
-2022-03-10 18:09:59.827,1646932199827,KeyTyped=113 ASCI=q WINDOW_CLOSING
-2022-03-10 18:09:59.829,1646932199829,
+2022-03-31 19:40:43.150,1648748443150,KeyTyped=32 ASCI=  DoCycleChange
+2022-03-31 19:40:43.171,1648748443171,DoCycleChange:DoStartCycleTimedSequence
+2022-03-31 19:40:43.172,1648748443172,DoCycleChange:DoRecord RecordDone=0 PauseDone=0 ToDo=6
+2022-03-31 19:40:43.969,1648748443969,Beep
+2022-03-31 19:40:45.523,1648748445523,KeyTyped=113 ASCI=q WINDOW_CLOSING
+2022-03-31 19:40:45.526,1648748445526,
     Var , nLaps ,      Re ,      Te ,   error ,  MT/lap , IDe/lap ,      Be ,     IPe ,
    unit ,   lap ,   pixel ,   pixel ,       % ,   s/lap , bit/lap ,  double ,   bit/s ,
- Theory ,  1.00 ,  291.50 ,   37.00 ,    3.88 ,         ,         ,    1.00 ,         ,
- Rec001 , -0.08 ,  292.94 ,    7.53 ,   -0.00 ,    6.11 ,  244.40 ,    0.20 ,   39.98 ,
+ Theory ,  1.00 ,  216.21 ,   36.00 ,    3.88 ,         ,         ,    1.00 ,         ,
+ Rec001 ,  0.35 ,  216.20 ,   22.06 ,    0.00 ,    4.38 ,   61.58 ,    0.61 ,   14.07 ,
  Rec002 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
  Rec003 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,
  Rec004 ,  0.00 ,    0.00 ,    0.00 ,     NaN ,     NaN ,     NaN ,    0.00 ,    0.00 ,

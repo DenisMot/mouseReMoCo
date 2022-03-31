@@ -21,9 +21,55 @@ public class Main {
 		logger.info("End of Main...");
 	}
 
+	private static String checkNecessaryScreenCalibration (LinkedHashMap<String, String> arguments) {
+		// screen must be calibrated to use _mm parameters on the CLI 
+		int screenDiagonal = 0; 
+		String errMessage = ""; 
+
+		// set possible error messages 
+		for (String key : arguments.keySet()) {
+			if (key.contains("_mm")) {
+				errMessage = errMessage + "You must define 'screenDiagonal' to use '" + key + "'\n"; 
+			}
+		}
+		
+		// check if screen is calibrated 
+		for (String key : arguments.keySet()) {
+			if ("-screenDiagonal".equalsIgnoreCase(key)) {
+				screenDiagonal = Util.toInt(arguments.get(key));
+				}
+			}
+				
+		// remove error messages if screen is calibrated  
+		if (screenDiagonal != 0) {
+			errMessage = ""; 
+		}
+
+		return errMessage ; 
+	}
+
+	private static void checkCommandLineCoherence (LinkedHashMap<String, String> arguments) {
+		String errorMessage = ""; 
+		
+		errorMessage += checkNecessaryScreenCalibration(arguments); 
+
+		// alert and stop  
+		if (!errorMessage.isEmpty() ) {
+			errorMessage = errorMessage + "" + Consts.APP_NAME + " will now quit..."; 
+			javax.swing.JOptionPane.showMessageDialog(null, 
+			errorMessage,
+				"Inconsistent command line...",
+				javax.swing.JOptionPane.ERROR_MESSAGE);
+			System.exit(1); 
+		}
+	}
+
 	private static void parseArguments(String[] args, Configuration configuration) {
 
 		LinkedHashMap<String, String> arguments = buildArgumentsHashMap(args);
+
+		// check the coherence of the command line 
+		checkCommandLineCoherence (arguments); 
 
 		// read arguments
 		for (String key : arguments.keySet()) {

@@ -131,7 +131,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		// move the frame at the right position and size
 		frame.setLocation(configuration.getFrameLocation());
 
-		if (configuration.getCircularTask().ID > 1.0) {
+		if (configuration.getTaskString().equals("circular") & configuration.getCircularTask().ID > 1.0) {
 			performanceAtTask = new PerformanceAtTask(configuration);
 		}
 
@@ -167,6 +167,13 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		// the next lines seems useless, I should investigate that later.
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // done AFTER the content is drawn ?? looks better... indeed
 		frame.setVisible(true);
+
+		// we have to wait for the window to be maximized... 
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 
 		configuration.calibration.setScreenCalibration(frame);
 		configuration.calibration.toWindow();
@@ -365,7 +372,6 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		X = X - configuration.getFrameInsets().left;
 		Y = Y - configuration.getFrameInsets().top;
 
-
 		// make event relative to center of circle
 		int dx = configuration.getCenterX() - X;
 		int dy = configuration.getCenterY() - Y;
@@ -450,7 +456,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 	@Override
 	public void keyTyped(KeyEvent keyEvent) {
 		// 2 things to do : forward key pressed to the marker stream + do action
-		String message = "KeyTyped=" + (int) keyEvent.getKeyChar() + " ASCI=" + keyEvent.getKeyChar() +" ";
+		String message = "KeyTyped=" + (int) keyEvent.getKeyChar() + " ASCI=" + keyEvent.getKeyChar() + " ";
 
 		switch (keyEvent.getKeyChar()) {
 			// specific key => perform action + inform
@@ -473,9 +479,9 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 			case 'w':
 				if (configuration.getTaskString().equals("circular")) {
 					actionPerformed(
-						new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "DoToggleDisplayEffectiveTolerance"));
+							new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "DoToggleDisplayEffectiveTolerance"));
 				}
-			// default => forward key pressed to the marker stream
+				// default => forward key pressed to the marker stream
 			default:
 				outputMouse.writeMarker(message);
 		}
