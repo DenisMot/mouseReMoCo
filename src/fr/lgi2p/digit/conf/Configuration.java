@@ -827,7 +827,7 @@ public class Configuration {
 				+ ";screenWidth " + drawingSize.width + ";screenHeight " + drawingSize.height
 				+ ";centerX " + centerX + ";centerY " + centerY
 				+ ";autoStart " + autoStart + ";cycleMaxNumber " + cycleMaxNumber + ";cycleDuration " + cycleDuration
-				+ ";borderColor " + borderColor + ";backgroundColor " + backgroundColor
+				+ ";borderColor " + borderColor + ";textColor " + textColor + ";backgroundColor " + backgroundColor 
 				+ ";cursorColorRecord " + cursorColorRecord + ";cursorColorWait " + cursorColorWait
 				+ ";task " + taskString
 				;

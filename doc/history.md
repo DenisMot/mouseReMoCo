@@ -11,6 +11,17 @@ With `mouseReMoCo`, we want to test whether Guigon's theoretical predictions res
 * replicate the results (in 1D task space) that back-and-forth movements at constant speed are in fact a sequence of 120 ms sub-movements, due to the sliding horizon control mode ([Guigon etal 2019](https://journals.physiology.org/doi/full/10.1152/jn.00576.2018)). 
 * test the prediction that the same logic applies in a 2D task space, i.e., in circular steering at constant speed. 
 
+## V1.2.2 
+First public release 
+- bug corrections after extensive testing 
+
+## V1.2.0
+For private tests before making the repo public. Updates include: 
+- disable press w on non-circular task
+- Update command line -h
+- textColor added to CLI
+- print configuration in console in all cases
+
 ## V1.1.0 
 Fully operational version for user testing 
 
@@ -43,6 +54,8 @@ First version for user testing.
 ### Missing documentation
 
 # LSL-Mouse 
+
+LSL-Mouse is a 2019 project over which mouseReMoCo was build. 
 
 ### V 1.2.0 release candidate 1
 

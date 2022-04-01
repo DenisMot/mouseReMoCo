@@ -43,7 +43,7 @@ java -jar mouseReMoCo.jar -borderColor blue -cycleDuration 10
 | Record-Pause 	|  cursorColorRecord	|  RGB   | color during Record phase  (red)
 | 				|  cursorColorWait 		|  RGB   | color during Pause phase (yellow)
 | Calibration 	|  screenDiagonal 		| mm 	 | diagonal of the screen used for the display
-| 			  	|  tabletSize 			| mm=pixel | `311x216=62200x43200`: width and heigh of graphic tablet
+| 			  	|  tabletSize 			| mm=pixel | `311x216=62200x43200`: width and heigh of graphic tablet 
 | Circular task | indexOfDifficulty 	|  bit	| from the [Steering Law](https://en.wikipedia.org/wiki/Steering_law). **NOTE:** A high ID value might result in tolerance = 0 pixel, hence an error rate = 100%.    
 | 				|  circlePerimeter_mm 	| mm 	| perimeter of the target circle (middle of external and internal radius)
 | Linear task	|  interLineDistance_mm | mm 	| distance between the (left and right) target lines
@@ -82,10 +82,27 @@ cp marker.csv marker.$(date "+%Y.%m.%d-%H.%M.%S").csv
 ```
 **NOTE:** Do not forget to make your `.sh` file executable with   `chmod u+x mouseReMoCo.sh`
 
+# Calibration 
+When using a graphic tablet, it is necessary to map the visual space and the hand space (unless using a device doing that for you (e.g., [Wacom cintiq](https://www.wacom.com/fr-fr/products/pen-displays/wacom-cintiq)). We want that: 
+- center of tablet = center of display 
+- 1 mm on tablet = 1 mm on display 
+
+This is where the calibration is necessary: 
+- to know the real world size of the display, set `screenDiagonal` on the command line
+- to know the real world size of the tablet, set `tabletSize` on the command line as e.g., `311x216=62200x43200` 
+	- `311x216` is the size of the active zone on the tablet **in millimeter**
+	- `62200x43200` is the size of the active zone on the tablet **in pixel**, usually given in the device driver. If you cannot find the exact values, you can safely duplicate the values in mm. 
+
+The tablet size will be represented in green on the display when the program starts. 
+
+The information about the calibration are provided in the startup message window as : 
+- Area of the screen corresponding to the complete tablet (also represented in green on the display when the program starts)
+- Area of the tablet corresponding to the complete screen 
+
 # Output in CSV files
 CSV output consists in 2 files :
 - `data.csv`: the mouse coordinate over time
-- `markers.csv`: the markers generated over time  
+- `marker.csv`: the marker generated over time  
 
 These are CSV files organized as follows :
 - header block  
@@ -104,31 +121,51 @@ The header block is **identical** in all CSV files corresponding to the same rec
 The `configuration_line` (L1) consists in a collection of name-value pairs, where pairs are separated by `';'` (semicolon), within which name and value are separated by `' '` (space).  
 An example of the (long) first line is:
 ```
-software mouseReMoCo;version 1.1.0;isWithLSL true;screenWidth 1512;screenHeight 916;centerX 756;centerY 458;autoStart 3600;cycleMaxNumber 6;cycleDuration 20;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];task linear;interLineDistance_mm 150;lineHeight_mm 100;mm2px 2.834645669291339;Diagonal_px2center [x1=109,y1=850,x2=1403,y2=66];LineLeft_px2center [x1=647,y1=690,x2=500,y2=447];LineRight_px2center [x1=1012,y1=469,x2=865,y2=226];halfPeriod 1750
+software mouseReMoCo;version 1.2.2;isWithLSL true;screenWidth 1352;screenHeight 815;centerX 676;centerY 407;autoStart 3600;cycleMaxNumber 6;cycleDuration 20;borderColor java.awt.Color[r=255,g=255,b=255];textColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];task circular;cornerX 349;cornerY 80;externalRadius 327;internalRadius 247;borderRadius 1;cursorRadius 16;indexOfDifficulty 38.30069341504152;taskRadius 286.5;taskTolerance 47;halfPeriod 1750
+2022-04-01 08:33:00.578
+
+timestamp,mouseX,mouseY,mouseInTarget
+1648794797873,606,199,1
+1648794797881,605,199,1
+1648794797889,605,200,1
+1648794797911,604,200,1
+1648794797923,603,201,1
+1648794797929,602,202,1
+1648794797939,601,202,1
+1648794797944,600,203,1
+1648794797953,599,204,1
+1648794797961,597,205,1
+1648794797969,596,206,1
+1648794797977,593,208,1
+1648794797985,592,210,1
 ````
 After parsing the previous `configuration_line`, we get :
 ```
 software = mouseReMoCo
-version = 1.1.0
+version = 1.2.2
 isWithLSL = true
-screenWidth = 1512
-screenHeight = 916
-centerX = 756
-centerY = 458
+screenWidth = 1352
+screenHeight = 815
+centerX = 676
+centerY = 407
 autoStart = 3600
 cycleMaxNumber = 6
 cycleDuration = 20
 borderColor = java.awt.Color[r=255,g=255,b=255]
+textColor = java.awt.Color[r=255,g=255,b=255]
 backgroundColor = java.awt.Color[r=0,g=0,b=0]
 cursorColorRecord = java.awt.Color[r=255,g=0,b=0]
 cursorColorWait = java.awt.Color[r=255,g=255,b=0]
-task = linear
-interLineDistance_mm = 150
-lineHeight_mm = 100
-mm2px = 2.834645669291339
-Diagonal = [x1=109,y1=850,x2=1403,y2=66]
-LineLeft = [x1=647,y1=690,x2=500,y2=447]
-LineRight = [x1=1012,y1=469,x2=865,y2=226]
+task = circular
+cornerX = 349
+cornerY = 80
+externalRadius = 327
+internalRadius = 247
+borderRadius = 1
+cursorRadius = 16
+indexOfDifficulty = 38.30069341504152
+taskRadius = 286.5
+taskTolerance = 47
 halfPeriod = 1750
 ```
 **IMPORTANT NOTE**: the order of the parameters may vary.  *You MUST NOT  rely on order when parsing the configuration line*. You should check for the name of each name=value pair.  
@@ -150,6 +187,7 @@ The parameters in the `configuration_line` detail the current configuration of t
 |  centerX      	|  pixel | center of screen ; :warning: JAVA origin is top-left 
 |  centerY      	|  pixel | center of screen ; :warning: JAVA origin is top-left 
 |  borderColor 		|  RGB  | default = white
+|  textColor 		|  RGB  | default = white
 |  backgroundColor 	|  RGB | default = black
 |  cursorRadius 	|  pixel | default = 16
 |  cursorColorRecord|  RGB | color during Record phase ; default = red
@@ -219,9 +257,9 @@ The `data_block` contains 4 columns of data (coma separated):
 
 
 
-## markers.csv
+## marker.csv
 
-A typical markers file looks as follows (note the very long first line):
+A typical marker file looks as follows (note the very long first line):
 ```
 screenWidth 1440;screenHeight 856;cornerX 372;cornerY 80;centerX 720;centerY 428;externalRadius 348;internalRadius 268;borderRadius 1;cursorRadius 16;borderColor java.awt.Color[r=255,g=255,b=255];backgroundColor java.awt.Color[r=0,g=0,b=0];cursorColorRecord java.awt.Color[r=255,g=0,b=0];cursorColorWait java.awt.Color[r=255,g=255,b=0];autoStart 3600;cycleMaxNumber 6;cycleDuration 3;software mouseReMoCo;version 1.1.0;task CircularTarget;isWithLSL true
 2020-05-02 20:28:22.268
@@ -297,7 +335,7 @@ https://github.com/sccn/xdf/wiki/Specifications
 Data are stored in a stream of type [MoCap](https://github.com/sccn/xdf/wiki/MoCap-Meta-Data):
 - in stream numbered `s`, which corresponds to the stream that satisfies:
 ``` matlab
-streams{s}.info.source_id == ‘MouseCircularData’
+streams{s}.info.source_id == ‘MouseData’
 % and also (though not useful)
 % streams{s}.info.name = ‘Mouse’ & streams{s}.info.type = ‘MoCap’
 ```
@@ -320,7 +358,7 @@ timestamp = streams{s}.time_stamps;
 Markers are stored in a stream of type [Markers](https://github.com/sccn/xdf/wiki/Markers-Meta-Data):
 - in stream numbered `s`, which corresponds to the stream that satisfies:
 ``` matlab
-streams{s}.info.source_id == ‘MouseCircularMarkers’
+streams{s}.info.source_id == ‘MouseMarkers’
 % and also (though not useful)
 % streams{s}.info.name = ‘Mouse’ & streams{s}.info.type = ‘Markers’
 ```
