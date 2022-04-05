@@ -344,17 +344,20 @@ public class Configuration {
 			}
 		}
 
-		private void setTargetLines() {
-			int w = 5 * cursorRadius;
+		public void setTargetLines() {
+			if (taskString.equals("circular")) {
+				int w = 5 * cursorRadius;
 
-			targetLines = new Line[2];
-			targetLines[0] = new Line(centerX, centerY - (externalRadius + w),
-					centerX, centerY - (internalRadius - w),
-					Color.GRAY);
-			targetLines[1] = new Line(centerX, centerY + (externalRadius + w),
-					centerX, centerY + (internalRadius - w),
-					Color.GRAY);
-			w = w;
+				targetLines = new Line[2];
+				targetLines[0] = new Line(
+						centerX, centerY - (externalRadius + w),
+						centerX, centerY - (internalRadius - w),
+						Color.GRAY);
+				targetLines[1] = new Line(
+						centerX, centerY + (externalRadius + w),
+						centerX, centerY + (internalRadius - w),
+						Color.GRAY);
+			}
 		}
 
 		public Line[] getTargetLines() {
@@ -515,7 +518,7 @@ public class Configuration {
 			setPublicTaskValues();
 		}
 
-		private void setCirclePerimeter() {
+		public void setCirclePerimeter() {
 			if (Configuration.this.circlePerimeter_mm > 0 & calibration.screenResolution_ppi > 0.0) {
 				perimeter = (double) Configuration.this.circlePerimeter_mm;
 				perimeter = perimeter * calibration.screenResolution_ppi / Consts.INCH_PER_MM;
@@ -543,32 +546,20 @@ public class Configuration {
 				tolerance_px = externalLimit - internalLimit;
 	
 				ID = perimeter / (double) tolerance_px;
-	
-				if (auditoryRhythm != null) {
-					auditoryRhythm.stopBeep();
-					auditoryRhythm = new AuditoryRhythm(halfPeriod);
-				}
 			}
 		}
 	}
 
-	public void setCircularTaskConfiguration() {
-		circularTask.setCirclePerimeter();
-	}
 
 	public void setCirclePerimeter_mm(int perimeter) {
 		this.circlePerimeter_mm = perimeter;
-		if (auditoryRhythm != null) {
-			auditoryRhythm.stopBeep();
-			auditoryRhythm = new AuditoryRhythm(halfPeriod);
-		}
 	}
 
 	public CircularTask getCircularTask() {
 		return circularTask;
 	}
 
-	private void setCircularTask() {
+	public void setCircularTask() {
 		circularTask = new CircularTask();
 	}
 

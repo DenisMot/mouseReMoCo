@@ -177,6 +177,11 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 
 		configuration.calibration.setScreenCalibration(frame);
 		configuration.calibration.toWindow();
+
+		// create a new OutputMouse with the updated configuration
+		this.outputMouse = new OutputMouse(configuration);
+		// show configuration on teh console 
+		configuration.printConfiguration();
 	}
 
 	// Controller
