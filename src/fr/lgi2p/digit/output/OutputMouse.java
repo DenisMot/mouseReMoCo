@@ -62,8 +62,6 @@ public class OutputMouse {
 				SetDataOutlet(configuration);
 				SetMarkerOutlet(configuration);
 			} 
-			// in all cases, print in the console
-			configuration.printConfiguration();
 
 		} catch (Exception e) {
 			logger.warning("ERROR : " + e.getLocalizedMessage());
@@ -78,7 +76,8 @@ public class OutputMouse {
 			withLSL = true;
 			System.out.println("CSV + LSL output...");
 		}
-		catch (java.lang.UnsatisfiedLinkError noLSLLibrary) { 
+		catch (java.lang.Error error) { 
+			// any type of error means that we have problem with LSL
 			System.out.println("No LSL library: CSV output only");
 			//System.out.println(noLSLLibrary); // a bit too verbose... 
 			withLSL = false;
