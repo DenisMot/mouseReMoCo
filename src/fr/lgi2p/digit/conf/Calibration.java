@@ -144,7 +144,8 @@ public class Calibration {
 
         // rebuild the task with the new calibration
         configuration.setLinearTask();
-        configuration.setCircularTaskConfiguration();
+        configuration.getCircularTask().setCirclePerimeter(); 
+        configuration.getAuditoryRhythm().setTargetLines();
     }
 
     public void paint(java.awt.Graphics g) {

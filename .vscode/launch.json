@@ -15,7 +15,8 @@
             //"args": "-task circular -indexOfDifficulty 100000 -screenDiagonal 356 -circlePerimeter_mm 300 -halfPeriod 4750 -tabletSize 311x216=62200x43200", 
             //"args": "-screenDiagonal 356 -task linear -halfPeriod 1750 -tabletSize 311x216=62200x43200"
             //"args": "-screenDiagonal 356 -task linear -halfPeriod 1750 -tabletSize 166x100=16588x10000 "
-            "args": "-screenDiagonal 356 -task circular -halfPeriod 1750 -tabletSize 1660x1000=16588x10000 -circlePerimeter_mm 300  "
+            //"args": "-screenDiagonal 356 -task circular -halfPeriod 1750 -tabletSize 311x216=62200x43200 -circlePerimeter_mm 300  -indexOfDifficulty 10000"
+            "args": "-screenDiagonal 356 -task linear -halfPeriod 1750 -tabletSize 311x216=62200x43200"
 
             // "args": "-screenDiagonal 356 -task linear -halfPeriod 1750 "
             // "args": "-screenDiagonal 356 -task linear  -halfPeriod 1750"

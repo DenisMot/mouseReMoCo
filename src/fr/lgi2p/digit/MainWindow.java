@@ -177,6 +177,11 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 
 		configuration.calibration.setScreenCalibration(frame);
 		configuration.calibration.toWindow();
+
+		// create a new OutputMouse with the updated configuration
+		this.outputMouse = new OutputMouse(configuration);
+		// show configuration on teh console 
+		configuration.printConfiguration();
 	}
 
 	// Controller
@@ -391,6 +396,11 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 					displayTask.setCursor(configuration.getCursorOut());
 				}
 			}
+		}
+
+		// workaround to be replaced by isInside defined by task 
+		if (configuration.getTaskString().equals("linear")) {
+			isInside = false; 
 		}
 
 		// pass the job to output and performance analysis
