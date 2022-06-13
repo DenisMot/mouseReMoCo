@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -26,7 +27,11 @@ import fr.lgi2p.digit.ui.DisplayTask;
 import fr.lgi2p.digit.ui.PerformanceAtTask;
 import fr.lgi2p.digit.util.Util;
 
+import jaco.mp3.player.MP3Player;
+
 public final class MainWindow implements MouseMotionListener, MouseListener, KeyListener, ActionListener {
+
+	MP3Player soundPlayer ;
 
 	Calibration calibration;
 
@@ -103,9 +108,23 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		return instance;
 	}
 
+	private MP3Player setMP3Player() {
+		String fname = "playAtRecord.mp3"; 
+		MP3Player player = null; 
+
+		File audioFile = new File(fname); 
+		if(audioFile.exists() && !audioFile.isDirectory()) { 
+			player = new MP3Player(audioFile);
+		} else {
+			System.out.println("No playAtRecord... "); 
+		}
+		return player; 
+	}
+
 	private MainWindow(Configuration configuration) {
 		this.configuration = configuration;
 		this.outputMouse = new OutputMouse(configuration);
+		this.soundPlayer = setMP3Player(); 
 		macOsSpecification();
 	}
 
@@ -287,6 +306,9 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 			if (NbRecDone <= NbRestDone) {
 				outputMouse.writeMarker("DoCycleChange:DoRecord" + Message);
 				outputMouse.writeNumericMarker(RECORD_MARKER);
+				if (soundPlayer != null) {
+					soundPlayer.play(); 
+				}
 				actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "record"));
 			} else {
 				outputMouse.writeMarker("DoCycleChange:DoPause" + Message);
@@ -295,6 +317,9 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 				outputMouse.writeData(0L, 0, 0, false); // show the end of a record with an "all zero line" to ease
 														// parsing the output file
 				actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "pause"));
+				if (soundPlayer != null) {
+					soundPlayer.stop();
+				}
 			}
 		}
 
