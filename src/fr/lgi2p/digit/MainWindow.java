@@ -114,7 +114,15 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 
 		File audioFile = new File(fname); 
 		if(audioFile.exists() && !audioFile.isDirectory()) { 
-			player = new MP3Player(audioFile);
+			System.out.println("playAtRecord.mp3 is loading... "); 
+			try {
+				player = new MP3Player(audioFile);
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("playAtRecord.mp3 is loaded"); 
 		} else {
 			System.out.println("No playAtRecord... "); 
 		}
