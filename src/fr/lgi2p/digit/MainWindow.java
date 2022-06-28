@@ -12,6 +12,9 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.logging.Logger;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
@@ -31,7 +34,8 @@ import jaco.mp3.player.MP3Player;
 
 public final class MainWindow implements MouseMotionListener, MouseListener, KeyListener, ActionListener {
 
-	MP3Player soundPlayer ;
+	// MP3Player soundPlayer ;
+	Clip soundPlayer; 
 
 	Calibration calibration;
 
@@ -108,31 +112,55 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		return instance;
 	}
 
-	private MP3Player setMP3Player() {
-		String fname = "playAtRecord.mp3"; 
-		MP3Player player = null; 
+	private Clip setWAVPlayer() {
+		String fname = "playAtRecord.wav"; 
+		Clip clip = null; 
 
 		File audioFile = new File(fname); 
 		if(audioFile.exists() && !audioFile.isDirectory()) { 
-			System.out.println("playAtRecord.mp3 is loading... "); 
+			System.out.println("playAtRecord.wav is loading... "); 
+
 			try {
-				player = new MP3Player(audioFile);
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				clip = AudioSystem.getClip();
+
+				//java.net.URL url = this.getClass().getClassLoader().getResource(fname);
+				AudioInputStream audioIn = AudioSystem.getAudioInputStream(audioFile);
+
+				clip.open(audioIn);
+				
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
 			}
-			System.out.println("playAtRecord.mp3 is loaded"); 
-		} else {
-			System.out.println("No playAtRecord... "); 
 		}
-		return player; 
+		return clip;
 	}
+
+	// private MP3Player setMP3Player() {
+	// 	String fname = "playAtRecord.mp3"; 
+	// 	MP3Player player = null; 
+
+	// 	File audioFile = new File(fname); 
+	// 	if(audioFile.exists() && !audioFile.isDirectory()) { 
+	// 		System.out.println("playAtRecord.mp3 is loading... "); 
+	// 		try {
+	// 			player = new MP3Player(audioFile);
+	// 			Thread.sleep(5000);
+	// 		} catch (InterruptedException e) {
+	// 			// TODO Auto-generated catch block
+	// 			e.printStackTrace();
+	// 		}
+	// 		System.out.println("playAtRecord.mp3 is loaded∏"); 
+	// 	} else {
+	// 		System.out.println("No playAtRecord... "); 
+	// 	}
+	// 	return player; 
+	// }
 
 	private MainWindow(Configuration configuration) {
 		this.configuration = configuration;
 		this.outputMouse = new OutputMouse(configuration);
-		this.soundPlayer = setMP3Player(); 
+		//this.soundPlayer = setMP3Player(); 
+		this.soundPlayer = setWAVPlayer(); 
 		macOsSpecification();
 	}
 
@@ -315,7 +343,9 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 				outputMouse.writeMarker("DoCycleChange:DoRecord" + Message);
 				outputMouse.writeNumericMarker(RECORD_MARKER);
 				if (soundPlayer != null) {
-					soundPlayer.play(); 
+					//soundPlayer.play(); 
+					soundPlayer.setMicrosecondPosition(0); 
+					soundPlayer.start(); 
 				}
 				actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "record"));
 			} else {
