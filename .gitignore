@@ -85,3 +85,6 @@ Temporary Items
 
 old/
 *.dylib
+
+# do not track output files 
+*.csv
