@@ -4,7 +4,7 @@ public final class Consts {
 
 	public static final String APP_NAME = "mouseReMoCo";
 
-	public static final String APP_VERSION = "1.2.4";
+	public static final String APP_VERSION = "1.3.0";
 
 	public static final double INCH_PER_MM = 25.4;
 	
