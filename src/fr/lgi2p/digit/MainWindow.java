@@ -105,7 +105,9 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 
 	private MainWindow(Configuration configuration) {
 		this.configuration = configuration;
-		this.outputMouse = new OutputMouse(configuration);
+		//this.outputMouse = new OutputMouse(configuration);
+		this.outputMouse = getOutputMouse();
+
 		macOsSpecification();
 	}
 
