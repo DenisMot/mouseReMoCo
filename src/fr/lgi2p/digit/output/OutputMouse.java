@@ -97,7 +97,7 @@ public class OutputMouse {
 		// 	marker = tracked joint
 		// 	object = tracked object 
 		String[] labels  = {"mouseX",	"mouseY",	"mouseInTarget"};
-		String[] markers = {"mouse",	"mouse",	"mouse"};
+		//String[] markers = {"mouse",	"mouse",	"mouse"};
 		//String[] objects = {"mouse",	"mouse",	"mouse"};
 		String[] units   = {"pixels",	"pixels",	"boolean"};
 		String[] types   = {"PositionX","PositionY",	"flag"};
@@ -106,7 +106,7 @@ public class OutputMouse {
 		for (int k=0;k<labels.length;k++)
 			chns.append_child("channel")
 			.append_child_value("label", labels[k])		
-			.append_child_value("marker",markers[k])
+			//.append_child_value("marker",markers[k])
 			//.append_child_value("object",objects[k])
 			.append_child_value("unit",  units[k])
 			.append_child_value("type",  types[k]);
