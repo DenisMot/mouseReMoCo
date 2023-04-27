@@ -148,7 +148,7 @@ public class OutputMouse {
 	}
 
 	private String timeToString(long currentTimeMillisec) {
-		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z");
 		Timestamp timestamp = new Timestamp(currentTimeMillisec);
 		return sdf.format(timestamp);
 	}
