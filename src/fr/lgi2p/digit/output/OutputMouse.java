@@ -88,7 +88,8 @@ public class OutputMouse {
 	private void SetDataOutlet(Configuration configuration) throws IOException {
 		// We make a stream of type MoCap with 3 channels 
 		// StreamInfo(name, type, channel_count, nominal_srate, channel_format, source_id)
-		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL+"Data","MoCap",3,100,LSL.ChannelFormat.float32, Consts.APP_NAME);
+		// LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL+"Data","MoCap",3,100,LSL.ChannelFormat.float32, Consts.APP_NAME);
+		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL+"Data", "MoCap", 3, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, Consts.APP_NAME);
 
 		// meta info : channels 
 		// https://github.com/sccn/xdf/wiki/MoCap-Meta-Data 
