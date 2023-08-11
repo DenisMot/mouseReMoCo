@@ -343,15 +343,22 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		}
 	}
 
+	private void setMouseMotionListener() {
+		MouseListener [] ml = frame.getMouseListeners();
+		if (ml.length == 0) {
+			frame.addMouseListener(this);
+			frame.addMouseMotionListener(this);
+		}
+	}
+
 	private void toggleRecordPause() {
 		if (this.recording) {
 			this.NbRestDone = this.NbRestDone + 1;
-			frame.removeMouseListener(this);
-			frame.removeMouseMotionListener(this);
+			// frame.removeMouseListener(this);
+			// frame.removeMouseMotionListener(this);
 		} else {
 			this.NbRecDone = this.NbRecDone + 1;
-			frame.addMouseListener(this);
-			frame.addMouseMotionListener(this);
+			setMouseMotionListener();
 		}
 		this.recording = !this.recording;
 
@@ -406,15 +413,15 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		}
 
 		// pass the job to output and performance analysis
-		if (this.recording) {
+		// if (this.recording) {
+		if (true) { // issue #15 : always record, even if not recording
 			// only if position changed, record and analyze the data
 			// this saves about 50% of the output (
 			if (X != previousX | Y != previousY) {
-				// if (true) {
 				previousX = X;
 				previousY = Y;
 				outputMouse.writeData(T, X, Y, isInside);
-				if (performanceAtTask != null)
+				if (performanceAtTask != null & this.recording)
 					performanceAtTask.mouseMoved(T, X, Y, isInside, d);
 			}
 		}
