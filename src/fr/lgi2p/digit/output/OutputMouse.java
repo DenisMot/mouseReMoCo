@@ -59,7 +59,7 @@ public class OutputMouse {
 
 			// Send with LSL : prepare a stream for mouse output 
 			if (isWithLSL) {
-				SetDataOutlet(configuration);
+				SetDataOutlet(configuration, logDate);
 				SetMarkerOutlet(configuration);
 			} 
 
@@ -85,10 +85,11 @@ public class OutputMouse {
 		return withLSL;
 	}
 
-	private void SetDataOutlet(Configuration configuration) throws IOException {
+	private void SetDataOutlet(Configuration configuration, String creationDateString) throws IOException {
 		// We make a stream of type MoCap with 3 channels 
 		// StreamInfo(name, type, channel_count, nominal_srate, channel_format, source_id)
-		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL+"Data","MoCap",3,100,LSL.ChannelFormat.float32, Consts.APP_NAME);
+		// LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL+"Data","MoCap",3,100,LSL.ChannelFormat.float32, Consts.APP_NAME);
+		LSL.StreamInfo info = new LSL.StreamInfo(streamNameLSL+"Data", "MoCap", 3, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, Consts.APP_NAME);
 
 		// meta info : channels 
 		// https://github.com/sccn/xdf/wiki/MoCap-Meta-Data 
@@ -96,27 +97,28 @@ public class OutputMouse {
 		// https://github.com/labstreaminglayer/App-KinectMocap/blob/master/KinectMocap/KinectMocap.cpp
 		// 	marker = tracked joint
 		// 	object = tracked object 
-		String[] labels  = {"mouseX",	"mouseY",	"mouseInTarget"};
-		String[] markers = {"mouse",	"mouse",	"mouse"};
-		//String[] objects = {"mouse",	"mouse",	"mouse"};
-		String[] units   = {"pixels",	"pixels",	"boolean"};
-		String[] types   = {"PositionX","PositionY",	"flag"};
+		String[] labels  = {"mouseX",	 "mouseY",	    "mouseInTarget"};
+		//String[] markers = {"mouse",	 "mouse",	    "mouse"};
+		String[] markers = {"none",	     "none",	    "none"}; // refers to no marker
+		String[] types   = {"PositionX", "PositionY",	"flag"};
+		String[] units   = {"pixels",	 "pixels",	    "boolean"};
 
 		LSL.XMLElement chns = info.desc().append_child("channels");
 		for (int k=0;k<labels.length;k++)
 			chns.append_child("channel")
 			.append_child_value("label", labels[k])		
 			.append_child_value("marker",markers[k])
-			//.append_child_value("object",objects[k])
+			.append_child_value("type",  types[k])
 			.append_child_value("unit",  units[k])
-			.append_child_value("type",  types[k]);
+			;
+			
 
 		// meta info : acquisition  
 		info.desc().append_child("acquisition")
 		.append_child_value("manufacturer","EuroMov")
 		.append_child_value("software",Consts.APP_NAME)
-		.append_child_value("version",Consts.APP_VERSION)
-		.append_child_value("task",configuration.getTaskString());
+		.append_child_value("version",Consts.APP_VERSION);
+		//.append_child_value("task",configuration.getTaskString());
 
 		// meta info : configuration   
 		LSL.XMLElement config = info.desc().append_child("configuration");
@@ -126,6 +128,10 @@ public class OutputMouse {
 			config.append_child_value(configurationKeyValue[0], configurationKeyValue[1]);
 			//System.out.println(configurationKeyValue[0] +" = "+ configurationKeyValue[1]);
 		}
+
+		// meta info : creation date as in CSV files 
+		info.desc().append_child("creation")
+		.append_child_value("creationDateString", creationDateString);
 
 		// create the stream with all the preceding information
 		dataOutlet = new LSL.StreamOutlet(info);
@@ -147,7 +153,7 @@ public class OutputMouse {
 	}
 
 	private String timeToString(long currentTimeMillisec) {
-		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z");
 		Timestamp timestamp = new Timestamp(currentTimeMillisec);
 		return sdf.format(timestamp);
 	}
