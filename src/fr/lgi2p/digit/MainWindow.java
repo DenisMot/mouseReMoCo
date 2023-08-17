@@ -398,7 +398,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		boolean isInside = (d < externalLimit & d > internalLimit);
 
 		if (configuration.getTaskString().equals("circular")) {
-			if (configuration.getCircularTask().tolerance_px > 0) {
+			if (configuration.getCircularTask().tolerance_px > 0 & isRecording()) {
 				if (isInside) {
 					displayTask.setCursor(configuration.getCursorRecord());
 				} else {
