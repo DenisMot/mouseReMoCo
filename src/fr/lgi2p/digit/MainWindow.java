@@ -21,12 +21,14 @@ import fr.lgi2p.digit.conf.Calibration;
 //import fr.lgi2p.digit.LSL.simple.LSLSendData;
 import fr.lgi2p.digit.conf.Configuration;
 import fr.lgi2p.digit.conf.Consts;
-import fr.lgi2p.digit.output.OutputMouse;
+import fr.lgi2p.digit.output.*;
 import fr.lgi2p.digit.ui.DisplayTask;
 import fr.lgi2p.digit.ui.PerformanceAtTask;
 import fr.lgi2p.digit.util.Util;
 
 public final class MainWindow implements MouseMotionListener, MouseListener, KeyListener, ActionListener {
+
+	SoundPlayer soundPlayer; 
 
 	Calibration calibration;
 
@@ -103,10 +105,11 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		return instance;
 	}
 
+
 	private MainWindow(Configuration configuration) {
 		this.configuration = configuration;
-		//this.outputMouse = new OutputMouse(configuration);
-		this.outputMouse = getOutputMouse();
+		this.outputMouse = new OutputMouse(configuration);
+		this.soundPlayer = new SoundPlayer(); 
 
 		macOsSpecification();
 	}
@@ -289,13 +292,13 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 			if (NbRecDone <= NbRestDone) {
 				outputMouse.writeMarker("DoCycleChange:DoRecord" + Message);
 				outputMouse.writeNumericMarker(RECORD_MARKER);
+				soundPlayer.start(); 
 				actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "record"));
 			} else {
 				outputMouse.writeMarker("DoCycleChange:DoPause" + Message);
-				outputMouse.writeNumericMarker(PAUSE_MARKER); // marker for sync with external devices reading only
-																// integers
-				outputMouse.writeData(0L, 0, 0, false); // show the end of a record with an "all zero line" to ease
-														// parsing the output file
+				outputMouse.writeNumericMarker(PAUSE_MARKER); // marker for external devices reading only integers
+				outputMouse.writeData(0L, 0, 0, false); // show the end of a record with an "all zero line" 
+				soundPlayer.stop();					
 				actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "pause"));
 			}
 		}
