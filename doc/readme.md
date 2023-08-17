@@ -8,6 +8,7 @@ cat DOC/readme.md | /Users/dm/bin/gh-md-toc -
  -->
 
 * [Command line arguments](#command-line-arguments)
+* [Calibration](#calibration)
 * [Output in CSV files](#output-in-csv-files)
 	* [Header block](#header-block)
 		* [configuration line](#configuration-line)
@@ -83,19 +84,23 @@ cp marker.csv marker.$(date "+%Y.%m.%d-%H.%M.%S").csv
 **NOTE:** Do not forget to make your `.sh` file executable with   `chmod u+x mouseReMoCo.sh`
 
 # Calibration 
-When using a graphic tablet, it is necessary to map the visual space and the hand space (unless using a device doing that for you (e.g., [Wacom cintiq](https://www.wacom.com/fr-fr/products/pen-displays/wacom-cintiq)). We want that: 
+For most experiments, the calibration is not necessary: the startup message could simply be ignored.
+
+However, it is sometimes necessary to map the visual space and the hand space (unless using a device doing that for you, e.g., [Wacom cintiq](https://www.wacom.com/fr-fr/products/pen-displays/wacom-cintiq)). We want that: 
 - center of tablet = center of display 
 - 1 mm on tablet = 1 mm on display 
 
 This is where the calibration is necessary: 
-- to know the real world size of the display, set `screenDiagonal` on the command line
-- to know the real world size of the tablet, set `tabletSize` on the command line as e.g., `311x216=62200x43200` 
-	- `311x216` is the size of the active zone on the tablet **in millimeter**
-	- `62200x43200` is the size of the active zone on the tablet **in pixel**, usually given in the device driver. If you cannot find the exact values, you can safely duplicate the values in mm. 
+- to know the real world size of the display: 
+	- set `screenDiagonal` on the command line 
+- to know the real world size of the tablet: 
+    - set `tabletSize` on the command line as e.g., `311x216=62200x43200` 
+		- `311x216` is the size of the active zone on the tablet **in millimeter**
+		- `62200x43200` is the size of the active zone on the tablet **in pixel**, usually given in the device driver. If you cannot find the exact values, you can safely duplicate the values in mm. 
 
 The tablet size will be represented in green on the display when the program starts. 
 
-The information about the calibration are provided in the startup message window as : 
+If (and only if) you provide calibration information on the command line, the startup message window provides the following information:
 - Area of the screen corresponding to the complete tablet (also represented in green on the display when the program starts)
 - Area of the tablet corresponding to the complete screen 
 
@@ -204,7 +209,7 @@ The parameters in the `configuration_line` detail the current configuration of t
 |  taskRadius 		|  pixel | radius of the task (average of external and internal radius)
 |  taskTolerance 	|  pixel | radius error tolerance (difference of external and internal radius)
 |  indexOfDifficulty | bit     | ID = A / W in the [Steering Law](https://en.wikipedia.org/wiki/Steering_law)
-|  circlePerimeter_mm 	| mm | 	perimeter of the target circle (2 * pi * taskRadius)
+|  circlePerimeter_mm 	| mm | 	perimeter of the target circle (2 * pi * taskRadius) :warning: only if screen diagonal is set 
 
 * linear task parameters 
 
@@ -213,7 +218,7 @@ The parameters in the `configuration_line` detail the current configuration of t
 |  interLineDistance_mm  | mm | distance between the (left and right) target lines
 |  lineHeight_mm 		| mm | 	height of the (left and right) target lines 
 |  Diagonal 	| pixel | [x1=109,y1=850,x2=1403,y2=66] coordinate pairs (:warning: JAVA: from top-left)
-|  LineLef 		| pixel | [x1=647,y1=690,x2=500,y2=447] coordinate pairs (:warning: JAVA: from top-left)
+|  LineLeft 		| pixel | [x1=647,y1=690,x2=500,y2=447] coordinate pairs (:warning: JAVA: from top-left)
 |  LineRight	| pixel | [x1=1012,y1=469,x2=865,y2=226] coordinate pairs (:warning: JAVA: from top-left)
 
 
