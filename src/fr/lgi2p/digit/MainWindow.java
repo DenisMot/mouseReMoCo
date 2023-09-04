@@ -108,7 +108,8 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 
 	private MainWindow(Configuration configuration) {
 		this.configuration = configuration;
-		this.outputMouse = new OutputMouse(configuration);
+		// this.outputMouse = new OutputMouse(configuration);
+		// configuration must be fully set BEFORE creating the LSL output
 		this.soundPlayer = new SoundPlayer(); 
 
 		macOsSpecification();
@@ -185,7 +186,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 
 		// create a new OutputMouse with the updated configuration
 		this.outputMouse = new OutputMouse(configuration);
-		// show configuration on teh console 
+		// show configuration on the console 
 		configuration.printConfiguration();
 	}
 
