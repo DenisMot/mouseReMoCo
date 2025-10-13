@@ -17,6 +17,7 @@ cat DOC/readme.md | /Users/dm/bin/gh-md-toc -
 	* [markers.csv](#markerscsv)
 		* [markers block](#markers-block)
 		* [typical markers sequence](#typical-markers-sequence)
+		* [Summary table for circular steering task](#summary-table-for-circular-steering-task)
 * [LSL Streams (and matlab)](#lsl-streams-and-matlab)
 	 * [Data](#data)
 	 * [Markers](#markers)
@@ -84,6 +85,9 @@ cp marker.csv marker.$(date "+%Y.%m.%d-%H.%M.%S").csv
 **NOTE:** Do not forget to make your `.sh` file executable with   `chmod u+x mouseReMoCo.sh`
 
 # Calibration 
+In general, calibration is unnecessary: the interface works just as if you were using a conventional computer mouse that we're all used to. 
+
+Rarely is it necessary to match **exactly** the scale of the visual space with the scale of the hand space (unless you're using a device that does this for you). (e.g., [Wacom cintiq](https://www.wacom.com/fr-fr/products/pen-displays/wacom-cintiq)). We want that: 
 For most experiments, the calibration is not necessary: the startup message could simply be ignored.
 
 However, it is sometimes necessary to map the visual space and the hand space (unless using a device doing that for you, e.g., [Wacom cintiq](https://www.wacom.com/fr-fr/products/pen-displays/wacom-cintiq)). We want that: 
@@ -98,7 +102,6 @@ This is where the calibration is necessary:
 		- `311x216` is the size of the active zone on the tablet **in millimeter**
 		- `62200x43200` is the size of the active zone on the tablet **in pixel**, usually given in the device driver. If you cannot find the exact values, you can safely duplicate the values in mm. 
 
-The tablet size will be represented in green on the display when the program starts. 
 
 If (and only if) you provide calibration information on the command line, the startup message window provides the following information:
 - Area of the screen corresponding to the complete tablet (also represented in green on the display when the program starts)
@@ -331,6 +334,30 @@ More detailed explanations below :
 - `2020-05-02 20:29:06.425,1588444146425,KeyTyped=113 WINDOW_CLOSING`  
 	Key number 113 was typed [ascii(113) = ‘q’]  
 	Event WINDOW_CLOSING was sent  
+
+
+## Summary table for circular steering task
+
+The table summarizes the  performance at the circular steering task. The first 3 lines are as follows, the first line being a header, the second line giving the unit of each variable, and the third line giving the theoretical values for the task. The following lines give the effective performance of the user (e.g., see [Fitts Law](https://en.wikipedia.org/wiki/Fitts%27s_law) for the definition of what is **effective** performance).
+
+
+|    Var | nLaps |      Re |      Te |   error |  MT/lap | IDe/lap |      Be |     IPe |
+| ------------- |------------- | ------------ | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+|   unit |   lap |   pixel |   pixel |       % |   s/lap | bit/lap |  double |   bit/s |
+|  Theory |  1.00 |  209.50 |   47.00 |    3.88 |         |         |    1.00 |         |
+| Rec001 | -10.85 |  213.87 |   91.79 |    3.90 |    1.84 |   14.64 |    1.95 |    7.94 |
+| Rec002 | -11.97 |  209.85 |   34.46 |    0.74 |    1.59 |   38.27 |    0.73 |   24.04 |
+
+Where  for more details):
+- Var : variable name
+- nLaps : number of laps completed (float, negative if counter-clockwise)
+- Re : effective radius of the task (in pixel)
+- Te : tolerance of the task (in pixel)
+- error : percentage of time the cursor was outside the target
+- MT/lap : movement time per lap (in second)
+- IDe/lap : effective index of difficulty per lap (in bit)
+- Be : effective bias ($B_e = \frac{T_e}{T_{theory}}$). A value of 1 means that user performance matches theoretical performance.
+- IPe : effective index of performance (in bit per second) 
 
 # LSL Streams (and matlab)
 mouseReMoCo streams data and markers following the LSL specifications
