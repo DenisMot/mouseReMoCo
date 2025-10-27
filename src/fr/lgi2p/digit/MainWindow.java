@@ -249,7 +249,14 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		if ("DoToggleDisplayEffectiveTolerance".equals(actionEvent.getActionCommand())) {
 			DoToggleDisplayEffectiveTolerance();
 		}
+		if ("DoQuit".equals(actionEvent.getActionCommand())) {
+			DoQuit();
+		}
+	}
 
+	private void DoQuit() {
+		outputMouse.writeMarker("DoQuit");	
+		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 
 	private void UpdateClock() {
@@ -271,6 +278,9 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		} else {
 			logger.info("Ask to end pause but running");
 		}
+		// all done: quit
+		outputMouse.writeMarker("endPause:AllDone");
+		DoQuit();
 
 	}
 
@@ -335,10 +345,6 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		// - stop a cycling sequence
 		if (isSequenceDone) {
 			outputMouse.writeMarker("DoCycleChange:DoEndPause" + Message);
-			if (performanceAtTask != null) {
-				// TODO: check if needed or better to call "quit" here as all is done
-				writePerformanceSummaryMarker();
-			}
 			actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "End pause"));
 		}
 	}
@@ -519,8 +525,8 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 
 			case 'q':
 			case 'Q':
-				outputMouse.writeMarker(message + "WINDOW_CLOSING");
-				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+				outputMouse.writeMarker(message + "DoQuit");
+				DoQuit();
 				break;
 
 			case 'c':
