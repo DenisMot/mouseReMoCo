@@ -114,6 +114,27 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		macOsSpecification();
 	}
 
+	/**
+	 * Writes the performance summary as a single CSV-safe marker line.
+	 * Surrounds the content with double quotes and escapes any embedded quotes by doubling them.
+	 */
+	private void writePerformanceSummaryMarker() {
+		if (performanceAtTask == null) {
+			return;
+		}
+		String performanceTable = performanceAtTask.performanceToString();
+		if (performanceTable == null) {
+			performanceTable = "";
+		} else {
+			// CSV escaping: double any embedded quotes
+			performanceTable = performanceTable.replace("\"", "\"\"");
+		}
+		// surround with quotes for CSV safe parsing see issue #19
+		outputMouse.writeMarker("\"" + performanceTable + "\"");
+	}
+
+	
+
 	public void buildAndShow() {
 		frame = new JFrame(Consts.APP_NAME);
 		frame.addKeyListener(this);
@@ -152,7 +173,9 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
 				if (performanceAtTask != null) {
-					outputMouse.writeMarker("\n" + performanceAtTask.performanceToString());
+					// Write performance summary once in a CSV-safe quoted form
+					writePerformanceSummaryMarker();
+
 				}
 				dispose(windowEvent);
 			}
@@ -307,7 +330,8 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		if (isSequenceDone) {
 			outputMouse.writeMarker("DoCycleChange:DoEndPause" + Message);
 			if (performanceAtTask != null) {
-				outputMouse.writeMarker("\n" + performanceAtTask.performanceToString());
+				// Surround performance report with CSV quotes to avoid problems (and escape embedded quotes)
+				writePerformanceSummaryMarker();
 			}
 			actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "End pause"));
 		}
