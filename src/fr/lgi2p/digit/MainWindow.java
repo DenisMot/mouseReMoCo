@@ -117,6 +117,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 	/**
 	 * Writes the performance summary as a single CSV-safe marker line.
 	 * Surrounds the content with double quotes and escapes any embedded quotes by doubling them.
+	 * See issue #19.
 	 */
 	private void writePerformanceSummaryMarker() {
 		if (performanceAtTask == null) {
@@ -129,8 +130,15 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 			// CSV escaping: double any embedded quotes
 			performanceTable = performanceTable.replace("\"", "\"\"");
 		}
-		// surround with quotes for CSV safe parsing see issue #19
-		outputMouse.writeMarker("\"" + performanceTable + "\"");
+		// remove trailing comma for each line
+		// to avoid a last empty columns in CSV parsing
+		for (String line : performanceTable.split("\n")) {
+			if (line.endsWith(",")) {
+				performanceTable = performanceTable.replace(line, line.substring(0, line.length() - 1));
+			}
+		}
+		// surround with quotes + \n in the beginning for readability
+		outputMouse.writeMarker("\"\n" + performanceTable + "\"");
 	}
 
 	
@@ -173,9 +181,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
 				if (performanceAtTask != null) {
-					// Write performance summary once in a CSV-safe quoted form
 					writePerformanceSummaryMarker();
-
 				}
 				dispose(windowEvent);
 			}
@@ -330,7 +336,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		if (isSequenceDone) {
 			outputMouse.writeMarker("DoCycleChange:DoEndPause" + Message);
 			if (performanceAtTask != null) {
-				// Surround performance report with CSV quotes to avoid problems (and escape embedded quotes)
+				// TODO: check if needed or better to call "quit" here as all is done
 				writePerformanceSummaryMarker();
 			}
 			actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "End pause"));
