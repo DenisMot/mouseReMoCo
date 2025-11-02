@@ -84,7 +84,11 @@ Temporary Items
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
 old/
-*.dylib
 
-# do not track output files 
+# lsl libraries 
+*.dylib
+liblsl*/
+liblsl*/**
+
+# do not track output files
 *.csv
