@@ -108,7 +108,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 
 	private MainWindow(Configuration configuration) {
 		this.configuration = configuration;
-		// this.outputMouse = new OutputMouse(configuration);
+		this.outputMouse = new OutputMouse(configuration);
 		// configuration must be fully set BEFORE creating the LSL output
 		this.soundPlayer = new SoundPlayer(); 
 
