@@ -265,7 +265,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 	}
 
 	private void DoQuit() {
-		outputMouse.writeMarker("DoQuit");	
+		outputMouse.writeMarker("DoQuit");
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 
