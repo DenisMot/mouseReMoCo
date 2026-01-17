@@ -133,7 +133,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		// remove trailing comma for each line
 		// to avoid a last empty columns in CSV parsing
 		if (!performanceTable.isEmpty()) {
-			String[] lines = performanceTable.split("\n");
+			String[] lines = performanceTable.split("\r?\n"); // handle both \n and \r\n
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < lines.length; i++) {
 				String line = lines[i];
