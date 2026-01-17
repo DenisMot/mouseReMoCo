@@ -17,11 +17,13 @@ cat DOC/readme.md | /Users/dm/bin/gh-md-toc -
 	* [markers.csv](#markerscsv)
 		* [markers block](#markers-block)
 		* [typical markers sequence](#typical-markers-sequence)
+		* [Summary table for circular steering task](#summary-table-for-circular-steering-task)
 * [LSL Streams (and matlab)](#lsl-streams-and-matlab)
 	 * [Data](#data)
 	 * [Markers](#markers)
 * [Code examples](#code-examples)
 	 * [isInside](#isinside)
+	 * [Parsing marker.csv in python](#parsing-markercsv-in-python)
 
 # Command line arguments
 
@@ -84,9 +86,13 @@ cp marker.csv marker.$(date "+%Y.%m.%d-%H.%M.%S").csv
 **NOTE:** Do not forget to make your `.sh` file executable with   `chmod u+x mouseReMoCo.sh`
 
 # Calibration 
-For most experiments, the calibration is not necessary: the startup message could simply be ignored.
+For most experiments, the calibration is not necessary: 
+- the interface works just as if you were using a conventional computer mouse that we're all used to. 
+- the startup message could simply be ignored.
 
-However, it is sometimes necessary to map the visual space and the hand space (unless using a device doing that for you, e.g., [Wacom cintiq](https://www.wacom.com/fr-fr/products/pen-displays/wacom-cintiq)). We want that: 
+However, it is sometimes necessary to map the visual space and the hand space, as with a [Wacom cintiq](https://www.wacom.com/fr-fr/products/pen-displays/wacom-cintiq) graphic tablet + screen, that is a device doing that for you...
+
+If using a graphic tablet + screen, we want that: 
 - center of tablet = center of display 
 - 1 mm on tablet = 1 mm on display 
 
@@ -98,7 +104,6 @@ This is where the calibration is necessary:
 		- `311x216` is the size of the active zone on the tablet **in millimeter**
 		- `62200x43200` is the size of the active zone on the tablet **in pixel**, usually given in the device driver. If you cannot find the exact values, you can safely duplicate the values in mm. 
 
-The tablet size will be represented in green on the display when the program starts. 
 
 If (and only if) you provide calibration information on the command line, the startup message window provides the following information:
 - Area of the screen corresponding to the complete tablet (also represented in green on the display when the program starts)
@@ -107,7 +112,7 @@ If (and only if) you provide calibration information on the command line, the st
 # Output in CSV files
 CSV output consists in 2 files :
 - `data.csv`: the mouse coordinate over time
-- `marker.csv`: the marker generated over time  
+- `marker.csv`: the markers generated over time  
 
 These are CSV files organized as follows :
 - header block  
@@ -119,7 +124,8 @@ The first lines in the CSV files are the `header_block` (up to the empty line) :
 - configuration line
 - timestamp  
 
-The header block is **identical** in all CSV files corresponding to the same record.
+> [!IMPORTANT]  
+> The header block is **identical** in all CSV files corresponding to the same record. You can use this to ensure no human renamed or modified one of the files.
 
 
 ### configuration line
@@ -173,7 +179,10 @@ taskRadius = 286.5
 taskTolerance = 47
 halfPeriod = 1750
 ```
-**IMPORTANT NOTE**: the order of the parameters may vary.  *You MUST NOT  rely on order when parsing the configuration line*. You should check for the name of each name=value pair.  
+
+> [!IMPORTANT]  
+> The order of the parameters may vary.  *You MUST NOT  rely on order when parsing the configuration line*. You should check for the name of each name=value pair.  
+
 
 The parameters in the `configuration_line` detail the current configuration of the display and of the target, so to allow for the "replay" the recorded data, or to allow for the post-hoc analysis of the data. The name of each parameter should be be easy to understand, and the tables below provides more information:  
 
@@ -187,10 +196,10 @@ The parameters in the `configuration_line` detail the current configuration of t
 |  autoStart        | s    | default = 3600 (1 hour)
 |  cycleMaxNumber 	| int  | number of Record-Pause cycles in the sequence ; default = 6
 |  cycleDuration 	| s  |  duration of the Record (or Pause) phase ; default = 10
-|  screenWidth   	|  pixel | :warning: JAVA origin is top-left 
-|  screenHeight 	|  pixel | :warning: JAVA origin is top-left
-|  centerX      	|  pixel | center of screen ; :warning: JAVA origin is top-left 
-|  centerY      	|  pixel | center of screen ; :warning: JAVA origin is top-left 
+|  screenWidth   	|  pixel | screen width
+|  screenHeight 	|  pixel | screen height :warning: JAVA origin is top-left
+|  centerX      	|  pixel | center of screen 
+|  centerY      	|  pixel | center of screen  :warning: JAVA origin is top-left 
 |  borderColor 		|  RGB  | default = white
 |  textColor 		|  RGB  | default = white
 |  backgroundColor 	|  RGB | default = black
@@ -217,9 +226,9 @@ The parameters in the `configuration_line` detail the current configuration of t
 | ------------- |------------- | ------------ |
 |  interLineDistance_mm  | mm | distance between the (left and right) target lines
 |  lineHeight_mm 		| mm | 	height of the (left and right) target lines 
-|  Diagonal 	| pixel | [x1=109,y1=850,x2=1403,y2=66] coordinate pairs (:warning: JAVA: from top-left)
-|  LineLeft 		| pixel | [x1=647,y1=690,x2=500,y2=447] coordinate pairs (:warning: JAVA: from top-left)
-|  LineRight	| pixel | [x1=1012,y1=469,x2=865,y2=226] coordinate pairs (:warning: JAVA: from top-left)
+|  Diagonal 	| pixel | [x1=109,y1=850,x2=1403,y2=66] coordinate pairs (:warning: JAVA origin is top-left)
+|  LineLeft 		| pixel | [x1=647,y1=690,x2=500,y2=447] coordinate pairs (:warning: JAVA origin is top-left)
+|  LineRight	| pixel | [x1=1012,y1=469,x2=865,y2=226] coordinate pairs (:warning: JAVA origin is top-left)
 
 
 * calibration parameters 
@@ -237,8 +246,8 @@ The parameters in the `configuration_line` detail the current configuration of t
 
 
 ### timestamp
-The timestamp corresponds to the date (in milliseconds) of the effective start of mouseReMoCo, with the following format  
-`2020-04-29 12:05:21.855`
+The timestamp corresponds to the date of the effective start of mouseReMoCo, with the following format  
+`2020-04-29 12:05:21.855` or `2025-10-30 15:55:13.287 +0100` (with timezone)
 
 ## data.csv
 A typical data file looks as follows, for the circular task:
@@ -256,11 +265,20 @@ timestamp,mouseX,mouseY,mouseInTarget
 The `data_block` contains 4 columns of data (coma separated):
 - Line 1: column headers
 	- `timestamp` : date of the [mouse motion event](https://docs.oracle.com/javase/7/docs/api/java/awt/event/MouseEvent.html), in [milliseconds](https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#currentTimeMillis--)
-	- `mouseX` and `mouseY`: coordinates of the center of the cursor **from top-left**
+	- `mouseX` and `mouseY`: coordinates of the center of the cursor **from top-left** in pixels (:warning: JAVA origin is top-left)
 	- `mouseInTarget`: 1 if the cursor is within the target limits (0 otherwise)  
 - Next lines : data
 
 
+> [!IMPORTANT]  
+> - Due to how an operating system works: 
+>   - Data is not sampled at a fixed frequency: the rate depends on how the user moves the mouse, because the OS generates no data when the mouse is stationary.
+>   - The start-stop timestamps are not exactly the same in the data.csv and markers.csv files. A difference of less than 5-10 milliseconds is expected. This is due to how the OS schedules the different tasks.
+
+> [!IMPORTANT]  
+> - Changes over versions :  
+>   - In mouseReMoCo (or LSL-mouse) <= v1.3.x, data are not recorded during Pause phases. To simplify the parsing of the data into Record-Pause phases, a line with `0,0,0,0` indicates the end of a Record phase. 
+>   - In mouseReMoCo >= v1.3.x data are recorded continuously . Consequently, this `0,0,0,0` line (if still existing) is no longer useful, as there is no such marker for the Pause phase. To parse the data into Record-Pause phases, you must refer to the marker.csv file.
 
 ## marker.csv
 
@@ -331,6 +349,47 @@ More detailed explanations below :
 - `2020-05-02 20:29:06.425,1588444146425,KeyTyped=113 WINDOW_CLOSING`  
 	Key number 113 was typed [ascii(113) = ‘q’]  
 	Event WINDOW_CLOSING was sent  
+
+
+## Summary table for circular steering task
+
+For the **circular steering task**, a multiline maker is added: it is a table that summarizes the  performance at the circular steering task.
+
+A typical summary table looks as follows :
+
+
+
+|    Var | nLaps |      Re |      Te |   error |  MT/lap | IDe/lap |      Be |     IPe |
+| ------------- |------------- | ------------ | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+|   unit |   lap |   pixel |   pixel |       % |   s/lap | bit/lap |  double |   bit/s |
+|  Theory |  1.00 |  209.50 |   47.00 |    3.88 |         |         |    1.00 |         |
+| Rec001 | -10.85 |  213.87 |   91.79 |    3.90 |    1.84 |   14.64 |    1.95 |    7.94 |
+| Rec002 | -11.97 |  209.85 |   34.46 |    0.74 |    1.59 |   38.27 |    0.73 |   24.04 |
+
+Where :
+
+- The first 3 lines are: 
+	- the name of each column variable
+	- the unit of each variable
+	- the theoretical values for the task (as defined by the parameters of the task)
+
+- The following lines give the effective performance of the user for each record.
+
+
+The columns are defined as follows :
+
+- `Var`: variable name
+- `nLaps` : number of laps completed (float, negative if counter-clockwise)
+- `Re` : effective radius of the task (in pixel)
+- `Te` : effective tolerance of the task (in pixel)
+- `error` : percentage of laps (i.e., phase angle) where the cursor was outside the target
+- `MT/lap` : movement time per lap (in second)
+- `IDe/lap` : effective index of difficulty per lap (in bit)
+- `Be` : effective bias $B_e = T_e /  T_{theory}$, where $T_e$ is the effective tolerance and $T_{theory}$ is the theoretical tolerance as defined by the task parameters. $B_e =1$ means that user performance $T_e$ matches task requirements $T_{theory}$.
+- `IPe` : effective index of performance (in bit per second). See [Fitts Law](https://en.wikipedia.org/wiki/Fitts%27s_law) for the definition of what is **effective** performance.
+
+> [!IMPORTANT]  
+> These statistics are computed only during the Record phases and :warning: only after the cursor has entered the target for the first time.:warning:
 
 # LSL Streams (and matlab)
 mouseReMoCo streams data and markers following the LSL specifications
@@ -406,4 +465,97 @@ limitExternal = limitExternal - configuration.getCursorRadius() ;
 limitExternal = limitExternal - configuration.getBorderRadius();
 
 boolean isInside = (d < limitExternal & d > limitInternal);
+```
+### Parsing marker.csv in python
+With MouseReMoCo >= v1.4.0, the  `marker.csv` file can be parsed easily in python using standard libraries:
+
+``` python
+import numpy as np
+
+lines = np.loadtxt(fname=tempFileName, skiprows=3, delimiter=",", quotechar='"', dtype=str)
+time_stamp = lines[:, 1].astype(float)
+label = lines[:, 2]
+```
+
+The first versions of mouseReMoCo generated markers with multiline labels for the summary statistics of the circular steering task.
+To parse the multiline markers (i.e., that contain newlines and are not properly escaped with quotes) in python, you can use the following code snippet:
+
+``` python
+import numpy as np
+
+def read_markers(fname):
+    """Read the markers file and return a dictionary with time_stamp and label arrays."""
+
+    markers_dict = {
+        "time_stamp": np.array([], dtype=float),
+        "label": np.array([], dtype=str),
+        "fname": fname,
+    }
+
+    def add_marker(time_stamp, label):
+        """Local function to add a single line label to the markers_dict"""
+        markers_dict["time_stamp"] = np.append(markers_dict["time_stamp"], time_stamp)
+        markers_dict["label"] = np.append(markers_dict["label"], label)
+
+    def add_multiline_marker(multiline_time_stamp, multiline_label):
+        """Local function to add a multiline label to the markers_dict"""
+        if multiline_label.endswith("\n"):
+            multiline_label = multiline_label[:-1]  # remove the last newline if present
+        add_marker(multiline_time_stamp, multiline_label)
+
+    with open(fname, "r") as f:
+        # 0: find the empty line that separates the header from the data
+        for line in f:
+            if line.strip() == "":
+                break
+
+        # 1: read the data lines
+        # the difficulty is that some markers have multiline labels: we need to handle that case while reading the file
+        multiline_mode = False  # the first label is not multiline
+        multiline_label = ""
+        multiline_time_stamp = np.nan
+
+        for line in f:
+            # if in multiline mode, keep adding lines to the label until we find an empty line
+            if multiline_mode:
+                if line.strip() == "":
+                    # empty line = end of multiline label
+                    # do not strip the label, keep the original formatting (best for the tabular data)	
+                    add_multiline_marker(multiline_time_stamp, multiline_label)
+                    multiline_mode = False
+                else:
+                    multiline_label += line
+                continue
+
+            # if not in multiline mode, process the line normally
+            # normal line = time_for_human, time_float, label_str
+            if not multiline_mode:
+                items = line.strip().split(",")
+                time_stamp = float(items[1])  # should always work: no try except needed
+                label = items[2]
+                if label == "":
+                    # it's a multiline label: start a new multiline mode
+                    multiline_time_stamp = time_stamp
+                    multiline_label = ""
+                    multiline_mode = True
+                else:
+                    add_marker(time_stamp, label)
+
+        # last: if we reach the end of the file while in multiline mode, we need to add the label
+        if multiline_mode:
+            add_multiline_marker(multiline_time_stamp, multiline_label)
+
+    return markers_dict
+
+
+def print_markers_dict(markers_dict):
+    """Print the markers dictionary in a readable format."""
+
+    print(f"Markers in '{markers_dict['fname']}':")
+    for time_stamp, label in zip(markers_dict["time_stamp"], markers_dict["label"]):
+        # if multiline label, prepend a newline for better readability
+        if "\n" in label:
+            label = "\n" + label
+        print(f"{time_stamp:.0f}: {label}")
+
 ```

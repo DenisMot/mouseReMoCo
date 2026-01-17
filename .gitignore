@@ -1,5 +1,8 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 
+
+
+
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,java
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,macos,java
 
@@ -84,7 +87,11 @@ Temporary Items
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
 old/
-*.dylib
 
-# do not track output files 
+# lsl libraries 
+*.dylib
+liblsl*/
+liblsl*/**
+
+# do not track output files
 *.csv

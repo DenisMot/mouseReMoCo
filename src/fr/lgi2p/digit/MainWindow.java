@@ -115,6 +115,45 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		macOsSpecification();
 	}
 
+	/**
+	 * Writes the performance summary as a single CSV-safe marker line.
+	 * Surrounds the content with double quotes and escapes any embedded quotes by doubling them.
+	 * See issue #19.
+	 */
+	private void writePerformanceSummaryMarker() {
+		if (performanceAtTask == null) {
+			return;
+		}
+		String performanceTable = performanceAtTask.performanceToString();
+		if (performanceTable == null) {
+			performanceTable = "";
+		} else {
+			// CSV escaping: double any embedded quotes
+			performanceTable = performanceTable.replace("\"", "\"\"");
+		}
+		// remove trailing comma for each line
+		// to avoid a last empty columns in CSV parsing
+		if (!performanceTable.isEmpty()) {
+			String[] lines = performanceTable.split("\r?\n"); // handle both \n and \r\n
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < lines.length; i++) {
+				String line = lines[i];
+				if (line.endsWith(",")) {
+					line = line.substring(0, line.length() - 1);
+				}
+				sb.append(line);
+				if (i < lines.length - 1) {
+					sb.append('\n');
+				}
+			}
+			performanceTable = sb.toString();
+		}
+		// surround with quotes + \n in the beginning for readability
+		outputMouse.writeMarker("\"\n" + performanceTable + "\"");
+	}
+
+	
+
 	public void buildAndShow() {
 		frame = new JFrame(Consts.APP_NAME);
 		frame.addKeyListener(this);
@@ -153,7 +192,7 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
 				if (performanceAtTask != null) {
-					outputMouse.writeMarker("\n" + performanceAtTask.performanceToString());
+					writePerformanceSummaryMarker();
 				}
 				dispose(windowEvent);
 			}
@@ -221,7 +260,14 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		if ("DoToggleDisplayEffectiveTolerance".equals(actionEvent.getActionCommand())) {
 			DoToggleDisplayEffectiveTolerance();
 		}
+		if ("DoQuit".equals(actionEvent.getActionCommand())) {
+			DoQuit();
+		}
+	}
 
+	private void DoQuit() {
+		outputMouse.writeMarker("DoQuit");
+		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 
 	private void UpdateClock() {
@@ -243,6 +289,9 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		} else {
 			logger.info("Ask to end pause but running");
 		}
+		// all done: quit
+		outputMouse.writeMarker("endPause:AllDone");
+		DoQuit();
 
 	}
 
@@ -307,9 +356,6 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 		// - stop a cycling sequence
 		if (isSequenceDone) {
 			outputMouse.writeMarker("DoCycleChange:DoEndPause" + Message);
-			if (performanceAtTask != null) {
-				outputMouse.writeMarker("\n" + performanceAtTask.performanceToString());
-			}
 			actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "End pause"));
 		}
 	}
@@ -490,8 +536,8 @@ public final class MainWindow implements MouseMotionListener, MouseListener, Key
 
 			case 'q':
 			case 'Q':
-				outputMouse.writeMarker(message + "WINDOW_CLOSING");
-				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+				outputMouse.writeMarker(message + "DoQuit");
+				DoQuit();
 				break;
 
 			case 'c':
