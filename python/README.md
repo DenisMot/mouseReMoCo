@@ -12,32 +12,49 @@ This is a Python/PyQt6 (incomplete) version of the original Java application wit
 
 ### 1. Clone Repository
 
-- Open a terminal and move **where you want to create the future `mouseReMoCo`directory**
+- Manually create a directory named `mouseReMoCo-app` 
+- Open a terminal and move in `mouseReMoCo-app` 
 - Run 
 ```bash
-    git clone https://github.com/DenisMot/mouseReMoCo.git
+    git clone --branch python-app --single-branch --depth 1 https://github.com/DenisMot/mouseReMoCo.git 
 ```
-- You now have a copy of the `mouseReMoCo`repository on your computer.
+- You now have a copy of the `mouseReMoCo`repository in `mouseReMoCo-app`.
+
+```
+mouseReMoCo-app/
+└── mouseReMoCo/
+    └── python/                   ← Python package
+        └── main.py               ← Entry point
+```
 
 ### 2. Setup Environment (Conda)
 
 Create and activate a conda environment:
 
 ```bash
-conda env create -f environment.yml
-conda activate mouseremoco
+    conda env create -f environment.yml
+    conda activate mouseremoco
 ```
 
 
 ### 3. Run Application
 
-- Open a terminal and move in `mouseReMoCo/python/` directory
+- Open a terminal and move in `mouseReMoCo-app` 
 - Run the application: 
 ```bash
-    python main.py
+    python mouseReMoCo/main.py
 ```
 
-A PyQt6 window will open with the circular target task ready to run.
+The `data.csv` and `marker.csv` files will be created in the `mouseReMoCo-app` directory after running the application, rendering the following structure:
+
+```
+mouseReMoCo-app/
+├── data.csv                      ← Generated data (runtime)
+├── marker.csv                    ← Generated markers (runtime)
+└── mouseremoco/
+    └── python/                   ← Python package
+        └── main.py               ← Entry point
+```
 
 ---
 

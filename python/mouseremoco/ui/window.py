@@ -220,7 +220,6 @@ class MainWindow(QWidget):
         """Print keyboard control instructions on startup"""
         print(
             f"\n{'='*60}\nControls:\n"
-            f"Press F: Toggle Fullscreen (Windowed ↔ Borderless)\n"
             f"Press C: Print Configuration\n"
             f"Press Q: Quit\n"
             f"Press SPACE: Toggle Record/Pause\n"
