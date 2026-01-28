@@ -4,6 +4,7 @@ from collections import deque
 import time
 
 from PyQt6.QtGui import QColor, QPainter, QPen
+import math
 
 
 class Trail:
@@ -34,6 +35,8 @@ class Trail:
         self._last_y = None
         self.output_data = None
         # Set by MainWindow after OutputData is created
+        # Visual smoothing enabled by default (draw-time only)
+        self.visual_smoothing = True
 
     def add_point(self, x: float, y: float, timestamp_ms: int, call_time_ms: int):
         """Add point with subpixel coordinates and pressure tracking.
@@ -131,9 +134,25 @@ class Trail:
         else:
             # TABLET DETECTED → Pressure-scaled RED trail (pressure-dependent thickness, position-based color)
             thickness = 2 * self.config.cursor_radius * pressure
-            base_color = self._get_color_for_position(
-                x2, y2
-            )  # Red inside/dark red outside
+            # Determine color based on pressure band: green when within band, else position-based red
+            center = getattr(self.config, "pressure_band_center", 0.5)
+            width = getattr(self.config, "pressure_band_width", 0.4)
+            low = max(0.0, center - width / 2)
+            high = min(1.0, center + width / 2)
+
+            if low <= pressure <= high:
+                # Determine if point is inside target to darken color when outside
+                dx = self.config.center_x - x2
+                dy = self.config.center_y - y2
+                distance = (dx * dx + dy * dy) ** 0.5
+                is_inside = self.config.internal_limit < distance < self.config.external_limit
+
+                if is_inside:
+                    base_color = (0, 200, 0)  # bright green when inside band and inside target
+                else:
+                    base_color = (0, 100, 0)  # darker green when inside band but outside target
+            else:
+                base_color = self._get_color_for_position(x2, y2)
 
         # Skip if thickness is too thin
         if thickness < 1:
@@ -159,9 +178,55 @@ class Trail:
     def _draw_path_distance_based(self, painter: QPainter, trail_list: list):
         """Draw trail with path-distance-based opacity fade"""
         threshold = self.get_length()
-        for i in range(len(trail_list) - 1):
-            x1, y1, _, d1, pressure1 = trail_list[i]
-            x2, y2, _, d2, pressure2 = trail_list[i + 1]
+
+        # Compute smoothed coordinates for visual-only smoothing using a small Gaussian kernel
+        n = len(trail_list)
+        if n < 2:
+            return
+
+        # If visual smoothing is disabled, draw using raw stored points
+        if not self.visual_smoothing:
+            threshold = self.get_length()
+            for i in range(n - 1):
+                x1, y1, _, d1, pressure1 = trail_list[i]
+                x2, y2, _, d2, pressure2 = trail_list[i + 1]
+
+                # Path distance from newest point
+                path_distance = self.cumulative_distance - d2
+                opacity = max(0, 1 - path_distance / threshold)
+
+                self._draw_segment(painter, x1, y1, x2, y2, pressure2, opacity)
+            return
+
+        # Kernel parameters (tunable)
+        k = 2  # radius -> window size = 2*k+1 (e.g., 5)
+        sigma = 1.0
+        kernel = [math.exp(-0.5 * (i / sigma) ** 2) for i in range(-k, k + 1)]
+        k_sum = sum(kernel)
+        kernel = [w / k_sum for w in kernel]
+
+        # Prepare smoothed coordinate list (keep other fields unchanged)
+        smoothed = []
+        for i in range(n):
+            acc_x = 0.0
+            acc_y = 0.0
+            for j, w in enumerate(kernel):
+                idx = i + (j - k)
+                if idx < 0:
+                    idx = 0
+                if idx >= n:
+                    idx = n - 1
+                xj, yj, tj, dj, pj = trail_list[idx]
+                acc_x += w * xj
+                acc_y += w * yj
+            # keep timestamp, distance, pressure unchanged
+            _, _, tj, dj, pj = trail_list[i]
+            smoothed.append((acc_x, acc_y, tj, dj, pj))
+
+        # Draw using smoothed coordinates but original pressures for styling
+        for i in range(n - 1):
+            x1, y1, _, d1, pressure1 = smoothed[i]
+            x2, y2, _, d2, pressure2 = smoothed[i + 1]
 
             # Path distance from newest point
             path_distance = self.cumulative_distance - d2

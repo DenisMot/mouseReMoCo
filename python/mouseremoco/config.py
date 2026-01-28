@@ -162,6 +162,11 @@ class Configuration:
         self.trail_mode = "path_length"  # Active trail mode
         self.trail_length = None  # Trail length in pixels; None means 10×cursor_radius
 
+        # ===== Pressure band configuration (0.0 - 1.0) =====
+        # Band defined by a center and full width; low/high are derived at runtime
+        self.pressure_band_center = 0.5
+        self.pressure_band_width = 0.4
+
         # ===== Output Configuration =====
         self.output_config = (
             None  # Will be created after center_x, center_y are determined

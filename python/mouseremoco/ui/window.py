@@ -25,6 +25,11 @@ class MainWindow(QWidget):
         "q": "_quit_application",
         "c": "_print_config",
         " ": "_toggle_recording",
+        "w": "_increase_band_width",
+        "x": "_decrease_band_width",
+        "p": "_increase_band_center",
+        "m": "_decrease_band_center",
+        "s": "_toggle_smoothing",
         # 'f': '_toggle_fullscreen', # only for testing:
         # !!! screen size must not change during task !!!
     }
@@ -123,16 +128,35 @@ class MainWindow(QWidget):
         mode_text = f"Mode: {self.config.trail_mode.upper()}"
         record_text = "● RECORDING" if self.status.is_recording else "○ PAUSED"
 
-        # Draw mode (white)
-        painter.setPen(QPen(Qt.GlobalColor.white))
-        painter.drawText(10, 20, mode_text)
+        # Pressure band info
+        center = getattr(self.config, "pressure_band_center", 0.5)
+        width = getattr(self.config, "pressure_band_width", 0.4)
+        low = max(0.0, center - width / 2)
+        high = min(1.0, center + width / 2)
+        band_text = f"Band: center={center:.2f} width={width:.2f} (low={low:.2f} high={high:.2f})"
 
-        # Draw recording status (green if ON, red if PAUSED)
+        # Draw HUD at top-right
+        painter.setPen(QPen(Qt.GlobalColor.white))
+        fm = painter.fontMetrics()
+        # draw mode and record on top-right
+        mode_w = fm.horizontalAdvance(mode_text)
+        record_w = fm.horizontalAdvance(record_text)
+        band_w = fm.horizontalAdvance(band_text)
+        margin = 10
+        x_mode = max(10, self.width() - mode_w - margin)
+        x_record = max(10, self.width() - record_w - margin)
+        x_band = max(10, self.width() - band_w - margin)
+
+        painter.drawText(x_mode, 20, mode_text)
+
         status_color = (
             Qt.GlobalColor.green if self.status.is_recording else Qt.GlobalColor.red
         )
         painter.setPen(QPen(status_color))
-        painter.drawText(10, 40, record_text)
+        painter.drawText(x_record, 40, record_text)
+
+        painter.setPen(QPen(Qt.GlobalColor.green))
+        painter.drawText(x_band, 60, band_text)
 
     def _toggle_recording(self):
         """Toggle recording on/off with spacebar"""
@@ -187,6 +211,43 @@ class MainWindow(QWidget):
         else:
             self._print_status("✓ Fullscreen Mode Changed", "Switched to WINDOWED mode")
 
+    # --- Pressure band adjustment handlers ---
+    def _increase_band_width(self):
+        self.config.pressure_band_width = min(1.0, self.config.pressure_band_width + 0.02)
+        self._print_status(
+            f"Band width={self.config.pressure_band_width:.2f}", ""
+        )
+        self.update()
+
+    def _decrease_band_width(self):
+        self.config.pressure_band_width = max(0.01, self.config.pressure_band_width - 0.02)
+        self._print_status(
+            f"Band width={self.config.pressure_band_width:.2f}", ""
+        )
+        self.update()
+
+    def _increase_band_center(self):
+        self.config.pressure_band_center = min(1.0, self.config.pressure_band_center + 0.02)
+        self._print_status(
+            f"Band center={self.config.pressure_band_center:.2f}", ""
+        )
+        self.update()
+
+    def _decrease_band_center(self):
+        self.config.pressure_band_center = max(0.0, self.config.pressure_band_center - 0.02)
+        self._print_status(
+            f"Band center={self.config.pressure_band_center:.2f}", ""
+        )
+        self.update()
+
+    def _toggle_smoothing(self):
+        """Toggle visual-only smoothing for the trail"""
+        current = getattr(self.trail, "visual_smoothing", True)
+        self.trail.visual_smoothing = not current
+        state = "ON" if self.trail.visual_smoothing else "OFF"
+        self._print_status(f"Visual smoothing: {state}")
+        self.update()
+
     def _toggle_fullscreen(self):
         """Toggle between windowed and borderless fullscreen"""
         if self.status.fullscreen_mode == 0:
@@ -220,9 +281,15 @@ class MainWindow(QWidget):
         """Print keyboard control instructions on startup"""
         print(
             f"\n{'='*60}\nControls:\n"
+            f"Press F: Toggle Fullscreen (Windowed ↔ Borderless)\n"
             f"Press C: Print Configuration\n"
             f"Press Q: Quit\n"
             f"Press SPACE: Toggle Record/Pause\n"
+            f"Press W / X: Increase / Decrease pressure-band WIDTH\n"
+            f"Press P / M: Move pressure-band CENTER up / down\n"
+            f"Press S: Toggle visual smoothing ON/OFF\n"
+            f"HUD: Band info always shown top-right (no auto-hide)\n"
+            f"Note: Changes are immediate and not saved to disk\n"
             f"{'='*60}\n"
         )
 
