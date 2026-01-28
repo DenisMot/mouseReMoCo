@@ -1,6 +1,7 @@
 # DataCapture class — Event data extraction and normalization
 
 import time
+from ..geometry import is_inside as geom_is_inside
 
 
 class DataCapture:
@@ -42,7 +43,7 @@ class DataCapture:
         # event_timestamp_ms = event.timestamp()
         event_timestamp_ms = int(event.timestamp())
         computed_timestamp_ms = int(time.time() * 1000)
-        is_inside = self._is_point_inside_circle(x, y)
+        is_inside = geom_is_inside(self.config, x, y)
 
         return {
             "x": x,
@@ -80,7 +81,7 @@ class DataCapture:
         # event_timestamp_ms = event.timestamp()
         event_timestamp_ms = int(event.timestamp())
         computed_timestamp_ms = int(time.time() * 1000)
-        is_inside = self._is_point_inside_circle(x, y)
+        is_inside = geom_is_inside(self.config, x, y)
 
         return {
             "x": x,
@@ -95,8 +96,5 @@ class DataCapture:
         }
 
     def _is_point_inside_circle(self, x: float, y: float) -> bool:
-        """Calculate if point is inside target circle."""
-        dx = self.config.center_x - x
-        dy = self.config.center_y - y
-        distance = (dx * dx + dy * dy) ** 0.5
-        return self.config.internal_limit < distance < self.config.external_limit
+        """Legacy wrapper kept for compatibility; delegates to geometry.is_inside."""
+        return geom_is_inside(self.config, x, y)

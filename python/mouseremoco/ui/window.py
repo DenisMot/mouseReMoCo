@@ -11,6 +11,7 @@ from .target import CircularTargetWidget
 from .trail import Trail
 from ..input.capture import DataCapture
 from ..types import AppStatus
+from ..geometry import is_inside as geom_is_inside
 
 
 class MainWindow(QWidget):
@@ -335,11 +336,7 @@ class MainWindow(QWidget):
 
     def _update_cursor_for_position(self, x: float, y: float):
         """Update cursor color based on distance from circle center"""
-        dx = self.config.center_x - x
-        dy = self.config.center_y - y
-        distance = (dx * dx + dy * dy) ** 0.5
-
-        is_inside = self.config.internal_limit < distance < self.config.external_limit
+        is_inside = geom_is_inside(self.config, x, y)
 
         if is_inside:
             self.setCursor(CursorFactory.create_record_cursor(self.config))

@@ -5,6 +5,7 @@ import time
 
 from PyQt6.QtGui import QColor, QPainter, QPen
 import math
+from ..geometry import is_inside as geom_is_inside
 
 
 class Trail:
@@ -87,11 +88,7 @@ class Trail:
 
     def _get_color_for_position(self, x: int, y: int) -> tuple[int, int, int]:
         """Determine trail color based on position relative to target"""
-        dx = self.config.center_x - x
-        dy = self.config.center_y - y
-        distance = (dx * dx + dy * dy) ** 0.5
-
-        is_inside = self.config.internal_limit < distance < self.config.external_limit
+        is_inside = geom_is_inside(self.config, x, y)
 
         # Mouse trails use blue, tablet trails use red
         # Use config colors based on position
@@ -142,10 +139,7 @@ class Trail:
 
             if low <= pressure <= high:
                 # Determine if point is inside target to darken color when outside
-                dx = self.config.center_x - x2
-                dy = self.config.center_y - y2
-                distance = (dx * dx + dy * dy) ** 0.5
-                is_inside = self.config.internal_limit < distance < self.config.external_limit
+                is_inside = geom_is_inside(self.config, x2, y2)
 
                 if is_inside:
                     base_color = (0, 200, 0)  # bright green when inside band and inside target
