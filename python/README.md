@@ -1,6 +1,8 @@
 # mouseReMoCo - Wacom Tablet Test
 
-Research application for testing circular target tracing with pen tablets.
+Prototype of a research application for testing circular target tracing with pen tablets.
+
+This is a Python/PyQt6 (incomplete) version of the original Java application with support for pressure-sensitive tablets.
 
 **Version:** 2.0.0 (Python/PyQt6)
 
@@ -10,10 +12,12 @@ Research application for testing circular target tracing with pen tablets.
 
 ### 1. Clone Repository
 
+- Open a terminal and move **where you want to create the future `mouseReMoCo`directory**
+- Run 
 ```bash
-git clone https://github.com/yourname/mouseReMoCo.git
-cd mouseReMoCo/python
+    git clone https://github.com/DenisMot/mouseReMoCo.git
 ```
+- You now have a copy of the `mouseReMoCo`repository on your computer.
 
 ### 2. Setup Environment (Conda)
 
@@ -27,8 +31,10 @@ conda activate mouseremoco
 
 ### 3. Run Application
 
+- Open a terminal and move in `mouseReMoCo/python/` directory
+- Run the application: 
 ```bash
-python main.py
+    python main.py
 ```
 
 A PyQt6 window will open with the circular target task ready to run.
@@ -154,29 +160,8 @@ Check console output for tablet detection status.
 
 ---
 
-## Development
 
-### Running Tests
 
-```bash
-python -m pytest
-```
-
-### Code Style
-
-Project uses `black` for formatting:
-```bash
-black mouseremoco/
-```
-
-### Adding New Features
-
-1. Create module in appropriate subpackage (ui/, input/, output/)
-2. Update `mouseremoco/__init__.py` to export new classes
-3. Add documentation and type hints
-4. Test with `python main.py`
-
----
 
 ## Dependencies
 
@@ -216,7 +201,6 @@ For issues, questions, or suggestions:
 
 - **Original Java version:** See `src/` directory
 - **Analysis notebooks:** See `python/` directory for Jupyter notebooks
-- **Documentation:** See `doc/` directory
 
 ---
 
