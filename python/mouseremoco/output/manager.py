@@ -77,7 +77,12 @@ class OutputTablet:
     def close(self):
         """Close all backends gracefully"""
         for backend in self.backends:
-            backend.close()
+            try:
+                backend.close()
+            except Exception:
+                pass
+        # Clear backends to prevent double-closing from __del__ or later calls
+        self.backends = []
 
     def __del__(self):
         """Ensure backends are closed when object is garbage collected"""

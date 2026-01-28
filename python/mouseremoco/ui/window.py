@@ -258,10 +258,6 @@ class MainWindow(QWidget):
             self.status.pause_recording()
             if self.output_data:
                 self.output_data.write_marker("RecordingEnded")
-
-        # Close output data files before exiting
-        if self.output_data:
-            self.output_data.close()
         event.accept()
 
     def showEvent(self, event):

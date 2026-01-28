@@ -194,13 +194,23 @@ class CSVBackend(OutputBackend):
             print(f"ERROR writing marker to {self.marker_filename}: {e}")
 
     def close(self):
-        """Close CSV files"""
+        """Close CSV files (idempotent)."""
+        if getattr(self, "_closed", False):
+            return
+        self._closed = True
+
         try:
             if self.data_file:
-                self.data_file.close()
+                try:
+                    self.data_file.close()
+                finally:
+                    self.data_file = None
                 print(f"✓ Closed {self.data_filename}")
             if self.marker_file:
-                self.marker_file.close()
+                try:
+                    self.marker_file.close()
+                finally:
+                    self.marker_file = None
                 print(f"✓ Closed {self.marker_filename}")
         except Exception as e:
             print(f"ERROR closing CSV files: {e}")
