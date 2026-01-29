@@ -1,6 +1,25 @@
 {
-    "java.project.sourcePaths": ["src"],
-    "java.project.outputPath": "bin",
-    "maven.view": "hierarchical",
-    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m"
+  "java.project.sourcePaths": ["src"],
+  "java.project.outputPath": "bin",
+  "maven.view": "hierarchical",
+  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m"
+  ,
+  // Python interpreter for this workspace (wacom_test conda env)
+  "python.defaultInterpreterPath": "/Users/denismottet/miniconda3/envs/wacom_test/bin/python",
+  "python.analysis.extraPaths": ["./python"],
+
+  // flake8 configuration
+  "flake8.args": ["--max-line-length=88"], // same as black
+
+  // set ruler at 88 characters
+   "editor.rulers": [88],
+
+  // activate black formatter on save
+  "[python]": {
+  "editor.defaultFormatter": "ms-python.black-formatter",
+  "editor.formatOnSave": true
+    },
+
+
+  
 }
