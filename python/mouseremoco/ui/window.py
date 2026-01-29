@@ -178,14 +178,16 @@ class MainWindow(QWidget):
             corner="top-left",
             color=Qt.GlobalColor.green if self.status.is_recording else Qt.GlobalColor.red
         )
-        self._draw_string_in_corner(
-            painter,
-            band_text,
-            x = margin,
-            y = margin + 40,
-            corner="top-left",
-            color=QColor(Qt.GlobalColor.white),
-        )
+        # Show pressure band info only when a tablet has been detected
+        if getattr(self.status, "tablet_detected", False):
+            self._draw_string_in_corner(
+                painter,
+                band_text,
+                x = margin,
+                y = margin + 40,
+                corner="top-left",
+                color=QColor(Qt.GlobalColor.white),
+            )
 
     def _toggle_recording(self):
         """Toggle recording on/off with spacebar"""
@@ -242,6 +244,13 @@ class MainWindow(QWidget):
 
     # --- Pressure band adjustment handlers ---
     def _increase_band_width(self):
+        if not getattr(self.status, "tablet_detected", False):
+            self._print_status(
+                "Pressure band inactive",
+                "No tablet detected — band controls disabled.",
+            )
+            return
+
         self.config.pressure_band_width += 0.02
         self.config._update_pressure_band("width")
         self._print_status(
@@ -250,6 +259,13 @@ class MainWindow(QWidget):
         self.update()
 
     def _decrease_band_width(self):
+        if not getattr(self.status, "tablet_detected", False):
+            self._print_status(
+                "Pressure band inactive",
+                "No tablet detected — band controls disabled.",
+            )
+            return
+
         self.config.pressure_band_width -= 0.02
         self.config._update_pressure_band("width")
         self._print_status(
@@ -258,6 +274,13 @@ class MainWindow(QWidget):
         self.update()
 
     def _increase_band_center(self):
+        if not getattr(self.status, "tablet_detected", False):
+            self._print_status(
+                "Pressure band inactive",
+                "No tablet detected — band controls disabled.",
+            )
+            return
+
         self.config.pressure_band_center += 0.02
         self.config._update_pressure_band("center")
         self._print_status(
@@ -266,6 +289,13 @@ class MainWindow(QWidget):
         self.update()
 
     def _decrease_band_center(self):
+        if not getattr(self.status, "tablet_detected", False):
+            self._print_status(
+                "Pressure band inactive",
+                "No tablet detected — band controls disabled.",
+            )
+            return
+
         self.config.pressure_band_center -= 0.02
         self.config._update_pressure_band("center")
         self._print_status(
@@ -319,9 +349,9 @@ class MainWindow(QWidget):
             f"Press Q: Quit\n"
             f"Press SPACE: Toggle Record/Pause\n"
             f"Press W / X: Increase / Decrease pressure-band WIDTH\n"
-            f"Press P / M: Move pressure-band CENTER up / down\n"
+            f"Press P / M: Move pressure-band CENTER up / down (tablet only)\n"
             f"Press S: Toggle visual smoothing ON/OFF\n"
-            f"HUD: Band info always shown top-right (no auto-hide)\n"
+            f"HUD: Band info shown only when a tablet is detected\n"
             f"Note: Changes are immediate and not saved to disk\n"
             f"{'='*60}\n"
         )
