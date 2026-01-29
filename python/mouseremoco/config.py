@@ -166,6 +166,8 @@ class Configuration:
         # Band defined by a center and full width; low/high are derived at runtime
         self.pressure_band_center = 0.5
         self.pressure_band_width = 0.4
+        self.pressure_band_low = None  # derived at runtime
+        self.pressure_band_high = None  # derived at runtime
 
         # ===== Output Configuration =====
         self.output_config = (
@@ -177,6 +179,40 @@ class Configuration:
 
         # Initialize derived values
         self._update_circular_task()
+        self._update_pressure_band()
+
+    def _update_pressure_band(self, to_adapt: str | None = None):
+        """Update pressure band derived values"""
+
+        if to_adapt not in (None, "center", "width"):
+            raise ValueError("to_adapt must be None, 'center', or 'width'")
+        
+        if to_adapt is None:
+            # Initial calculation, ensure valid values
+            to_adapt = "center"
+        
+        center = self.pressure_band_center
+        width = self.pressure_band_width
+        half_width = width / 2
+        # ensure center+/-width/2 are within [0.02, 1.0]
+        if to_adapt == "center":
+            # clip center if changed
+            center = max(center, 0.02 + half_width)
+            center = min(center, 1.0 - half_width)
+        elif to_adapt == "width":
+            # clip half_width if changed
+            half_width = min(half_width, center - 0.02)
+            half_width = min(half_width, 1.0 - center)
+            width = half_width * 2
+
+        low = center - half_width
+        high = center + half_width
+
+        self.pressure_band_low = low
+        self.pressure_band_high = high
+        self.pressure_band_width = width
+        self.pressure_band_center = center
+
 
     def _update_circular_task(self):
         """Update circular task derived values"""

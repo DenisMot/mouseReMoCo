@@ -124,40 +124,68 @@ class MainWindow(QWidget):
         )
         painter.setBrush(original_brush)
 
+    def _draw_string_in_corner(self, painter: QPainter, text: str, x: int, y: int, corner: str, color: QColor):
+        """Draw a string at specified corner coordinates"""
+        painter.setPen(QPen(color))
+        fm = painter.fontMetrics()
+        text_w = fm.horizontalAdvance(text)
+        text_h = fm.height()
+
+        if corner == "top-left":
+            painter.drawText(x, y + text_h, text)
+        elif corner == "top-right":
+            painter.drawText(self.width() - text_w - x, y + text_h, text)
+        elif corner == "bottom-left":
+            painter.drawText(x, self.height() - y, text)
+        elif corner == "bottom-right":
+            painter.drawText(self.width() - text_w - x, self.height() - y, text)
+
     def _draw_mode_indicator(self, painter: QPainter):
         """Draw current trail mode and recording status in corner"""
+
         mode_text = f"Mode: {self.config.trail_mode.upper()}"
         record_text = "● RECORDING" if self.status.is_recording else "○ PAUSED"
 
         # Pressure band info
         center = getattr(self.config, "pressure_band_center", 0.5)
         width = getattr(self.config, "pressure_band_width", 0.4)
-        low = max(0.0, center - width / 2)
-        high = min(1.0, center + width / 2)
+        # low = max(0.0, center - width / 2)
+        # high = min(1.0, center + width / 2)q
+
+        low = center - width / 2
+        high = center + width / 2
+         # allow display of out-of-bounds values for debugging
         band_text = f"Band: center={center:.2f} width={width:.2f} (low={low:.2f} high={high:.2f})"
 
-        # Draw HUD at top-right
-        painter.setPen(QPen(Qt.GlobalColor.white))
-        fm = painter.fontMetrics()
-        # draw mode and record on top-right
-        mode_w = fm.horizontalAdvance(mode_text)
-        record_w = fm.horizontalAdvance(record_text)
-        band_w = fm.horizontalAdvance(band_text)
+        # Draw texts in top-left corner with some margin
         margin = 10
-        x_mode = max(10, self.width() - mode_w - margin)
-        x_record = max(10, self.width() - record_w - margin)
-        x_band = max(10, self.width() - band_w - margin)
-
-        painter.drawText(x_mode, 20, mode_text)
-
+        self._draw_string_in_corner(
+            painter,
+            f"Mode: {self.config.trail_mode.upper()}",
+            x = margin,
+            y = margin,
+            corner="top-left",
+            color=QColor(Qt.GlobalColor.white),
+        )
         status_color = (
             Qt.GlobalColor.green if self.status.is_recording else Qt.GlobalColor.red
         )
-        painter.setPen(QPen(status_color))
-        painter.drawText(x_record, 40, record_text)
-
-        painter.setPen(QPen(Qt.GlobalColor.green))
-        painter.drawText(x_band, 60, band_text)
+        self._draw_string_in_corner(
+            painter,
+            "● RECORDING" if self.status.is_recording else "○ PAUSED",
+            x = margin,
+            y = margin + 20,
+            corner="top-left",
+            color=Qt.GlobalColor.green if self.status.is_recording else Qt.GlobalColor.red
+        )
+        self._draw_string_in_corner(
+            painter,
+            band_text,
+            x = margin,
+            y = margin + 40,
+            corner="top-left",
+            color=QColor(Qt.GlobalColor.white),
+        )
 
     def _toggle_recording(self):
         """Toggle recording on/off with spacebar"""
@@ -214,28 +242,32 @@ class MainWindow(QWidget):
 
     # --- Pressure band adjustment handlers ---
     def _increase_band_width(self):
-        self.config.pressure_band_width = min(1.0, self.config.pressure_band_width + 0.02)
+        self.config.pressure_band_width += 0.02
+        self.config._update_pressure_band("width")
         self._print_status(
             f"Band width={self.config.pressure_band_width:.2f}", ""
         )
         self.update()
 
     def _decrease_band_width(self):
-        self.config.pressure_band_width = max(0.01, self.config.pressure_band_width - 0.02)
+        self.config.pressure_band_width -= 0.02
+        self.config._update_pressure_band("width")
         self._print_status(
             f"Band width={self.config.pressure_band_width:.2f}", ""
         )
         self.update()
 
     def _increase_band_center(self):
-        self.config.pressure_band_center = min(1.0, self.config.pressure_band_center + 0.02)
+        self.config.pressure_band_center += 0.02
+        self.config._update_pressure_band("center")
         self._print_status(
             f"Band center={self.config.pressure_band_center:.2f}", ""
         )
         self.update()
 
     def _decrease_band_center(self):
-        self.config.pressure_band_center = max(0.0, self.config.pressure_band_center - 0.02)
+        self.config.pressure_band_center -= 0.02
+        self.config._update_pressure_band("center")
         self._print_status(
             f"Band center={self.config.pressure_band_center:.2f}", ""
         )
