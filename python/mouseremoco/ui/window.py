@@ -42,6 +42,14 @@ class MainWindow(QWidget):
         output_data=None,
         app_status=None,
     ):
+        # arguments checks
+        if config is None:
+            raise ValueError("Config must be provided to MainWindow.")
+        if window_setup is None:
+            raise ValueError("WindowSetup must be provided to MainWindow.")
+        if app_status is None:
+            pass  # will create new AppStatus instance in the end of __init__
+
         super().__init__()
         self.config = config
         self.window_setup = window_setup
@@ -99,7 +107,8 @@ class MainWindow(QWidget):
         original_brush = painter.brush()
         painter.setBrush(Qt.BrushStyle.NoBrush)
 
-        shift = 0  # small shift to see the border more clearly (-1,suppresses the green rect)
+        # small shift to see the border more clearly (-1,suppresses the green rect)
+        shift = 0
         painter.setPen(QPen(Qt.GlobalColor.green, 1))
 
         # get screen dimensions from config
@@ -124,7 +133,9 @@ class MainWindow(QWidget):
         )
         painter.setBrush(original_brush)
 
-    def _draw_string_in_corner(self, painter: QPainter, text: str, x: int, y: int, corner: str, color: QColor):
+    def _draw_string_in_corner(
+        self, painter: QPainter, text: str, x: int, y: int, corner: str, color: QColor
+    ):
         """Draw a string at specified corner coordinates"""
         painter.setPen(QPen(color))
         fm = painter.fontMetrics()
@@ -143,9 +154,6 @@ class MainWindow(QWidget):
     def _draw_mode_indicator(self, painter: QPainter):
         """Draw current trail mode and recording status in corner"""
 
-        mode_text = f"Mode: {self.config.trail_mode.upper()}"
-        record_text = "● RECORDING" if self.status.is_recording else "○ PAUSED"
-
         # Pressure band info
         center = getattr(self.config, "pressure_band_center", 0.5)
         width = getattr(self.config, "pressure_band_width", 0.4)
@@ -154,16 +162,16 @@ class MainWindow(QWidget):
 
         low = center - width / 2
         high = center + width / 2
-         # allow display of out-of-bounds values for debugging
-        band_text = f"Band: center={center:.2f} width={width:.2f} (low={low:.2f} high={high:.2f})"
+        # allow display of out-of-bounds values for debugging
+        band_text = f"{center:.2f}+/-{width/2:.2f} [{low:.2f} , {high:.2f}]"
 
         # Draw texts in top-left corner with some margin
         margin = 10
         self._draw_string_in_corner(
             painter,
             f"Mode: {self.config.trail_mode.upper()}",
-            x = margin,
-            y = margin,
+            x=margin,
+            y=margin,
             corner="top-left",
             color=QColor(Qt.GlobalColor.white),
         )
@@ -173,18 +181,20 @@ class MainWindow(QWidget):
         self._draw_string_in_corner(
             painter,
             "● RECORDING" if self.status.is_recording else "○ PAUSED",
-            x = margin,
-            y = margin + 20,
+            x=margin,
+            y=margin + 20,
             corner="top-left",
-            color=Qt.GlobalColor.green if self.status.is_recording else Qt.GlobalColor.red
+            color=(
+                Qt.GlobalColor.green if self.status.is_recording else Qt.GlobalColor.red
+            ),
         )
         # Show pressure band info only when a tablet has been detected
         if getattr(self.status, "tablet_detected", False):
             self._draw_string_in_corner(
                 painter,
                 band_text,
-                x = margin,
-                y = margin + 40,
+                x=margin,
+                y=margin + 40,
                 corner="top-left",
                 color=QColor(Qt.GlobalColor.white),
             )
@@ -253,9 +263,7 @@ class MainWindow(QWidget):
 
         self.config.pressure_band_width += 0.02
         self.config._update_pressure_band("width")
-        self._print_status(
-            f"Band width={self.config.pressure_band_width:.2f}", ""
-        )
+        self._print_status(f"Band width={self.config.pressure_band_width:.2f}", "")
         self.update()
 
     def _decrease_band_width(self):
@@ -268,9 +276,7 @@ class MainWindow(QWidget):
 
         self.config.pressure_band_width -= 0.02
         self.config._update_pressure_band("width")
-        self._print_status(
-            f"Band width={self.config.pressure_band_width:.2f}", ""
-        )
+        self._print_status(f"Band width={self.config.pressure_band_width:.2f}", "")
         self.update()
 
     def _increase_band_center(self):
@@ -283,9 +289,7 @@ class MainWindow(QWidget):
 
         self.config.pressure_band_center += 0.02
         self.config._update_pressure_band("center")
-        self._print_status(
-            f"Band center={self.config.pressure_band_center:.2f}", ""
-        )
+        self._print_status(f"Band center={self.config.pressure_band_center:.2f}", "")
         self.update()
 
     def _decrease_band_center(self):
@@ -298,9 +302,7 @@ class MainWindow(QWidget):
 
         self.config.pressure_band_center -= 0.02
         self.config._update_pressure_band("center")
-        self._print_status(
-            f"Band center={self.config.pressure_band_center:.2f}", ""
-        )
+        self._print_status(f"Band center={self.config.pressure_band_center:.2f}", "")
         self.update()
 
     def _toggle_smoothing(self):

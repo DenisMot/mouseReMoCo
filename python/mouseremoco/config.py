@@ -15,7 +15,8 @@ class OutputConfiguration:
     """Configuration for data output coordinate system (CSV, LSL).
 
     Creates a copy of the Configuration object and modifies it for output.
-    Handles coordinate transformation: screen → center-origin with y-reversed (matplotlib style).
+    Handles coordinate transformation:
+    screen → center-origin with y-reversed (matplotlib style).
     """
 
     def __init__(self, config):
@@ -69,7 +70,7 @@ class Configuration:
     """
 
     def __init__(self):
-        """Initialize Configuration with NO arguments - all values use defaults.
+        """Initialize Configuration with NO arguments - use defaults.
 
         To customize behavior:
         1. Create: config = Configuration()
@@ -91,7 +92,8 @@ class Configuration:
         self._height = None
         self._nb_cursor_radii_for_target_margin = 5
 
-        # ===== Screen & Window Configuration (set during measure_and_correct_dimensions) =====
+        # ===== Screen & Window Configuration =====
+        # These are set during setup.create_and_display()
         self.screen_width = 0
         self.screen_height = 0
         # self.drawable_width = 0
@@ -102,7 +104,7 @@ class Configuration:
         self._frame_undecorated = False
         self._used_screen_id = 0
 
-        # ===== Circular Task Parameters (radii set during measure_and_correct_dimensions) =====
+        # ===== Circular Task Parameters =====
         self.task_string = "circular"
         self.center_x = 0
         self.center_y = 0
@@ -113,7 +115,8 @@ class Configuration:
         self.border_radius = 1
         self.circle_perimeter_mm = 0
 
-        # ===== Circular task derived values (set during measure_and_correct_dimensions) =====
+        # ===== Circular task derived values =====
+        # These are calculated in _update_circular_task()
         self.task_radius = 0.0
         self.tolerance_px = 0
         self.index_of_difficulty = 0.0
@@ -121,6 +124,7 @@ class Configuration:
         self.external_limit = 0
 
         # ===== Linear Task Parameters =====
+        # These are set when switching to linear task
         self.inter_line_distance_mm = 150
         self.line_height_mm = 100
         self.mm2px = 0.0
@@ -160,10 +164,12 @@ class Configuration:
 
         # ===== Trail Configuration =====
         self.trail_mode = "path_length"  # Active trail mode
-        self.trail_length = None  # Trail length in pixels; None means 10×cursor_radius
+        # Trail length in pixels; None means 10×cursor_radius
+        self.trail_length = None
 
         # ===== Pressure band configuration (0.0 - 1.0) =====
-        # Band defined by a center and full width; low/high are derived at runtime
+        # Band defined by a center and full width;
+        # low/high are derived at runtime
         self.pressure_band_center = 0.5
         self.pressure_band_width = 0.4
         self.pressure_band_low = None  # derived at runtime
@@ -171,7 +177,7 @@ class Configuration:
 
         # ===== Output Configuration =====
         self.output_config = (
-            None  # Will be created after center_x, center_y are determined
+            None  # Will be created after center_x, center_y are determined)
         )
 
         # ===== Application State =====
@@ -186,11 +192,11 @@ class Configuration:
 
         if to_adapt not in (None, "center", "width"):
             raise ValueError("to_adapt must be None, 'center', or 'width'")
-        
+
         if to_adapt is None:
             # Initial calculation, ensure valid values
             to_adapt = "center"
-        
+
         center = self.pressure_band_center
         width = self.pressure_band_width
         half_width = width / 2
@@ -213,7 +219,6 @@ class Configuration:
         self.pressure_band_width = width
         self.pressure_band_center = center
 
-
     def _update_circular_task(self):
         """Update circular task derived values"""
         if self.task_string == "circular":
@@ -233,7 +238,8 @@ class Configuration:
                 ) / self.tolerance_px
 
     def get_trail_length(self) -> int:
-        """Get trail length for current mode, defaulting to 10×cursor_radius if not set"""
+        """Get trail length for current mode,
+        defaulting to 10×cursor_radius if not set"""
         if self.trail_length is not None:
             return self.trail_length
         return 10 * self.cursor_radius
@@ -268,9 +274,9 @@ class Configuration:
         if perimeter_mm <= 0 or screen_resolution_ppi <= 0:
             return
 
-        # Convert mm to pixels
+        # Convert mm to pixels. (1 inch = 25.4 mm)
         self.circle_perimeter_mm = perimeter_mm
-        perimeter_px = perimeter_mm * screen_resolution_ppi / 25.4  # 25.4 mm per inch
+        perimeter_px = perimeter_mm * screen_resolution_ppi / 25.4
 
         # Calculate new radius and tolerance
         self.task_radius = perimeter_px / (2.0 * 3.14159)
@@ -293,7 +299,7 @@ class Configuration:
     def calculate_default_circle_radii(
         self, screen_width: int, screen_height: int
     ) -> tuple[int, int]:
-        """Calculate circle radii based on screen dimensions and margin settings"""
+        """Calculate circle radii based on screen dimensions and margin"""
         # NOTE: default margin is 5 times cursor radius
         # Calculate available space accounting for margins
         margin_px = self._nb_cursor_radii_for_target_margin * self.cursor_radius
@@ -309,7 +315,7 @@ class Configuration:
         # External radius is half the maximum diameter
         external_radius = max_diameter // 2
 
-        # Internal radius is 60% of external radius (creates 40% wide tolerance band)
+        # Internal radius is 60% of external radius
         internal_radius = int(external_radius * 0.6)
 
         return external_radius, internal_radius
