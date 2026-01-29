@@ -47,7 +47,7 @@ dist/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-*.ipynb
+# *.ipynb
 
 # Testing
 .pytest_cache/
