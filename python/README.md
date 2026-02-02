@@ -138,10 +138,9 @@ Edit `main.py` before `create_and_display()` to customize:
 ```python
 # Customize before window setup
 window_setup.update_configuration(
-    cursor_radius=20,              # Change cursor size
-    external_radius=200,           # Change target size
-#    cycle_max_number=5,            # Number of cycles
-    trail_length=500,              # Trail length (pixels)
+#    cursor_radius=20,              # Change cursor size
+#    external_radius=200,           # Change target size
+#    trail_length=500,              # Trail length (pixels)
 )
 ```
 
@@ -166,7 +165,7 @@ Check console output for tablet detection status.
 
 ### Cannot write CSV files
 
-**Solution:** Ensure write permissions in the `python/` directory.
+**Solution:** Ensure write permissions in the directory where the application is running.
 
 ### Poor performance / high latency
 
