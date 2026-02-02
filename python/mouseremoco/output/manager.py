@@ -20,7 +20,7 @@ class OutputTablet:
         Args:
             config: Configuration object with screen and task parameters
             app_status: AppStatus instance for recording state tracking
-            output_config: OutputConfiguration instance for coordinate transformation (default: None)
+            output_config: OutputConfiguration instance (default: None)
             enable_csv: Enable CSV file output with subpixel precision (default: True)
             enable_lsl: Enable LSL streaming output (default: False)
         """

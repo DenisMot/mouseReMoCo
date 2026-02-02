@@ -1,8 +1,6 @@
 # Circular target rendering
 
 from dataclasses import dataclass
-
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor, QPainter, QPen
 
 
@@ -13,7 +11,7 @@ class CircularTaskConfig:
     external_radius: int = 150  # pixels
     internal_radius: int = 80  # pixels
     background_color: str = "black"
-    path_color: str = "#333333"  #  darkgray < "#333333"  < "#1a1a1a" < black
+    path_color: str = "#333333"  # darkgray < "#333333"  < "#1a1a1a" < black
     circle_border_color: str = "white"
     circle_border_width: int = 2
 

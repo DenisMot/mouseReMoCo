@@ -1,7 +1,5 @@
-
 # WindowSetup — Application window orchestration
 
-import time
 from PyQt6.QtWidgets import QApplication
 
 from .config import Configuration, OutputConfiguration
@@ -70,6 +68,10 @@ class WindowSetup:
 
     def create_widget(self):
         """Step 4: Create and position window widget"""
+        if self.target_screen_info is None:
+            raise RuntimeError(
+                "initialize_screens() must be called before create_widget()"
+            )
         widget = self.tablet_test_class(
             config=self.config,
             window_setup=self,
@@ -89,7 +91,13 @@ class WindowSetup:
         """Step 5-8: Measure frame insets and update widget with corrected dimensions"""
         if self.target_screen_info is None:
             raise RuntimeError(
-                "initialize_screens() must be called before measure_and_correct_dimensions()"
+                "initialize_screens() must be called before "
+                + "measure_and_correct_dimensions()"
+            )
+        if self.widget is None:
+            raise RuntimeError(
+                "create_widget() must be called before "
+                + "measure_and_correct_dimensions()"
             )
         # Show window to make frame insets calculable
         self.widget.show()
@@ -100,7 +108,9 @@ class WindowSetup:
             self.widget, self.usable_width, self.usable_height
         )
         print(
-            f"\nWindow frame insets: Top={insets['top']}, Bottom={insets['bottom']}, Left={insets['left']}, Right={insets['right']}"
+            f"\nWindow frame insets: "
+            f"Top={insets['top']}, Bottom={insets['bottom']}, "
+            f"Left={insets['left']}, Right={insets['right']}"
         )
 
         # Recalculate radii with actual drawable area
@@ -168,6 +178,8 @@ class WindowSetup:
         )
 
         # Assign output_data to widget and its trail
+        if self.widget is None:
+            raise RuntimeError("Widget must be created before finalize_display()")
         self.widget.output_data = self.output_data
         self.widget.trail.output_data = self.output_data
 

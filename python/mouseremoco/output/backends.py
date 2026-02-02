@@ -5,6 +5,8 @@
 from abc import ABC, abstractmethod
 import csv
 from datetime import datetime
+from ..config import OutputConfiguration
+from typing import Any
 
 
 class OutputBackend(ABC):
@@ -53,7 +55,7 @@ class CSVBackend(OutputBackend):
     ):
         # Use output_config's modified copy if available, otherwise use original
         self.config = output_config.config if output_config else config
-        self.output_config = output_config
+        self.output_config: OutputConfiguration | None = output_config
         self.data_filename = data_filename
         self.marker_filename = marker_filename
         self.creation_timestamp = datetime.now()
@@ -112,7 +114,7 @@ class CSVBackend(OutputBackend):
         print(f"✓ CSV Backend: Created {self.data_filename} and {self.marker_filename}")
 
     def _config_to_string(self) -> str:
-        """Convert all configuration attributes to semicolon-separated string for CSV header"""
+        """All configuration attributes to semicolon-separated string for CSV header"""
         config_dict = {}
 
         # Write all config attributes
@@ -144,6 +146,9 @@ class CSVBackend(OutputBackend):
     ):
         """Write event data to CSV with coordinate transformation"""
         try:
+            if not self.data_writer:
+                return
+
             # Transform coordinates if output_config is available
             if self.output_config:
                 x, y = self.output_config.transform_coordinates(x, y)
@@ -170,13 +175,17 @@ class CSVBackend(OutputBackend):
                     tilt_y,
                 ]
             )
-            self.data_file.flush()
+            if self.data_file:
+                self.data_file.flush()
         except Exception as e:
             print(f"ERROR writing data to {self.data_filename}: {e}")
 
     def write_marker(self, marker_text: str):
         """Write event marker to CSV"""
         try:
+            if not self.marker_writer:
+                return
+
             current_time = datetime.now()
             # millisecond accuracy for humans and machines
             timestamp_ms = int(current_time.timestamp() * 1000)
@@ -189,7 +198,8 @@ class CSVBackend(OutputBackend):
                     marker_text,
                 ]
             )
-            self.marker_file.flush()
+            if self.marker_file:
+                self.marker_file.flush()
         except Exception as e:
             print(f"ERROR writing marker to {self.marker_filename}: {e}")
 
@@ -224,9 +234,11 @@ class LSLBackend(OutputBackend):
         self.data_outlet = None
         self.marker_outlet = None
         self.numeric_marker_outlet = None
+        self.lsl: Any = None
 
         try:
-            import lsl as lsl_module
+            # Local import to handle missing dependency
+            import lsl as lsl_module  # type: ignore
 
             self.lsl = lsl_module
             self._init_lsl()

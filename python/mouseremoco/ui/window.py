@@ -175,9 +175,7 @@ class MainWindow(QWidget):
             corner="top-left",
             color=QColor(Qt.GlobalColor.white),
         )
-        status_color = (
-            Qt.GlobalColor.green if self.status.is_recording else Qt.GlobalColor.red
-        )
+
         self._draw_string_in_corner(
             painter,
             "● RECORDING" if self.status.is_recording else "○ PAUSED",
@@ -382,7 +380,7 @@ class MainWindow(QWidget):
             self.setWindowFlags(Qt.WindowType.Widget)
             self.showNormal()
             self.status.fullscreen_mode = 0
-            # CRITICAL: Let windowing system process state changes before accepting close
+            # CRITICAL: Let system process state changes before accepting close
             QApplication.instance().processEvents()
 
         # Stop recording and log end marker before closing
@@ -483,6 +481,11 @@ class MainWindow(QWidget):
 
     def tabletEvent(self, event: QTabletEvent):
         """Handle tablet input event"""
+        if not self.data_capture:
+            raise ValueError(
+                "DataCapture instance is required for tablet event handling."
+            )
+
         # Capture data
         data = self.data_capture.capture_tablet_event(event)
 
@@ -494,6 +497,11 @@ class MainWindow(QWidget):
 
     def mouseMoveEvent(self, event):
         """Handle mouse movement event"""
+        if not self.data_capture:
+            raise ValueError(
+                "DataCapture instance is required for mouse event handling."
+            )
+
         # Capture data
         data = self.data_capture.capture_mouse_event(event)
 
@@ -503,7 +511,7 @@ class MainWindow(QWidget):
     def mousePressEvent(self, event):
         """Print mouse click position"""
         print(
-            f"Mouse click at: X={event.position().x():.1f}, Y={event.position().y():.1f}"
+            f"Mouse click: X={event.position().x():.1f}, Y={event.position().y():.1f}"
         )
         sys.stdout.flush()
 

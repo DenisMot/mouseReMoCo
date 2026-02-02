@@ -23,7 +23,7 @@ class Trail:
     VALID_MODES = ["path_length"]
 
     def __init__(self, config, app_status=None):
-        """Initialize Trail with configuration reference and app status for tablet detection"""
+        """Initialize Trail with configuration reference and app status"""
         self.config = config
         self.app_status = app_status  # Reference to app status for tablet detection
         self.trail = deque()  # (x, y, timestamp, cumulative_path_distance, pressure)
@@ -46,8 +46,8 @@ class Trail:
 
         Args:
             x, y: Subpixel cursor coordinates (float)
-            timestamp_ms: Hardware event timestamp from Qt event.timestamp()
-            call_time_ms: System time when event handler was called (kept for API consistency)
+            timestamp_ms: Timestamp from Qt event.timestamp (since app start)
+            call_time_ms: Timestamp when event handler was called (since 01 Jan 1970)
         """
 
         if self._last_x is not None and self._last_y is not None:
@@ -107,10 +107,10 @@ class Trail:
         pressure: float,
         opacity: float,
     ) -> bool:
-        """Draw a single trail segment with conditional styling based on tablet detection.
+        """Draw a single trail segment.
 
         No tablet detected: 3px blue trail (fixed thickness, blue color)
-        Tablet detected: Pressure-scaled red trail (thickness varies with pressure, position-based color)
+        Tablet detected: Pressure-dependent thickness, position-based color
 
         Both use opacity fading based on trail mode.
 
@@ -129,9 +129,11 @@ class Trail:
             thickness = 3
             base_color = (0, 0, 255)  # Blue RGB
         else:
-            # TABLET DETECTED → Pressure-scaled RED trail (pressure-dependent thickness, position-based color)
+            # TABLET DETECTED → Pressure-scaled RED trail
+            # (pressure-dependent thickness, position-based color)
             thickness = 2 * self.config.cursor_radius * pressure
-            # Determine color based on pressure band: green when within band, else position-based red
+            # Determine color based on pressure band: green when within band,
+            # else position-based red
             center = getattr(self.config, "pressure_band_center", 0.5)
             width = getattr(self.config, "pressure_band_width", 0.4)
             low = max(0.0, center - width / 2)
@@ -142,9 +144,17 @@ class Trail:
                 is_inside = geom_is_inside(self.config, x2, y2)
 
                 if is_inside:
-                    base_color = (0, 200, 0)  # bright green when inside band and inside target
+                    base_color = (
+                        0,
+                        200,
+                        0,
+                    )  # bright green when inside band and inside target
                 else:
-                    base_color = (0, 100, 0)  # darker green when inside band but outside target
+                    base_color = (
+                        0,
+                        100,
+                        0,
+                    )  # darker green when inside band but outside target
             else:
                 base_color = self._get_color_for_position(x2, y2)
 
@@ -173,7 +183,7 @@ class Trail:
         """Draw trail with path-distance-based opacity fade"""
         threshold = self.get_length()
 
-        # Compute smoothed coordinates for visual-only smoothing using a small Gaussian kernel
+        # Visual-only smoothing using a small Gaussian kernel
         n = len(trail_list)
         if n < 2:
             return
@@ -245,3 +255,7 @@ class Trail:
         Args:
             mode_name: Trail mode name (must be in Trail.VALID_MODES)
         """
+        if mode_name not in self.VALID_MODES:
+            raise ValueError(f"Invalid trail mode: {mode_name}")
+        # Clear trail and reset distance tracking
+        self.clear()

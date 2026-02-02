@@ -21,11 +21,11 @@ class CursorFactory:
 
         Args:
             radius: Cursor circle radius in pixels
-            color: RGB tuple (r, g, b) for circle color
-            background_color: RGB tuple for crosshair (contrasts with circle for visibility)
+            color: RGB tuple (r, g, b) for circle color (e.g., red for recording)
+            background_color: RGB tuple for crosshair color (default black).
 
         Returns:
-            QCursor with hotspot positioned at center (radius, radius) for precision targeting
+            QCursor with hotspot positioned at center.
         """
         diameter = radius * 2
 
