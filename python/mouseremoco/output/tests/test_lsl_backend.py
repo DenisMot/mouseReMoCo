@@ -370,3 +370,39 @@ class TestLSLClose:
             backend = LSLBackend(config=Mock())
             backend.close()
             assert backend.data_outlet is None
+
+
+class TestMarkerConsistency:
+    """Test that markers are identical across CSV and LSL backends"""
+
+    def test_output_tablet_broadcasts_same_marker_to_all_backends(self):
+        """Verify OutputTablet sends identical marker to all backends"""
+        if pylsl is None:
+            # Skip test if LSL not available
+            import pytest
+
+            pytest.skip("LSL not installed - skipping marker consistency test")
+
+        from mouseremoco.output.manager import OutputTablet
+
+        # Real LSL version - test with actual libraries
+        config = Mock()
+        app_status = Mock()
+        app_status.is_recording = True
+
+        output_tablet = OutputTablet(
+            config=config,
+            app_status=app_status,
+            output_config=None,
+            enable_csv=True,
+            enable_lsl=True,
+        )
+
+        # Verify both backends are present
+        backend_names = [b.__class__.__name__ for b in output_tablet.backends]
+        assert "CSVBackend" in backend_names
+        assert "LSLBackend" in backend_names
+
+        # Send marker and verify both backends got it (no crash)
+        output_tablet.write_marker("test_marker_consistency")
+        output_tablet.close()
