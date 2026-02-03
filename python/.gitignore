@@ -41,6 +41,7 @@ ENV/
 # Project
 data.csv
 marker.csv
+data.xdf
 *.dmg
 dist/
 *.egg-info/
