@@ -174,7 +174,13 @@ class WindowSetup:
             app_status=self.app_status,
             output_config=self.config.output_config,
             enable_csv=True,  # Enable CSV output
-            enable_lsl=False,  # Set to True when LSL library available
+            enable_lsl=True,  # Attempt LSL initialization
+        )
+
+        # Update is_with_lsl based on whether LSL backend was successfully added
+        self.config.is_with_lsl = any(
+            backend.__class__.__name__ == "LSLBackend"
+            for backend in self.output_data.backends
         )
 
         # Assign output_data to widget and its trail
@@ -232,6 +238,8 @@ class WindowSetup:
         )
 
         # Update widget
+        if self.widget is None:
+            raise RuntimeError("Widget must be created before updating circular target")
         self.widget.circular_target = CircularTargetWidget(
             config=corrected_circle_config
         )

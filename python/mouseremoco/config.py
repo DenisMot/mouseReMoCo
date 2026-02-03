@@ -176,8 +176,8 @@ class Configuration:
         self.pressure_band_high = None  # derived at runtime
 
         # ===== Output Configuration =====
-        self.output_config = (
-            None  # Will be created after center_x, center_y are determined)
+        self.output_config: OutputConfiguration | None = (
+            None  # Will be created after center_x, center_y are determined
         )
 
         # ===== Application State =====
