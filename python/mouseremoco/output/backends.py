@@ -238,7 +238,7 @@ class LSLBackend(OutputBackend):
 
         try:
             # Local import to handle missing dependency
-            import lsl as lsl_module  # type: ignore
+            import pylsl as lsl_module  # type: ignore
 
             self.lsl = lsl_module
             self._init_lsl()
