@@ -1,5 +1,6 @@
 # OutputTablet unified output manager
 
+from datetime import datetime
 from .backends import CSVBackend, LSLBackend
 
 
@@ -28,11 +29,20 @@ class OutputTablet:
         self.app_status = app_status  # For state tracking if needed
         self.backends = []
 
+        # Create single timestamp for all backends to ensure consistency
+        creation_timestamp = datetime.now()
+
         if enable_csv:
-            self.backends.append(CSVBackend(config, output_config))
+            self.backends.append(
+                CSVBackend(config, output_config, creation_timestamp=creation_timestamp)
+            )
 
         if enable_lsl:
-            lsl_backend = LSLBackend(config, self.config._output_config)
+            lsl_backend = LSLBackend(
+                config,
+                self.config._output_config,
+                creation_timestamp=creation_timestamp,
+            )
             if lsl_backend.lsl:
                 self.backends.append(lsl_backend)
             else:

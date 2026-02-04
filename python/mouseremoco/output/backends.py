@@ -261,14 +261,19 @@ class CSVBackend(OutputBackend):
         output_config=None,
         data_filename="data.csv",
         marker_filename="marker.csv",
-    ):
+        creation_timestamp=None,
+    ) -> None:
         super().__init__(config, output_config)
+        if creation_timestamp is None:
+            raise ValueError(
+                "creation_timestamp is required to ensure CSV and LSL consistency"
+            )
         # Use output_config's modified copy if available, otherwise use original
         self.config = output_config.config if output_config else config
         self.output_config: OutputConfiguration | None = output_config
         self.data_filename = data_filename
         self.marker_filename = marker_filename
-        self.creation_timestamp = datetime.now()
+        self.creation_timestamp = creation_timestamp
 
         self.data_file = None
         self.marker_file = None
@@ -371,10 +376,14 @@ class CSVBackend(OutputBackend):
 class LSLBackend(OutputBackend):
     """LSL (Lab Streaming Layer) output backend with subpixel support"""
 
-    def __init__(self, config, output_config=None):
+    def __init__(self, config, output_config=None, creation_timestamp=None) -> None:
+        if creation_timestamp is None:
+            raise ValueError(
+                "creation_timestamp is required to ensure CSV and LSL consistency"
+            )
         super().__init__(config, output_config)
         self.output_config = output_config
-        self.creation_timestamp = datetime.now()
+        self.creation_timestamp = creation_timestamp
         self.data_outlet = None
         self.marker_outlet = None
         self.numeric_marker_outlet = None
@@ -392,6 +401,22 @@ class LSLBackend(OutputBackend):
             print("⚠ LSL library not available - LSL backend disabled")
             self.lsl = None
 
+    def _add_lsl_metadata(self, stream_info, config_str: str, timestamp_str: str):
+        """Add configuration and timestamp metadata to LSL stream info
+
+        Args:
+            stream_info: LSL StreamInfo object
+            config_str: Configuration string to add
+            timestamp_str: ISO8601 timestamp string to add
+
+        Returns:
+            The root descriptor element for further modifications
+        """
+        root = stream_info.desc()
+        root.append_child_value("configuration_str", config_str)
+        root.append_child_value("timestamp_str", timestamp_str)
+        return root
+
     def _init_lsl(self):
         """Initialize LSL streams with metadata matching CSV format"""
         if not self.lsl:
@@ -408,15 +433,9 @@ class LSLBackend(OutputBackend):
         )
 
         # Add metadata to stream description (matching CSV header lines 1-2)
-        root = data_info.desc()
-
-        # Add configuration metadata (line 1 from CSV)
         config_str = self._config_to_string()
-        root.append_child("configuration").append_child_value("config", config_str)
-
-        # Add creation timestamp (line 2 from CSV)
         timestamp_str = self.creation_timestamp.astimezone().isoformat()
-        root.append_child("metadata").append_child_value("timestamp", timestamp_str)
+        root = self._add_lsl_metadata(data_info, config_str, timestamp_str)
 
         # Add channel descriptions from shared DATA_SCHEMA
         chns = root.append_child("channels")
@@ -439,13 +458,7 @@ class LSLBackend(OutputBackend):
         )
 
         # Add metadata to marker stream
-        marker_root = marker_info.desc()
-        marker_root.append_child("configuration").append_child_value(
-            "config", config_str
-        )
-        marker_root.append_child("metadata").append_child_value(
-            "timestamp", timestamp_str
-        )
+        self._add_lsl_metadata(marker_info, config_str, timestamp_str)
 
         self.marker_outlet = self.lsl.StreamOutlet(marker_info)
 
@@ -460,13 +473,7 @@ class LSLBackend(OutputBackend):
         )
 
         # Add metadata to numeric marker stream
-        numeric_root = numeric_info.desc()
-        numeric_root.append_child("configuration").append_child_value(
-            "config", config_str
-        )
-        numeric_root.append_child("metadata").append_child_value(
-            "timestamp", timestamp_str
-        )
+        self._add_lsl_metadata(numeric_info, config_str, timestamp_str)
 
         self.numeric_marker_outlet = self.lsl.StreamOutlet(numeric_info)
 
