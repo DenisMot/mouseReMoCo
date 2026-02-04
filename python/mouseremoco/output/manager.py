@@ -32,14 +32,46 @@ class OutputTablet:
             self.backends.append(CSVBackend(config, output_config))
 
         if enable_lsl:
-            lsl_backend = LSLBackend(config)
-            if lsl_backend.lsl:  # Only add if LSL initialized successfully
+            lsl_backend = LSLBackend(config, self.config.output_config)
+            if lsl_backend.lsl:
                 self.backends.append(lsl_backend)
             else:
                 print("⚠ LSL Backend not added due to initialization failure")
 
         if not self.backends:
             raise ValueError("At least one backend must be enabled (CSV or LSL)")
+
+        self._is_recording = False
+
+    def start_recording(self):
+        """Start recording: mark exact moment all backends begin recording.
+
+        Call this BEFORE any data collection starts to ensure CSV and LSL
+        backends timestamp their initialization identically.
+        """
+        if self._is_recording:
+            print("⚠ Recording already started")
+            return
+
+        self._is_recording = True
+        print(f"✓ Started recording to {len(self.backends)} backend(s)")
+
+    def stop_recording(self):
+        """Stop recording: mark exact moment all backends stop recording.
+
+        Call this AFTER data collection ends to ensure both backends
+        captured the same event range.
+        """
+        if not self._is_recording:
+            print("⚠ Recording not active")
+            return
+
+        self._is_recording = False
+        print("✓ Stopped recording")
+
+    def is_recording(self) -> bool:
+        """Check if recording is active"""
+        return self._is_recording
 
     def write_data(
         self,
@@ -53,8 +85,8 @@ class OutputTablet:
         tilt_y: float = 0.0,
     ):
         """Write position data with subpixel precision to all active backends"""
-        # Only write if recording
-        if not self.app_status.is_recording:
+        # Only write if explicitly recording via start_recording()
+        if not self._is_recording:
             return
 
         for backend in self.backends:

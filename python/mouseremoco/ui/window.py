@@ -201,6 +201,13 @@ class MainWindow(QWidget):
         """Toggle recording on/off with spacebar"""
         self.status.toggle_recording()
 
+        # Synchronize output backends explicitly
+        if self.output_data:
+            if self.status.is_recording:
+                self.output_data.start_recording()
+            else:
+                self.output_data.stop_recording()
+
         # Write marker to CSV
         marker = "RecordingStarted" if self.status.is_recording else "RecordingPaused"
         if self.output_data:
@@ -388,6 +395,11 @@ class MainWindow(QWidget):
             self.status.pause_recording()
             if self.output_data:
                 self.output_data.write_marker("RecordingEnded")
+
+        # Explicitly close output backends before exit
+        if self.output_data:
+            self.output_data.close()
+
         event.accept()
 
     def showEvent(self, event):
