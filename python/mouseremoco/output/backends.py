@@ -80,10 +80,18 @@ class OutputBackend(ABC):
         self.output_config = output_config
 
     def _config_to_string(self) -> str:
-        """Convert config to semicolon-separated string for metadata headers"""
+        """Convert config to semicolon-separated string for metadata headers
+
+        Uses output_config's modified copy (with coordinate transformation info)
+        if available, otherwise uses self.config.
+        """
+        # Use output_config's modified copy if available for consistent metadata
+        config_to_serialize = (
+            self.output_config.config if self.output_config else self.config
+        )
         config_dict = {}
 
-        for key, value in self.config.__dict__.items():
+        for key, value in config_to_serialize.__dict__.items():
             if key.startswith("_"):
                 continue
 
