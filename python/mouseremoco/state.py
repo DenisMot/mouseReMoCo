@@ -7,6 +7,7 @@ from .screen import ScreenManager, ScreenInfo
 from .output.manager import OutputTablet
 from .ui.target import CircularTaskConfig
 from .types import AppStatus
+from . import app_config
 
 
 class WindowSetup:
@@ -173,8 +174,8 @@ class WindowSetup:
             config=self.config,
             app_status=self.app_status,
             output_config=self.config.output_config,
-            enable_csv=True,  # Enable CSV output
-            enable_lsl=True,  # Attempt LSL initialization
+            enable_csv=app_config.ENABLE_CSV,
+            enable_lsl=app_config.ENABLE_LSL,
         )
 
         # Update is_with_lsl based on whether LSL backend was successfully added

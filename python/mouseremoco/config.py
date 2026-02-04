@@ -2,6 +2,7 @@
 
 from enum import Enum
 import copy
+from . import app_config
 
 
 class TaskType(Enum):
@@ -86,11 +87,13 @@ class Configuration:
         self.version = "2.0.0"
 
         # ===== Window Configuration =====
-        self._title = "Wacom Tablet Test"
-        self._target_monitor = 2
-        self._width = None
-        self._height = None
-        self._nb_cursor_radii_for_target_margin = 5
+        self._title = app_config.WINDOW_TITLE
+        self._target_monitor = app_config.TARGET_MONITOR
+        self._width = app_config.WINDOW_WIDTH
+        self._height = app_config.WINDOW_HEIGHT
+        self._nb_cursor_radii_for_target_margin = (
+            app_config.NB_CURSOR_RADII_FOR_TARGET_MARGIN
+        )
 
         # ===== Screen & Window Configuration =====
         # These are set during setup.create_and_display()
@@ -110,9 +113,9 @@ class Configuration:
         self.center_y = 0
         self.corner_x = 0
         self.corner_y = 0
-        self.external_radius = 150
-        self.internal_radius = 80
-        self.border_radius = 1
+        self.external_radius = app_config.EXTERNAL_RADIUS
+        self.internal_radius = app_config.INTERNAL_RADIUS
+        self.border_radius = app_config.BORDER_RADIUS
         self.circle_perimeter_mm = 0
 
         # ===== Circular task derived values =====
@@ -133,45 +136,43 @@ class Configuration:
         self.half_period = 2000
 
         # ===== Cursor Configuration =====
-        self.cursor_radius = 16
-        self.cursor_color_record = (255, 0, 0)  # RGB red
+        self.cursor_radius = app_config.CURSOR_RADIUS
+        self.cursor_color_record = app_config.CURSOR_COLOR_RECORDING  # RGB red
         r, g, b = self.cursor_color_record
-        self.cursor_color_record_outside = (
-            max(0, r // 2),
-            max(0, g // 2),
-            max(0, b // 2),
-        )
-        self.cursor_color_wait = (255, 255, 0)  # RGB yellow
+        self.cursor_color_record_outside = app_config.CURSOR_COLOR_RECORDING_OUTSIDE
+        self.cursor_color_wait = app_config.CURSOR_COLOR_WAITING  # RGB yellow
 
         # ===== Visual Styling =====
-        self.border_color = (255, 255, 255)  # RGB white
-        self.background_color = (0, 0, 0)  # RGB black
-        self.text_color = (255, 255, 255)  # RGB white
+        self.border_color = app_config.BORDER_COLOR  # RGB white
+        self.background_color = app_config.BACKGROUND_COLOR  # RGB black
+        self.text_color = app_config.TEXT_COLOR  # RGB white
 
         # ===== Sequence Configuration =====
-        self.auto_start = 3600  # seconds before auto start
-        self.cycle_max_number = 6  # Move-Rest cycle number
-        self.cycle_duration = 20  # seconds for a Move or Rest (half-cycle)
-        self.is_target_hidden_during_pause = False
+        self.auto_start = app_config.AUTO_START_DELAY  # seconds before auto start
+        self.cycle_max_number = app_config.CYCLE_MAX_NUMBER  # Move-Rest cycle number
+        self.cycle_duration = (
+            app_config.CYCLE_DURATION
+        )  # seconds for a Move or Rest (half-cycle)
+        self.is_target_hidden_during_pause = app_config.HIDE_TARGET_DURING_PAUSE
 
         # ===== Font Configuration =====
-        self.font_size = 20
-        self.font_family = "Courier"
+        self.font_size = app_config.FONT_SIZE
+        self.font_family = app_config.FONT_FAMILY
 
         # ===== Flags =====
         self.is_with_lsl = False  # Lab Streaming Layer
         self.is_with_pause_target = False
 
         # ===== Trail Configuration =====
-        self.trail_mode = "path_length"  # Active trail mode
+        self.trail_mode = app_config.TRAIL_MODE  # Active trail mode
         # Trail length in pixels; None means 10×cursor_radius
-        self.trail_length = None
+        self.trail_length = app_config.TRAIL_LENGTH
 
         # ===== Pressure band configuration (0.0 - 1.0) =====
         # Band defined by a center and full width;
         # low/high are derived at runtime
-        self.pressure_band_center = 0.5
-        self.pressure_band_width = 0.4
+        self.pressure_band_center = app_config.PRESSURE_BAND_CENTER
+        self.pressure_band_width = app_config.PRESSURE_BAND_WIDTH
         self.pressure_band_low = None  # derived at runtime
         self.pressure_band_high = None  # derived at runtime
 
