@@ -97,10 +97,8 @@ class Configuration:
 
         # ===== Screen & Window Configuration =====
         # These are set during setup.create_and_display()
-        self.screen_width = 0
-        self.screen_height = 0
-        # self.drawable_width = 0
-        # self.drawable_height = 0
+        self.screen_width = 0  # in pixels: drawable area width
+        self.screen_height = 0  # in pixels: drawable area height
         self._frame_location_x = 0
         self._frame_location_y = 0
         self._frame_insets = {"top": 0, "bottom": 0, "left": 0, "right": 0}
@@ -160,8 +158,8 @@ class Configuration:
         self.font_family = app_config.FONT_FAMILY
 
         # ===== Flags =====
-        self.is_with_lsl = False  # Lab Streaming Layer
-        self.is_with_pause_target = False
+        self.is_with_lsl = False  # Lab Streaming Layer present and enabled (or not)
+        self.is_with_pause_target = False  # Whether to show target during pause (rest)
 
         # ===== Trail Configuration =====
         self.trail_mode = app_config.TRAIL_MODE  # Active trail mode
@@ -177,12 +175,12 @@ class Configuration:
         self.pressure_band_high = None  # derived at runtime
 
         # ===== Output Configuration =====
-        self.output_config: OutputConfiguration | None = (
+        self._output_config: OutputConfiguration | None = (
             None  # Will be created after center_x, center_y are determined
         )
 
         # ===== Application State =====
-        self.step = ""
+        self._step = ""
 
         # Initialize derived values
         self._update_circular_task()

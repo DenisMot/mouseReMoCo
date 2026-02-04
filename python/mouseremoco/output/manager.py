@@ -32,7 +32,7 @@ class OutputTablet:
             self.backends.append(CSVBackend(config, output_config))
 
         if enable_lsl:
-            lsl_backend = LSLBackend(config, self.config.output_config)
+            lsl_backend = LSLBackend(config, self.config._output_config)
             if lsl_backend.lsl:
                 self.backends.append(lsl_backend)
             else:

@@ -167,13 +167,13 @@ class WindowSetup:
         """Step 9: Finalize window display and print configuration"""
 
         # Create OutputConfiguration after center is determined
-        self.config.output_config = OutputConfiguration(self.config)
+        self.config._output_config = OutputConfiguration(self.config)
 
         # Create OutputData NOW = with the corrected configuration
         self.output_data = OutputTablet(
             config=self.config,
             app_status=self.app_status,
-            output_config=self.config.output_config,
+            output_config=self.config._output_config,
             enable_csv=app_config.ENABLE_CSV,
             enable_lsl=app_config.ENABLE_LSL,
         )
