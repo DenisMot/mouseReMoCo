@@ -2,8 +2,8 @@
 
 import sys
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QPainter, QPen, QTabletEvent
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QColor, QPainter, QPen, QTabletEvent, QFont, QFontMetrics
 from PyQt6.QtWidgets import QApplication, QWidget
 
 from .cursor import CursorFactory
@@ -71,6 +71,9 @@ class MainWindow(QWidget):
         # Use shared AppStatus instance from WindowSetup
         self.status = app_status if app_status else AppStatus()
 
+        # Flag to track goodbye mode (showing "bye" message before exit)
+        self.goodbye_mode = False
+
         # Enable mouse tracking to receive mouseMoveEvent even when no button is pressed
         self.setMouseTracking(True)
         self.setFocus()
@@ -96,6 +99,10 @@ class MainWindow(QWidget):
 
         # Draw mode indicator on screen
         self._draw_mode_indicator(painter)
+
+        # Draw goodbye message if in goodbye mode
+        if self.goodbye_mode:
+            self._draw_goodbye_message(painter)
 
         # Optionally draw limits rectangles for debugging
         self._draw_limits_retangles(painter)
@@ -196,6 +203,36 @@ class MainWindow(QWidget):
                 corner="top-left",
                 color=QColor(Qt.GlobalColor.white),
             )
+
+    def _draw_goodbye_message(self, painter: QPainter):
+        """Draw 'bye' message centered in the window - only if LSL is activated"""
+        if not self.config.is_with_lsl:
+            return
+
+        font = QFont()
+        font.setPointSize(72)
+        font.setBold(True)
+        text = "You should manually stop LabRecorder recording before quitting..."
+
+        metrics = QFontMetrics(font)
+        text_width = metrics.horizontalAdvance(text)
+        text_height = metrics.height()
+
+        # Reduce font size until it fits within 90% of window width
+        while text_width > self.width() * 0.9 and font.pointSize() > 10:
+            font.setPointSize(font.pointSize() - 2)
+            metrics = QFontMetrics(font)
+            text_width = metrics.horizontalAdvance(text)
+            text_height = metrics.height()
+
+        # Set font once before drawing
+        painter.setFont(font)
+        painter.setPen(QColor(Qt.GlobalColor.white))
+
+        x = (self.width() - text_width) // 2
+        y = (self.height() + text_height) // 2
+
+        painter.drawText(x, y, text)
 
     def _toggle_recording(self):
         """Toggle recording on/off with spacebar"""
@@ -364,21 +401,25 @@ class MainWindow(QWidget):
         )
 
     def _quit_application(self):
-        """Gracefully quit application, handling fullscreen state"""
+        """Gracefully quit application, showing bye message then closing"""
         # Disable all input to suppress user interaction during shutdown
         self.setEnabled(False)
+
+        # Enter goodbye mode to display "bye" message
+        self.goodbye_mode = True
+        self.update()  # Trigger paintEvent to show "bye" text
 
         # If in fullscreen, toggle to windowed first, wait 1 sec, then close
         # (fullscreen close is buggy on macOS, so bypass by going windowed first)
         if self.status.fullscreen_mode == 1:
             self._toggle_fullscreen()
             # Delay close by 1 second to let window state settle
-            from PyQt6.QtCore import QTimer
-
             QTimer.singleShot(1000, self.close)
         else:
-            # Already windowed, close immediately
-            self.close()
+
+            # Already windowed, delay close by 1 second to show bye message
+
+            QTimer.singleShot(1000, self.close)
 
     def closeEvent(self, event):
         """Handle window close - exit fullscreen before closing"""

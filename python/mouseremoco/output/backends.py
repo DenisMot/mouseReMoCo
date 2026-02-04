@@ -482,7 +482,7 @@ class LSLBackend(OutputBackend):
             print(f"ERROR pushing marker to LSL: {e}")
 
     def close(self):
-        """Close LSL outlets with timeout (safe even if labRecorder is recording)
+        """Close LSL outlets (safe even if labRecorder is recording)
 
         Gracefully disconnects from labRecorder. If labRecorder is actively reading,
         it will detect the disconnection and continue recording with what it received.
@@ -504,5 +504,5 @@ class LSLBackend(OutputBackend):
                 self.numeric_marker_outlet = None
             print("✓ Closed LSL Backend")
         except Exception:
-            # Ignore errors - called from async daemon thread
+            # Ignore errors
             pass
