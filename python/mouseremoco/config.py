@@ -179,9 +179,6 @@ class Configuration:
             None  # Will be created after center_x, center_y are determined
         )
 
-        # ===== Application State =====
-        self._step = ""
-
         # Initialize derived values
         self._update_circular_task()
         self._update_pressure_band()

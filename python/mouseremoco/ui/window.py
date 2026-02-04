@@ -401,25 +401,28 @@ class MainWindow(QWidget):
         )
 
     def _quit_application(self):
-        """Gracefully quit application, showing bye message then closing"""
+        """Quit application, showing bye message if LabRecorder is recording"""
         # Disable all input to suppress user interaction during shutdown
         self.setEnabled(False)
 
-        # Enter goodbye mode to display "bye" message
-        self.goodbye_mode = True
-        self.update()  # Trigger paintEvent to show "bye" text
+        # Only show goodbye message if LabRecorder is actively recording
+        show_goodbye = self.is_labrecorder_listening()
+        delay_ms = 10 if show_goodbye else 0
 
-        # If in fullscreen, toggle to windowed first, wait 1 sec, then close
+        if show_goodbye:
+            # Enter goodbye mode to display "bye" message
+            self.goodbye_mode = True
+            self.update()  # Trigger paintEvent to show "bye" text
+
+        # If in fullscreen, toggle to windowed first, then close
         # (fullscreen close is buggy on macOS, so bypass by going windowed first)
         if self.status.fullscreen_mode == 1:
             self._toggle_fullscreen()
-            # Delay close by 1 second to let window state settle
-            QTimer.singleShot(1000, self.close)
+            # Delay close to let window state settle (+ goodbye message if needed)
+            QTimer.singleShot(delay_ms + 500, self.close)
         else:
-
-            # Already windowed, delay close by 1 second to show bye message
-
-            QTimer.singleShot(1000, self.close)
+            # delay close to show bye message (if LabRecorder recording)
+            QTimer.singleShot(delay_ms, self.close)
 
     def closeEvent(self, event):
         """Handle window close - exit fullscreen before closing"""
@@ -567,6 +570,20 @@ class MainWindow(QWidget):
             f"Mouse click: X={event.position().x():.1f}, Y={event.position().y():.1f}"
         )
         sys.stdout.flush()
+
+    @staticmethod
+    def is_labrecorder_listening():
+        """Check if LabRecorder process is running (multiplatform via psutil)"""
+        try:
+            import psutil
+
+            # psutil: Works on Windows, macOS, Linux
+            for proc in psutil.process_iter(["name"]):
+                if "LabRecorder" in proc.info["name"]:
+                    return True
+            return False
+        except Exception:
+            return False
 
     def keyPressEvent(self, event):
         """Handle keyboard input using command dispatch"""
