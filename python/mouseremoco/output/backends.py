@@ -175,7 +175,7 @@ class OutputBackend(ABC):
         for value, field in zip(raw_values, DATA_SCHEMA["fields"]):
             decimals = field["rounding"]
             if decimals == 0:
-                formatted.append(int(value) if isinstance(value, bool) else value)
+                formatted.append(value)
             else:
                 formatted.append(round(value, decimals))
 
@@ -395,7 +395,7 @@ class LSLBackend(OutputBackend):
             type="MoCap",
             channel_count=len(DATA_SCHEMA["fields"]),
             nominal_srate=self.lsl.IRREGULAR_RATE,
-            channel_format=self.lsl.cf_float32,
+            channel_format=self.lsl.cf_double64,  # for timestamp accuracy
             source_id="mouseReMoCo",
         )
 
@@ -466,7 +466,7 @@ class LSLBackend(OutputBackend):
         """Push formatted sample to LSL stream"""
         if not self.lsl or not self.data_outlet:
             return
-        # Convert to float for LSL
+        # Convert to float64 for LSL (cf_double64 format ensures exact precision)
         sample = [float(v) for v in formatted]
 
         self.data_outlet.push_sample(sample)
