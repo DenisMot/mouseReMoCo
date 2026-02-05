@@ -5,6 +5,10 @@ Modify these values to customize the application behavior without editing
 multiple files throughout the codebase.
 """
 
+# ===== Software =====
+SOFTWARE_NAME = "mouseReMoCo-Python"
+SOFTWARE_VERSION = "2.0.0"
+
 # ===== Window & Display =====
 WINDOW_TITLE = "Wacom Tablet Test"
 TARGET_MONITOR = 2  # Which monitor to use (1-indexed)

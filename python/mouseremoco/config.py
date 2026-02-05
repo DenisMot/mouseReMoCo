@@ -83,8 +83,8 @@ class Configuration:
         """
 
         # ===== Software =====
-        self.software = "mouseReMoCo-Python"
-        self.version = "2.0.0"
+        self.software = app_config.SOFTWARE_NAME
+        self.version = app_config.SOFTWARE_VERSION
 
         # ===== Window Configuration =====
         self._title = app_config.WINDOW_TITLE
@@ -117,7 +117,8 @@ class Configuration:
         self.circle_perimeter_mm = 0
 
         # ===== Circular task derived values =====
-        # These are calculated in _update_circular_task()
+        # These are calculated in _update_circular_task() based on the current radii
+        # and cursor size and after screen dimensions are set
         self.task_radius = 0.0
         self.tolerance_px = 0
         self.index_of_difficulty = 0.0
@@ -126,19 +127,18 @@ class Configuration:
 
         # ===== Linear Task Parameters =====
         # These are set when switching to linear task
-        self.inter_line_distance_mm = 150
-        self.line_height_mm = 100
-        self.mm2px = 0.0
+        self.inter_line_distance_mm = app_config.INTER_LINE_DISTANCE_MM
+        self.line_height_mm = app_config.LINE_HEIGHT_MM
+        self.mm2px = 0.0  # To be calculated based on screen PPI during setup
 
         # ===== Auditory Rhythm =====
-        self.half_period = 2000
+        self.half_period = app_config.RHYTHM_HALF_PERIOD_MS
 
         # ===== Cursor Configuration =====
         self.cursor_radius = app_config.CURSOR_RADIUS
-        self.cursor_color_record = app_config.CURSOR_COLOR_RECORDING  # RGB red
-        r, g, b = self.cursor_color_record
+        self.cursor_color_record = app_config.CURSOR_COLOR_RECORDING
         self.cursor_color_record_outside = app_config.CURSOR_COLOR_RECORDING_OUTSIDE
-        self.cursor_color_wait = app_config.CURSOR_COLOR_WAITING  # RGB yellow
+        self.cursor_color_wait = app_config.CURSOR_COLOR_WAITING
 
         # ===== Visual Styling =====
         self.border_color = app_config.BORDER_COLOR  # RGB white
@@ -146,20 +146,22 @@ class Configuration:
         self.text_color = app_config.TEXT_COLOR  # RGB white
 
         # ===== Sequence Configuration =====
-        self.auto_start = app_config.AUTO_START_DELAY  # seconds before auto start
-        self.cycle_max_number = app_config.CYCLE_MAX_NUMBER  # Move-Rest cycle number
-        self.cycle_duration = (
-            app_config.CYCLE_DURATION
-        )  # seconds for a Move or Rest (half-cycle)
-        self.is_target_hidden_during_pause = app_config.HIDE_TARGET_DURING_PAUSE
+        # seconds before auto start recording
+        self.auto_start = app_config.AUTO_START_DELAY
+        # Move-Rest cycle number before stopping cycling after last Rest
+        self.cycle_max_number = app_config.CYCLE_MAX_NUMBER
+        # seconds for a Move or a Rest (half-cycle)
+        self.cycle_duration = app_config.CYCLE_DURATION
 
         # ===== Font Configuration =====
         self.font_size = app_config.FONT_SIZE
         self.font_family = app_config.FONT_FAMILY
 
         # ===== Flags =====
-        self.is_with_lsl = False  # Lab Streaming Layer present and enabled (or not)
-        self.is_with_pause_target = False  # Whether to show target during pause (rest)
+        # Lab Streaming Layer present and enabled (or not)
+        self.is_with_lsl = False  # will be set if LSL is successfully initialized
+        # Whether to show target during pause (rest)
+        self.is_target_hidden_during_pause = app_config.HIDE_TARGET_DURING_PAUSE
 
         # ===== Trail Configuration =====
         self.trail_mode = app_config.TRAIL_MODE  # Active trail mode
@@ -175,10 +177,10 @@ class Configuration:
         self.pressure_band_high = None  # derived at runtime
 
         # ===== Output Configuration =====
-        self._output_config: OutputConfiguration | None = (
-            None  # Will be created after center_x, center_y are determined
-        )
+        # Will be created after center_x, center_y are determined
+        self._output_config: OutputConfiguration | None = None
 
+        # ===== Initialize derived values at runtime =====
         # Initialize derived values
         self._update_circular_task()
         self._update_pressure_band()
@@ -190,7 +192,7 @@ class Configuration:
             raise ValueError("to_adapt must be None, 'center', or 'width'")
 
         if to_adapt is None:
-            # Initial calculation, ensure valid values
+            # Initial calculation: just compute low/high based on current center/width
             to_adapt = "center"
 
         center = self.pressure_band_center
