@@ -64,7 +64,10 @@ mouseReMoCo-app/
 |-----|--------|
 | **SPACE** | Toggle record/pause |
 | **C** | Print configuration to console |
-| **Q** | Quit application |
+| **Q** | Quit application (shows goodbye message if LSL recording is active) |
+| **W** / **X** | Increase / Decrease pressure band width (tablet only) |
+| **P** / **M** | Move pressure band center up / down (tablet only) |
+| **S** | Toggle trail smoothing on/off |
 
 ---
 
@@ -73,25 +76,86 @@ mouseReMoCo-app/
 After running the application, two CSV files are generated in the `python/` directory:
 
 ### `data.csv`
-Contains tablet/mouse position and pressure data:
-- `event_timestamp` - Hardware event timestamp (ms, with epoch 0 at Jan 1, 1970).
-- `call_time` - System time when handler was called (ms, with epoch 0 at system start)
-- `mouseX`, `mouseY` - Cursor position (sub-pixel precision)
+Contains tablet/mouse timestamps with position and pressure data:
+- `event_timestamp` - Hardware event timestamp (ms, with epoch 0 unknown, maybe system start)
+- `unix_timestamp` - System time when event handler was called (ms, with epoch 0 at Jan 1, 1970)
+- `mouseX`, `mouseY` - Cursor position (sub-pixel precision, pixels)
 - `mouseInTarget` - 1 if inside tolerance band, 0 otherwise
-- `pressure` - Stylus pressure (0.0-1.0)
-- `tiltX`, `tiltY` - Stylus tilt angles (-60° to +60°)
+- `pressure` - Stylus pressure (0.0-1.0 normalized)
+- `tiltX`, `tiltY` - Stylus tilt angles (degrees, -60° to +60°)
 
 IMPORTANT NOTES: 
 - `pressure`, `tiltX`, and `tiltY` are 0 when using mouse input.
-- `event_timestamp` is standard UNIX time; use it for synchronization across devices.
-- `call_time` it the exact time stamp of mouse-tablet interaction: use it for all analyses. 
-- Sampling rate varies based on hardware and system load: it is NOT constant.
+- `event_timestamp` - Hardware timestamp from tablet/mouse event (most accurate for analysis)
+- `unix_timestamp` - System time when handler was called (use for synchronization with external devices)
+- Sampling rate varies based on hardware and system load: **sampling is NOT constant**.
 
 ### `marker.csv`
 Contains event markers for experiment synchronization:
-- `timestamp` - Human-readable timestamp
-- `milliseconds` - Epoch milliseconds (for automated sync)
+- `timestamp` - Human-readable ISO8601 timestamp with millisecond precision
+- `unix_timestamp` - UNIX epoch time in milliseconds (since Jan 1, 1970, 00:00:00 UTC)
 - `marker` - Event description (e.g., "RecordingStarted", "TabletDetected")
+
+### Shared Metadata
+Both `data.csv` and `marker.csv` include the same metadata in their first two lines:
+1. **Configuration String** - A JSON string of the current configuration settings (e.g., cursor radius, target size)
+2. **Session Start Timestamp** - ISO8601 timestamp of when the session started (same for both files)
+
+This metadata allows you to **link the data and marker files together** and understand the experimental conditions under which the data was collected.
+
+---
+
+## Lab Streaming Layer (LSL) Output (Optional)
+
+Lab Streaming Layer (LSL) enables **real-time streaming** of mouse/tablet data to external applications like LabRecorder, enabling synchronized multi-device recording.
+
+### Prerequisites
+
+LSL is **optional**. To use it:
+
+1. Install pylsl:
+   ```bash
+   pip install pylsl
+   ```
+
+2. Download and install **LabRecorder** from [LSL documentation](https://labstreaminglayer.readthedocs.io/)
+
+### Enable LSL
+
+Edit `mouseremoco/app_config.py`to change the `ENABLE_LSL` flag to `True`:
+```python
+ENABLE_LSL = True
+```
+
+### How LSL Works
+
+When enabled, mouseReMoCo broadcasts three LSL streams:
+
+| Stream | Type | Purpose |
+|--------|------|---------|
+| **MouseData** | double64 | timestamps, position, pressure and tilt |
+| **MouseMarkers** | String | Event markers |
+| **MouseMarkersNumeric** | Integer | Numeric markers for sync (for future use) |
+
+**Data precision:** Uses double64 format for exact timestamp accuracy (avoids float32 rounding errors).
+
+### Recording with LabRecorder
+
+1. Start LabRecorder (available before or after mouseReMoCo)
+2. LabRecorder automatically discovers the three streams
+3. Select them for recording
+4. Click "Start Recording"
+5. Run mouseReMoCo normally
+6. Close mouseReMoCo (shows reminder if LabRecorder is recording)
+7. Stop LabRecorder → generates `.xdf` file with synchronized data
+
+### LSL Metadata
+
+All streams include the same metadata found in *.csv file header:
+
+- **configuration_str** - Configuration settings (same as first line of `data.csv`)
+- **timestamp_str** - ISO8601 session start time (same as second line of `data.csv`)
+
 
 ---
 
@@ -106,6 +170,7 @@ python/
 │
 ├── mouseremoco/                      ← Python package
 │   ├── __init__.py
+│   ├── app_config.py                 ← Centralized configuration (edit this!)
 │   ├── config.py                     ← Configuration classes
 │   ├── screen.py                     ← Screen & tablet detection
 │   ├── types.py                      ← Lightweight shared types (`AppStatus`)
@@ -133,16 +198,43 @@ python/
 
 ## Configuration
 
-Edit `main.py` before `create_and_display()` to customize:
+All startup parameters are centralized in **`mouseremoco/app_config.py`**. This is the single source of truth for:
+
+- **Window & Display**: Screen dimensions, refresh rate, background color
+- **Circular Task**: Target radius, center position, tolerance band
+- **Visual Styling**: Colors, fonts, cursor sizes, trail modes
+- **Recording**: CSV and LSL backend activation
+- **Tablet Input**: Pressure band settings, tilt limits
+
+### Quick Start - Modify Parameters
+
+Edit `mouseremoco/app_config.py` before running:
 
 ```python
-# Customize before window setup
-window_setup.update_configuration(
-#    cursor_radius=20,              # Change cursor size
-#    external_radius=200,           # Change target size
-#    trail_length=500,              # Trail length (pixels)
-)
+# Example: Change target size and enable LSL
+EXTERNAL_RADIUS = 150      # Target circle radius (pixels)
+INTERNAL_RADIUS = 80       # Inner band radius (pixels)
+ENABLE_CSV = True          # Record to CSV files
+ENABLE_LSL = True          # Stream to LabRecorder
 ```
+
+Then run the application:
+```bash
+python main.py
+```
+
+### Common Customizations
+
+| Parameter | Purpose | Example |
+|-----------|---------|---------|
+| `EXTERNAL_RADIUS` | Target circle size | `200` |
+| `INTERNAL_RADIUS` | Tolerance band size | `100` |
+| `ENABLE_CSV` | Write data.csv, marker.csv | `True` |
+| `ENABLE_LSL` | Stream via Lab Streaming Layer | `True` |
+| `PRESSURE_BAND_CENTER` | Tablet pressure threshold | `0.5` |
+| `PRESSURE_BAND_WIDTH` | Pressure band range | `0.4` |
+
+All parameters have sensible defaults. Changes take effect immediately on restart—no build required.
 
 ---
 

@@ -314,7 +314,7 @@ class CSVBackend(OutputBackend):
         self.marker_file.write("\n")
 
         # Write marker column headers
-        self.marker_writer.writerow(["timestamp", "milliseconds", "marker"])
+        self.marker_writer.writerow(["timestamp", "unix_timestamp", "marker"])
         self.marker_file.flush()
 
         print(f"✓ CSV Backend: Created {self.data_filename} and {self.marker_filename}")
@@ -334,14 +334,14 @@ class CSVBackend(OutputBackend):
                 return
 
             current_time = datetime.now()
-            # millisecond accuracy for humans and machines
-            timestamp_ms = int(current_time.timestamp() * 1000)
+            # UNIX epoch time in milliseconds for automated sync
+            unix_timestamp_ms = int(current_time.timestamp() * 1000)
             timestamp_str = current_time.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
             self.marker_writer.writerow(
                 [
-                    timestamp_str,  # Human-readable for manual log inspection
-                    timestamp_ms,  # Epoch ms for automated sync
+                    timestamp_str,  # Human-readable ISO8601 for manual log inspection
+                    unix_timestamp_ms,  # UNIX epoch ms for automated sync
                     marker_text,
                 ]
             )
