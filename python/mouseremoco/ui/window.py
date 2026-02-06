@@ -248,6 +248,20 @@ class MainWindow(QWidget):
         painter.drawText(x - shift_x, y + center_px + shift_y, f"{center:.2f}")
         painter.drawText(x - shift_x, y + low_px + shift_y + text_h, f"{low:.2f}")
 
+        # Draw current pressure indicator line
+        current_pressure = self.trail.current_pressure
+        current_px = int((1.0 - current_pressure) * gauge_height)
+
+        # Draw thick cyan line showing current position
+        painter.setPen(QPen(QColor(0, 255, 255), 3))  # Cyan, 3px thick
+        painter.drawLine(x - 5, y + current_px, x + gauge_width + 5, y + current_px)
+
+        # Add numeric label near the line
+        painter.setPen(QColor(0, 255, 255))
+        painter.drawText(
+            x + gauge_width + 10, y + current_px - 5, f"{current_pressure:.2f}"
+        )
+
         # Restore painter state
         painter.restore()
 
