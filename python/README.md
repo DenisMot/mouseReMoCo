@@ -10,11 +10,11 @@ This is a Python/PyQt6 (incomplete) version of the original Java application wit
 
 ## Quick Start
 
-### 1. Clone Repository
+### 1. Clone repository and setup conda environment
 
 - Manually create a directory named `mouseReMoCo-app` 
 - Open a terminal and move in `mouseReMoCo-app` 
-- Run 
+- Run the following commands:
 ```bash
     git clone --branch python-app --single-branch --depth 1 https://github.com/DenisMot/mouseReMoCo.git 
 ```
@@ -27,14 +27,15 @@ mouseReMoCo-app/
         └── main.py               ← Entry point
 ```
 
-### 2. Setup Environment (Conda)
-
-Create and activate a conda environment:
+- Move the terminal in `mouseReMoCo-app/python/` where the `environment.yml` file is located
+- Run the following commands:
 
 ```bash
     conda env create -f environment.yml
     conda activate mouseremoco
 ```
+
+- Move the terminal back to `mouseReMoCo-app` where you want the output files to be generated. 
 
 
 ### 3. Run Application
@@ -42,7 +43,11 @@ Create and activate a conda environment:
 - Open a terminal and move in `mouseReMoCo-app` 
 - Run the application: 
 ```bash
-    python mouseReMoCo/main.py
+    python mouseReMoCo/python/main.py
+```
+NB: for windows, path is with backslashes:
+```bash
+    python mouseReMoCo\python\main.py
 ```
 
 The `data.csv` and `marker.csv` files will be created in the `mouseReMoCo-app` directory after running the application, rendering the following structure:
@@ -51,7 +56,7 @@ The `data.csv` and `marker.csv` files will be created in the `mouseReMoCo-app` d
 mouseReMoCo-app/
 ├── data.csv                      ← Generated data (runtime)
 ├── marker.csv                    ← Generated markers (runtime)
-└── mouseremoco/
+└── mouseReMoCo/
     └── python/                   ← Python package
         └── main.py               ← Entry point
 ```
@@ -65,9 +70,11 @@ mouseReMoCo-app/
 | **SPACE** | Toggle record/pause |
 | **C** | Print configuration to console |
 | **Q** | Quit application (shows goodbye message if LSL recording is active) |
-| **W** / **X** | Increase / Decrease pressure band width (tablet only) |
-| **P** / **M** | Move pressure band center up / down (tablet only) |
+| **← / →** | Decrease / Increase pressure band width |
+| **↓ / ↑** | Decrease / Increase pressure band center |
 | **S** | Toggle trail smoothing on/off |
+
+**Note:** Pressure band adjustment requires a tablet to be detected (first stylus press activates).
 
 ---
 
@@ -198,7 +205,7 @@ python/
 
 ## Configuration
 
-All startup parameters are centralized in **`mouseremoco/app_config.py`**. This is the single source of truth for:
+All startup parameters are centralized in **`mouseremoco/app_config.py`** for easy modification without digging through code. This includes:
 
 - **Window & Display**: Screen dimensions, refresh rate, background color
 - **Circular Task**: Target radius, center position, tolerance band
@@ -211,24 +218,15 @@ All startup parameters are centralized in **`mouseremoco/app_config.py`**. This 
 Edit `mouseremoco/app_config.py` before running:
 
 ```python
-# Example: Change target size and enable LSL
-EXTERNAL_RADIUS = 150      # Target circle radius (pixels)
-INTERNAL_RADIUS = 80       # Inner band radius (pixels)
+# Example: enable CSV only
 ENABLE_CSV = True          # Record to CSV files
-ENABLE_LSL = True          # Stream to LabRecorder
-```
-
-Then run the application:
-```bash
-python main.py
+ENABLE_LSL = False         # Stream to LabRecorder or other LSL receivers
 ```
 
 ### Common Customizations
 
 | Parameter | Purpose | Example |
 |-----------|---------|---------|
-| `EXTERNAL_RADIUS` | Target circle size | `200` |
-| `INTERNAL_RADIUS` | Tolerance band size | `100` |
 | `ENABLE_CSV` | Write data.csv, marker.csv | `True` |
 | `ENABLE_LSL` | Stream via Lab Streaming Layer | `True` |
 | `PRESSURE_BAND_CENTER` | Tablet pressure threshold | `0.5` |
@@ -273,9 +271,9 @@ Check console output for tablet detection status.
 
 ## Dependencies
 
-- **PyQt6** - Cross-platform GUI framework
-- **numpy** - Numerical operations 
-
+- **PyQt6** - Cross-platform GUI framework 
+- **pylsl** - Lab Streaming Layer for real-time data streaming
+- **psutil** - System monitoring
 
 ---
 
@@ -312,4 +310,6 @@ For issues, questions, or suggestions:
 
 ---
 
-**Last updated:** January 28, 2026
+# Acknowledgements
+- Thanks to the open-source community for libraries and tools used in this project
+- Thanks to Copilot for code suggestions and documentation help!
