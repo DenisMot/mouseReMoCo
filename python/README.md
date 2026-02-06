@@ -12,13 +12,14 @@ This is a Python/PyQt6 (incomplete) version of the original Java application wit
 
 ### 1. Clone repository and setup conda environment
 
-- Manually create a directory named `mouseReMoCo-app` 
-- Open a terminal and move in `mouseReMoCo-app` 
-- Run the following commands:
+1. Manually create a directory named `mouseReMoCo-app` 
+2. Open a terminal and move in `mouseReMoCo-app` 
+3. Run the following commands:
 ```bash
     git clone --branch python-app --single-branch --depth 1 https://github.com/DenisMot/mouseReMoCo.git 
 ```
-- You now have a copy of the `mouseReMoCo`repository in `mouseReMoCo-app`.
+
+You now have a copy of the `mouseReMoCo`repository in `mouseReMoCo-app`.
 
 ```
 mouseReMoCo-app/
@@ -27,28 +28,29 @@ mouseReMoCo-app/
         └── main.py               ← Entry point
 ```
 
-- Move the terminal in `mouseReMoCo-app/python/` where the `environment.yml` file is located
-- Run the following commands:
+4. Move the terminal in `mouseReMoCo/python/` where the `environment.yml` file is located
+5. Run the following commands:
 
 ```bash
     conda env create -f environment.yml
     conda activate mouseremoco
 ```
 
-- Move the terminal back to `mouseReMoCo-app` where you want the output files to be generated. 
-
+You now have the `mouseremoco` conda environment set up with all dependencies installed.
 
 ### 3. Run Application
 
-- Open a terminal and move in `mouseReMoCo-app` 
-- Run the application: 
+1. Open a terminal and move in `mouseReMoCo-app`
+2. Run the application: 
+- For macOS/Linux: 
 ```bash
     python mouseReMoCo/python/main.py
 ```
-NB: for windows, path is with backslashes:
+- For windows (path is with backslashes):
 ```bash
     python mouseReMoCo\python\main.py
 ```
+
 
 The `data.csv` and `marker.csv` files will be created in the `mouseReMoCo-app` directory after running the application, rendering the following structure:
 
@@ -60,6 +62,56 @@ mouseReMoCo-app/
     └── python/                   ← Python package
         └── main.py               ← Entry point
 ```
+
+---
+
+## Advanced: Run from a Different Data Directory
+
+You can place the launcher in any directory (e.g., experiment folder), and all output files will save there automatically. The launcher is already configured for your repository, but you need to edit the `REPO_DIR` path in the launcher script.
+
+### Step by step usage:
+
+1. Copy `mouseremoco.command` (macOS) or `mouseremoco.bat` (Windows) from the repository to your desired data directory (e.g., `Desktop/Experiment_1/`)
+2. Double click the launcher to run the application
+3. Data files (`data.csv` and `marker.csv`) will be generated in the same directory as the launcher
+
+
+### Example: Setting up Multiple Experiments
+
+```
+Desktop/
+├── Experiment_1/
+│   ├── mouseremoco.command    ← Copy with REPO_DIR edited
+│   ├── data.csv               ← Generated here
+│   └── marker.csv             ← Generated here
+├── Experiment_2/
+│   ├── mouseremoco.command    ← Separate copy
+│   ├── data.csv
+│   └── marker.csv
+```
+
+Each folder keeps its own data organized and independent.
+
+### Automatic Data Archiving
+
+When using the launcher scripts (`.command`, `.sh`, or `.bat`), the application **automatically archives your data files** with a timestamp when it closes:
+
+- Original files: `data.csv`, `marker.csv` (overwritten on next run)
+- Archived files: `data_2025-02-06_14-30-45.csv`, `marker_2025-02-06_14-30-45.csv` (preserved with timestamp)
+
+**Example directory after 2 experiments:**
+```
+Experiment_1/
+├── mouseremoco.command
+├── data.csv                          ← Current session (will be overwritten)
+├── marker.csv                        ← Current session (will be overwritten)
+├── data_2025-02-06_14-30-45.csv     ← Archived from first run
+├── marker_2025-02-06_14-30-45.csv   ← Archived from first run
+├── data_2025-02-06_15-15-20.csv     ← Archived from second run
+└── marker_2025-02-06_15-15-20.csv   ← Archived from second run
+```
+
+This ensures you never lose data between sessions—all your experiments are automatically preserved with unique timestamps.
 
 ---
 
@@ -113,20 +165,13 @@ This metadata allows you to **link the data and marker files together** and unde
 
 ---
 
-## Lab Streaming Layer (LSL) Output (Optional)
+## Lab Streaming Layer (LSL) Output
 
 Lab Streaming Layer (LSL) enables **real-time streaming** of mouse/tablet data to external applications like LabRecorder, enabling synchronized multi-device recording.
 
 ### Prerequisites
 
-LSL is **optional**. To use it:
-
-1. Install pylsl:
-   ```bash
-   pip install pylsl
-   ```
-
-2. Download and install **LabRecorder** from [LSL documentation](https://labstreaminglayer.readthedocs.io/)
+LSL is **optional**. To use it, you have to download and install **LabRecorder** from [LSL documentation](https://labstreaminglayer.readthedocs.io/). 
 
 ### Enable LSL
 
@@ -153,9 +198,9 @@ When enabled, mouseReMoCo broadcasts three LSL streams:
 2. LabRecorder automatically discovers the three streams
 3. Select them for recording
 4. Click "Start Recording"
-5. Run mouseReMoCo normally
-6. Close mouseReMoCo (shows reminder if LabRecorder is recording)
-7. Stop LabRecorder → generates `.xdf` file with synchronized data
+5. Run mouseReMoCo and perform your task
+6. Click "Stop Recording" in LabRecorder → generates `.xdf` file with synchronized data
+7. Close mouseReMoCo 
 
 ### LSL Metadata
 
