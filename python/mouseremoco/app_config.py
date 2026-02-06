@@ -5,6 +5,8 @@ Modify these values to customize the application behavior without editing
 multiple files throughout the codebase.
 """
 
+from PyQt6.QtCore import Qt
+
 # ===== Software =====
 SOFTWARE_NAME = "mouseReMoCo-Python"
 SOFTWARE_VERSION = "2.0.0"
@@ -57,6 +59,20 @@ RHYTHM_HALF_PERIOD_MS = 2000  # milliseconds for auditory rhythm half-period
 # ===== Linear Task Parameters (for future use) =====
 INTER_LINE_DISTANCE_MM = 150
 LINE_HEIGHT_MM = 100
+
+# ===== Keyboard Controls =====
+# Unified command dispatch mapping using Qt.Key enum for all keys
+# Provides consistent, type-safe key binding configuration
+KEY_COMMANDS = {
+    Qt.Key.Key_Q: "_quit_application",
+    Qt.Key.Key_C: "_print_config",
+    Qt.Key.Key_Space: "_toggle_recording",
+    Qt.Key.Key_S: "_toggle_smoothing",
+    Qt.Key.Key_Up: "_increase_band_center",
+    Qt.Key.Key_Down: "_decrease_band_center",
+    Qt.Key.Key_Right: "_increase_band_width",
+    Qt.Key.Key_Left: "_decrease_band_width",
+}
 
 
 # ===== Derived Colors (computed from recording color) =====

@@ -12,6 +12,7 @@ from .trail import Trail
 from ..input.capture import DataCapture
 from ..types import AppStatus
 from ..geometry import is_inside as geom_is_inside
+from .. import app_config
 
 
 class MainWindow(QWidget):
@@ -21,19 +22,8 @@ class MainWindow(QWidget):
     # Dynamically built to stay in sync if Trail.VALID_MODES changes
     TRAIL_MODES = {str(i + 1): mode for i, mode in enumerate(Trail.VALID_MODES)}
 
-    # Command dispatch mapping for keyboard shortcuts
-    KEY_COMMANDS = {
-        "q": "_quit_application",
-        "c": "_print_config",
-        " ": "_toggle_recording",
-        "w": "_increase_band_width",
-        "x": "_decrease_band_width",
-        "p": "_increase_band_center",
-        "m": "_decrease_band_center",
-        "s": "_toggle_smoothing",
-        # 'f': '_toggle_fullscreen', # only for testing:
-        # !!! screen size must not change during task !!!
-    }
+    # Import unified keyboard commands from app_config
+    KEY_COMMANDS = app_config.KEY_COMMANDS
 
     def __init__(
         self,
@@ -161,17 +151,6 @@ class MainWindow(QWidget):
     def _draw_mode_indicator(self, painter: QPainter):
         """Draw current trail mode and recording status in corner"""
 
-        # Pressure band info
-        center = getattr(self.config, "pressure_band_center", 0.5)
-        width = getattr(self.config, "pressure_band_width", 0.4)
-        # low = max(0.0, center - width / 2)
-        # high = min(1.0, center + width / 2)q
-
-        low = center - width / 2
-        high = center + width / 2
-        # allow display of out-of-bounds values for debugging
-        band_text = f"{center:.2f}|{width/2:.2f} [{low:.2f} , {high:.2f}]"
-
         # Draw texts in top-left corner with some margin
         margin = 10
         self._draw_string_in_corner(
@@ -193,16 +172,81 @@ class MainWindow(QWidget):
                 Qt.GlobalColor.green if self.status.is_recording else Qt.GlobalColor.red
             ),
         )
-        # Show pressure band info only when a tablet has been detected
+
+        # Show pressure band gauge on the right side when a tablet has been detected
         if True:  # getattr(self.status, "tablet_detected", False):
-            self._draw_string_in_corner(
-                painter,
-                band_text,
-                x=margin,
-                y=margin + 40,
-                corner="top-left",
-                color=QColor(Qt.GlobalColor.white),
-            )
+            self._draw_pressure_band_gauge_vertical(painter)
+
+    def _draw_pressure_band_gauge_vertical(self, painter: QPainter):
+        """Draw vertical color gauge for pressure band on the right side.
+
+        Shows red-green-red zones vertically where:
+        - Red (top): pressure above valid band (high to 1.0)
+        - Green (middle): pressure inside valid band (low to high)
+        - Red (bottom): pressure below valid band (0.0 to low)
+        - White line: center of band
+
+        Args:
+            painter: QPainter instance
+        """
+        center = getattr(self.config, "pressure_band_center", 0.5)
+        width = getattr(self.config, "pressure_band_width", 0.4)
+        low = center - width / 2
+        high = center + width / 2
+
+        gauge_height = 300  # pixels
+        gauge_width = 10  # pixels
+        margin = 20
+
+        # Position on right side
+        x = self.width() - gauge_width - margin
+        y = (self.height() - gauge_height) // 2
+
+        # Calculate pixel positions (inverted: top=1.0, bottom=0.0)
+        low_px = int((1.0 - low) * gauge_height)  # Distance from top
+        high_px = int((1.0 - high) * gauge_height)  # Distance from top
+        center_px = int((1.0 - center) * gauge_height)  # Distance from top
+
+        # Save painter state
+        painter.save()
+
+        # Draw red zone (above band) - top part
+        painter.setBrush(QColor(200, 50, 50))
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.drawRect(x, y, gauge_width, high_px)
+
+        # Draw green zone (band) - middle part
+        painter.setBrush(QColor(50, 200, 50))
+        painter.drawRect(x, y + high_px, gauge_width, low_px - high_px)
+
+        # Draw red zone (below band) - bottom part
+        painter.setBrush(QColor(200, 50, 50))
+        painter.drawRect(x, y + low_px, gauge_width, gauge_height - low_px)
+
+        # Draw center marker (white horizontal line)
+        painter.setPen(QPen(QColor(Qt.GlobalColor.white), 1))
+        painter.drawLine(x, y + center_px, x + gauge_width, y + center_px)
+
+        # Draw labels on the left (facing window center)
+        font = QFont()
+        font.setPointSize(7)
+        painter.setFont(font)
+        painter.setPen(QColor(Qt.GlobalColor.white))
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+
+        # Center value label (on the left, vertically centered with white line)
+        metrics = QFontMetrics(font)
+        text_h = metrics.height()
+        text_w = metrics.horizontalAdvance(f"{center:.2f}")
+        shift_x = text_w + 5  # space between text and gauge
+        shift_y = text_h // 2
+
+        painter.drawText(x - shift_x, y + high_px + shift_y - text_h, f"{high:.2f}")
+        painter.drawText(x - shift_x, y + center_px + shift_y, f"{center:.2f}")
+        painter.drawText(x - shift_x, y + low_px + shift_y + text_h, f"{low:.2f}")
+
+        # Restore painter state
+        painter.restore()
 
     def _draw_goodbye_message(self, painter: QPainter):
         """Draw 'bye' message centered in the window - only if LSL is activated"""
@@ -378,10 +422,10 @@ class MainWindow(QWidget):
             f"Press C: Print Configuration\n"
             f"Press Q: Quit\n"
             f"Press SPACE: Toggle Record/Pause\n"
-            f"Press W / X: Increase / Decrease pressure-band WIDTH\n"
-            f"Press P / M: Move pressure-band CENTER up / down (tablet only)\n"
+            f"Press ← / →: Decrease / Increase pressure-band WIDTH\n"
+            f"Press ↓ / ↑: Decrease / Increase pressure-band CENTER\n"
             f"Press S: Toggle visual smoothing ON/OFF\n"
-            f"HUD: Band info shown only when a tablet is detected\n"
+            f"HUD: Pressure band gauge shown on right side\n"
             f"Note: Changes are immediate and not saved to disk\n"
             f"{'='*60}\n"
         )
@@ -573,14 +617,9 @@ class MainWindow(QWidget):
 
     def keyPressEvent(self, event):
         """Handle keyboard input using command dispatch"""
-        key = event.text()
+        # Look up handler by Qt.Key enum (unified approach)
+        handler_name = self.KEY_COMMANDS.get(event.key())
 
-        # Look up handler method name from KEY_COMMANDS dictionary
-        # Use original key for space, lowercased for letter keys
-        lookup_key = key if key == " " else key.lower()
-        handler_name = self.KEY_COMMANDS.get(lookup_key)
-
-        # Execute handler if found
         if handler_name:
             handler = getattr(self, handler_name, None)
             if handler:
