@@ -170,7 +170,7 @@ class MainWindow(QWidget):
         low = center - width / 2
         high = center + width / 2
         # allow display of out-of-bounds values for debugging
-        band_text = f"{center:.2f}+/-{width/2:.2f} [{low:.2f} , {high:.2f}]"
+        band_text = f"{center:.2f}|{width/2:.2f} [{low:.2f} , {high:.2f}]"
 
         # Draw texts in top-left corner with some margin
         margin = 10
@@ -194,7 +194,7 @@ class MainWindow(QWidget):
             ),
         )
         # Show pressure band info only when a tablet has been detected
-        if getattr(self.status, "tablet_detected", False):
+        if True:  # getattr(self.status, "tablet_detected", False):
             self._draw_string_in_corner(
                 painter,
                 band_text,
@@ -295,57 +295,43 @@ class MainWindow(QWidget):
             self._print_status("✓ Fullscreen Mode Changed", "Switched to WINDOWED mode")
 
     # --- Pressure band adjustment handlers ---
-    def _increase_band_width(self):
-        if not getattr(self.status, "tablet_detected", False):
-            self._print_status(
-                "Pressure band inactive",
-                "No tablet detected — band controls disabled.",
-            )
-            return
+    def _adjust_pressure_band(self, attr_name: str, delta: float, update_type: str):
+        """Adjust pressure band (center or width) with tablet detection check.
 
-        self.config.pressure_band_width += 0.02
-        self.config._update_pressure_band("width")
-        self._print_status(f"Band width={self.config.pressure_band_width:.2f}", "")
+        Args:
+            attr_name: "pressure_band_center" or "pressure_band_width"
+            delta: adjustment amount (+0.02 or -0.02)
+            update_type: "center" or "width" for _update_pressure_band()
+        """
+        # if not getattr(self.status, "tablet_detected", False):
+        #     self._print_status(
+        #         "Pressure band inactive",
+        #         "No tablet detected — band controls disabled.",
+        #     )
+        #     return
+
+        # Adjust the attribute
+        current = getattr(self.config, attr_name)
+        setattr(self.config, attr_name, current + delta)
+
+        # Update and display
+        self.config._update_pressure_band(update_type)
+        new_value = getattr(self.config, attr_name)
+        label = "Band width" if update_type == "width" else "Band center"
+        self._print_status(f"{label}={new_value:.2f}", "")
         self.update()
+
+    def _increase_band_width(self):
+        self._adjust_pressure_band("pressure_band_width", 0.01, "width")
 
     def _decrease_band_width(self):
-        if not getattr(self.status, "tablet_detected", False):
-            self._print_status(
-                "Pressure band inactive",
-                "No tablet detected — band controls disabled.",
-            )
-            return
-
-        self.config.pressure_band_width -= 0.02
-        self.config._update_pressure_band("width")
-        self._print_status(f"Band width={self.config.pressure_band_width:.2f}", "")
-        self.update()
+        self._adjust_pressure_band("pressure_band_width", -0.01, "width")
 
     def _increase_band_center(self):
-        if not getattr(self.status, "tablet_detected", False):
-            self._print_status(
-                "Pressure band inactive",
-                "No tablet detected — band controls disabled.",
-            )
-            return
-
-        self.config.pressure_band_center += 0.02
-        self.config._update_pressure_band("center")
-        self._print_status(f"Band center={self.config.pressure_band_center:.2f}", "")
-        self.update()
+        self._adjust_pressure_band("pressure_band_center", 0.01, "center")
 
     def _decrease_band_center(self):
-        if not getattr(self.status, "tablet_detected", False):
-            self._print_status(
-                "Pressure band inactive",
-                "No tablet detected — band controls disabled.",
-            )
-            return
-
-        self.config.pressure_band_center -= 0.02
-        self.config._update_pressure_band("center")
-        self._print_status(f"Band center={self.config.pressure_band_center:.2f}", "")
-        self.update()
+        self._adjust_pressure_band("pressure_band_center", -0.01, "center")
 
     def _toggle_smoothing(self):
         """Toggle visual-only smoothing for the trail"""
