@@ -68,6 +68,7 @@ KEY_COMMANDS = {
     Qt.Key.Key_C: "_print_config",
     Qt.Key.Key_Space: "_toggle_recording",
     Qt.Key.Key_S: "_toggle_smoothing",
+    Qt.Key.Key_G: "_toggle_pressure_gauge_visibility",
     Qt.Key.Key_Up: "_increase_band_center",
     Qt.Key.Key_Down: "_decrease_band_center",
     Qt.Key.Key_Right: "_increase_band_width",

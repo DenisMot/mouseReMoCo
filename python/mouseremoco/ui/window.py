@@ -64,6 +64,9 @@ class MainWindow(QWidget):
         # Flag to track goodbye mode (showing "bye" message before exit)
         self.goodbye_mode = False
 
+        # Flag to track pressure gauge visibility
+        self.show_pressure_gauge = True
+
         # Enable mouse tracking to receive mouseMoveEvent even when no button is pressed
         self.setMouseTracking(True)
         self.setFocus()
@@ -173,8 +176,8 @@ class MainWindow(QWidget):
             ),
         )
 
-        # Show pressure band gauge on the right side when a tablet has been detected
-        if True:  # getattr(self.status, "tablet_detected", False):
+        # Show pressure band gauge on the right side when visible
+        if self.show_pressure_gauge:
             self._draw_pressure_band_gauge_vertical(painter)
 
     def _draw_pressure_band_gauge_vertical(self, painter: QPainter):
@@ -410,6 +413,13 @@ class MainWindow(QWidget):
 
         self.setFocus()
 
+    def _toggle_pressure_gauge_visibility(self):
+        """Toggle pressure gauge HUD visibility"""
+        self.show_pressure_gauge = not self.show_pressure_gauge
+        state = "ON" if self.show_pressure_gauge else "OFF"
+        self._print_status(f"Pressure gauge visibility: {state}")
+        self.update()
+
     def _print_tablet_detected(self):
         """Print tablet detection confirmation"""
         self._print_status("✓ Tablet detected and active!")
@@ -425,7 +435,7 @@ class MainWindow(QWidget):
             f"Press ← / →: Decrease / Increase pressure-band WIDTH\n"
             f"Press ↓ / ↑: Decrease / Increase pressure-band CENTER\n"
             f"Press S: Toggle visual smoothing ON/OFF\n"
-            f"HUD: Pressure band gauge shown on right side\n"
+            f"Press G: Toggle pressure band gauge visibility ON/OFF\n"
             f"Note: Changes are immediate and not saved to disk\n"
             f"{'='*60}\n"
         )

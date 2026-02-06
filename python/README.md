@@ -73,6 +73,7 @@ mouseReMoCo-app/
 | **← / →** | Decrease / Increase pressure band width |
 | **↓ / ↑** | Decrease / Increase pressure band center |
 | **S** | Toggle trail smoothing on/off |
+| **G** | Toggle pressure band gauge visibility on/off |
 
 **Note:** Pressure band adjustment requires a tablet to be detected (first stylus press activates).
 
