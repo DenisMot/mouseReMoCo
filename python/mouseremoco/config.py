@@ -53,6 +53,16 @@ class OutputConfiguration:
         y_out = self.origin_y - y  # Use origin_y, not center_y
         return x_out, y_out
 
+    def to_string(self) -> str:
+        """Generate output configuration string representation"""
+
+        # print all configuration parameters
+        parts = []
+        for key, value in self.config.__dict__.items():
+            parts.append(f"{key}: {value}")
+
+        return "\n".join(parts)
+
 
 class Configuration:
     """
