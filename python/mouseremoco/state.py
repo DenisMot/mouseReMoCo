@@ -164,12 +164,23 @@ class WindowSetup:
         self.widget.update()
 
     def finalize_display(self):
-        """Step 9: Finalize window display and print configuration"""
+        """Step 9: Finalize window display"""
 
         # Create OutputConfiguration after center is determined
         self.config._output_config = OutputConfiguration(self.config)
 
-        # Create OutputData NOW = with the corrected configuration
+        # DON'T create backends here anymore
+        # Just assign widget references
+        if self.widget is None:
+            raise RuntimeError("Widget must be created before finalize_display()")
+
+        # Bring window to front and focus
+        self.widget.raise_()
+        self.widget.setFocus()
+
+    def initialize_backends(self):
+        """Create output backends with finalized configuration"""
+        # Create OutputData NOW = with the final configuration
         self.output_data = OutputTablet(
             config=self.config,
             app_status=self.app_status,
@@ -178,26 +189,17 @@ class WindowSetup:
             enable_lsl=app_config.ENABLE_LSL,
         )
 
-        # Update is_with_lsl based on whether LSL backend was successfully added
+        # Update is_with_lsl based on LSL backend availability
         self.config.is_with_lsl = any(
             backend.__class__.__name__ == "LSLBackend"
             for backend in self.output_data.backends
         )
 
-        # Assign output_data to widget and its trail
+        # Assign output_data to widget and trail
         if self.widget is None:
-            raise RuntimeError("Widget must be created before finalize_display()")
+            raise RuntimeError("Widget must be created before initialize_backends()")
         self.widget.output_data = self.output_data
         self.widget.trail.output_data = self.output_data
-
-        # Bring window to front and focus
-        self.widget.raise_()
-        self.widget.setFocus()
-
-        # Display the final configuration
-        print("\n" + "=" * 60)
-        print(self.config.to_string())
-        print("=" * 60 + "\n")
 
     def update_configuration(self, **kwargs):
         """Update configuration parameters and refresh the display.
@@ -229,6 +231,15 @@ class WindowSetup:
         # Update circular task derived values
         self.config._update_circular_task()
 
+        # Recreate OutputConfiguration with updated config
+        if self.config._output_config:
+            self.config._output_config = OutputConfiguration(self.config)
+
+            # Update all backends with new output_config
+            if self.output_data:
+                for backend in self.output_data.backends:
+                    backend.output_config = self.config._output_config
+
         # Recreate circle config with updated radii if needed
         corrected_circle_config = CircularTaskConfig(
             external_radius=self.config.external_radius,
@@ -246,11 +257,61 @@ class WindowSetup:
         )
         self.widget.update()
 
-    def create_and_display(self):
-        """Execute the complete setup pipeline"""
+        # Print configuration
+        print("\n" + "=" * 60)
+        print("Configuration:")
+        print(self.config.to_string())
+        print("=" * 60 + "\n")
+        if self.config._output_config:
+            print("Output Configuration:")
+            print(self.config._output_config.to_string())
+            print("=" * 60 + "\n")
+
+    def setup_and_run(self, config_updates: dict | None = None):
+        """Complete initialization workflow from startup to ready-to-run.
+
+        Steps:
+            1. Detect screens and calculate dimensions
+            2. Create window widget
+            3. Measure actual drawable area
+            4. Apply user configuration updates (if any)
+            5. Auto-calculate trail_length if not provided
+            6. Create output backends with final configuration
+            7. Display and focus window
+
+        Args:
+            config_updates: Optional dict of configuration parameters to apply
+                        e.g., {"index_of_difficulty": 70.0}
+                        If "trail_length" is not provided, it's auto-calculated
+
+        Returns:
+            The configured main window widget
+        """
+        # Step 1: Detect screens and calculate dimensions
         self.initialize_screens()
         _, _, self.circle_config = self.calculate_initial_radii()
+
+        # Step 2: Create window widget
         self.widget = self.create_widget()
+
+        # Step 3: Measure actual drawable area
         self.measure_and_correct_dimensions()
+
+        # Step 4: Apply user configuration updates
+        if config_updates:
+            self.update_configuration(**config_updates)
+
+        # Step 5: Auto-calculate trail_length if not explicitly set
+        if config_updates is None or "trail_length" not in config_updates:
+            one_lap_length = int(2 * 3.14159 * self.config.internal_radius)
+            self.update_configuration(trail_length=one_lap_length)
+
+        # Step 6: Create output backends with final configuration
         self.finalize_display()
+        self.initialize_backends()
+
+        # Step 7: Display and focus window
+        self.widget.raise_()
+        self.widget.setFocus()
+
         return self.widget
