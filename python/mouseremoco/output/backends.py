@@ -383,15 +383,15 @@ class CSVBackend(OutputBackend):
                     self.data_file.close()
                 finally:
                     self.data_file = None
-                print(f"✓ Closed {self.data_filename}")
             if self.marker_file:
                 try:
                     self.marker_file.close()
                 finally:
                     self.marker_file = None
-                print(f"✓ Closed {self.marker_filename}")
         except Exception as e:
             print(f"ERROR closing CSV files: {e}")
+
+        print(f"✓ Closed CSV Backend ({self.data_filename} and {self.marker_filename})")
 
 
 class LSLBackend(OutputBackend):
