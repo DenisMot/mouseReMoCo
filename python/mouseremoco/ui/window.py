@@ -372,11 +372,13 @@ class MainWindow(QWidget):
             title: Main message/title to display
             message: Optional secondary message (printed on new line if provided)
         """
-        print("\n" + "=" * 60)
         print(title)
         if message:
             print(message)
-        print("=" * 60 + "\n")
+
+        # send a marker to output backends
+        if self.output_data:
+            self.output_data.write_marker(title)
 
     def _print_fullscreen_status(self, mode: str):
         """Print fullscreen mode change notification.
@@ -660,12 +662,36 @@ class MainWindow(QWidget):
         except Exception:
             return False
 
+    def _emit_key_marker(self, event, handler_name: str | None):
+        """Emit marker + console print for key events."""
+
+        # Try to get human-readable key name, fallback to numeric code if unknown
+        try:
+            key_name = Qt.Key(event.key()).name
+        except Exception:
+            key_name = str(event.key())
+
+        # Get text representation of the key if available (e.g., for character keys)
+        text = event.text() or ""
+        handler_label = handler_name or "None"
+
+        # Create a structured marker for key events, with handler name and key info
+        marker = f"KeyPress:{key_name}:{handler_label}"
+        if text:
+            marker = f"{marker}:{text}"
+
+        if self.output_data:
+            self.output_data.write_marker(marker)
+        print(marker)
+        sys.stdout.flush()
+
     def keyPressEvent(self, event):
         """Handle keyboard input using command dispatch"""
-        # Look up handler by Qt.Key enum (unified approach)
         handler_name = self.KEY_COMMANDS.get(event.key())
 
+        # Call the handler method if it exists
         if handler_name:
             handler = getattr(self, handler_name, None)
             if handler:
+                self._emit_key_marker(event, handler_name)
                 handler()

@@ -64,7 +64,6 @@ class OutputTablet:
             return
 
         self._is_recording = True
-        print(f"✓ Started recording to {len(self.backends)} backend(s)")
 
     def stop_recording(self):
         """Stop recording: mark exact moment all backends stop recording.
@@ -77,7 +76,6 @@ class OutputTablet:
             return
 
         self._is_recording = False
-        print("✓ Stopped recording")
 
     def is_recording(self) -> bool:
         """Check if recording is active"""
