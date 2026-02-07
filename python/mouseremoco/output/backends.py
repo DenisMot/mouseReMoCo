@@ -51,6 +51,18 @@ DATA_SCHEMA = {
             "rounding": 4,
         },
         {
+            "name": "pressure_low",
+            "type": "threshold",
+            "unit": "normalized",
+            "rounding": 4,
+        },
+        {
+            "name": "pressure_high",
+            "type": "threshold",
+            "unit": "normalized",
+            "rounding": 4,
+        },
+        {
             "name": "tiltX",
             "type": "tilt",
             "unit": "degrees",
@@ -118,7 +130,7 @@ class OutputBackend(ABC):
                 - pressure: Pen pressure (0.0-1.0 normalized), optional default 0.0
                 - tilt_x: Tilt angle X (degrees), optional default 0.0
                 - tilt_y: Tilt angle Y (degrees), optional default 0.0
-                - output_config: Optional for coordinate transformation
+                - output_config: for coordinate transformation and pressure thresholds
 
         Returns:
             List of formatted values in DATA_SCHEMA field order
@@ -166,6 +178,13 @@ class OutputBackend(ABC):
         if output_config:
             x, y = output_config.transform_coordinates(x, y)
 
+        # Get pressure thresholds from output_config if available            # ← NEW
+        pressure_low = 0.0  # ← NEW
+        pressure_high = 0.0  # ← NEW
+        if output_config:  # ← NEW
+            pressure_low = getattr(output_config, "pressure_band_low", 0.0)  # ← NEW
+            pressure_high = getattr(output_config, "pressure_band_high", 0.0)  # ← NEW
+
         # Build raw values directly in DATA_SCHEMA field order
         raw_values = [
             event_timestamp_ms,  # event_timestamp
@@ -174,6 +193,8 @@ class OutputBackend(ABC):
             y,  # mouseY
             1 if is_inside else 0,  # mouseInTarget
             pressure,  # pressure
+            pressure_low,  # pressure_low (← NEW)
+            pressure_high,  # pressure_high (← NEW)
             tilt_x,  # tiltX
             tilt_y,  # tiltY
         ]

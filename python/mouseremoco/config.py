@@ -18,6 +18,8 @@ class OutputConfiguration:
     Creates a copy of the Configuration object and modifies it for output.
     Handles coordinate transformation:
     screen → center-origin with y-reversed (matplotlib style).
+
+    Stores pressure threshold values for data output.
     """
 
     def __init__(self, config):
@@ -29,6 +31,11 @@ class OutputConfiguration:
         # Store original screen center for transformation calculations
         self.origin_x = config.center_x
         self.origin_y = config.center_y
+
+        # Store pressure thresholds from original config                # ← NEW
+        # These represent the pressure band active when recording started
+        self.pressure_band_low = config.pressure_band_low  # ← NEW
+        self.pressure_band_high = config.pressure_band_high  # ← NEW
 
         self.config = copy.deepcopy(config)
 

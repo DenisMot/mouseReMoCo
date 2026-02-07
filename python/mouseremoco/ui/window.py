@@ -355,7 +355,6 @@ class MainWindow(QWidget):
         else:
             self._print_status("✓ Fullscreen Mode Changed", "Switched to WINDOWED mode")
 
-    # --- Pressure band adjustment handlers ---
     def _adjust_pressure_band(self, attr_name: str, delta: float, update_type: str):
         """Adjust pressure band (center or width) with tablet detection check.
 
@@ -364,19 +363,20 @@ class MainWindow(QWidget):
             delta: adjustment amount (+0.02 or -0.02)
             update_type: "center" or "width" for _update_pressure_band()
         """
-        # if not getattr(self.status, "tablet_detected", False):
-        #     self._print_status(
-        #         "Pressure band inactive",
-        #         "No tablet detected — band controls disabled.",
-        #     )
-        #     return
-
-        # Adjust the attribute
+        # Adjust the attribute in self.config (UI state)
         current = getattr(self.config, attr_name)
         setattr(self.config, attr_name, current + delta)
 
-        # Update and display
+        # Update derived values in self.config
         self.config._update_pressure_band(update_type)
+
+        # IMPORTANT: Update output_config with new pressure thresholds for data output
+        if self.config._output_config:
+            self.config._output_config.pressure_band_low = self.config.pressure_band_low
+            self.config._output_config.pressure_band_high = (
+                self.config.pressure_band_high
+            )
+
         new_value = getattr(self.config, attr_name)
         label = "Band width" if update_type == "width" else "Band center"
         self._print_status(f"{label}={new_value:.2f}", "")
