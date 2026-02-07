@@ -2,7 +2,7 @@
 
 import sys
 
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt, QTimer, QObject
 from PyQt6.QtGui import QColor, QPainter, QPen, QTabletEvent, QFont, QFontMetrics
 from PyQt6.QtWidgets import QApplication, QWidget
 
@@ -13,6 +13,39 @@ from ..input.capture import DataCapture
 from ..types import AppStatus
 from ..geometry import is_inside as geom_is_inside
 from .. import app_config
+
+
+class TabletProximityFilter(QObject):
+    """Global event filter to detect tablet proximity events"""
+
+    def __init__(self, main_window):
+        super().__init__()
+        self.main_window = main_window
+
+    def eventFilter(self, obj, event):
+        """Intercept proximity events at application level"""
+        if event.type() == QTabletEvent.Type.TabletEnterProximity:
+
+            self.main_window.status.tablet_detected = True
+            self.main_window.status.active_input_type = "tablet"
+            if self.main_window.output_data:
+                self.main_window.output_data.write_marker("TabletDetected")
+            self.main_window._print_status("✓ Tablet detected and active!")
+
+            return False  # Continue processing
+
+        elif event.type() == QTabletEvent.Type.TabletLeaveProximity:
+            self.main_window.status.tablet_detected = False
+            self.main_window.status.active_input_type = "mouse"
+            if self.main_window.output_data:
+                self.main_window.output_data.write_marker("TabletLeftProximity")
+            self.main_window._print_status(
+                "✓ Tablet left proximity (no longer detected)"
+            )
+
+            return False
+
+        return super().eventFilter(obj, event)
 
 
 class MainWindow(QWidget):
@@ -73,6 +106,10 @@ class MainWindow(QWidget):
 
         # Print controls on startup
         self._print_control_instructions()
+
+        # Install global tablet proximity event filter
+        self.tablet_proximity_filter = TabletProximityFilter(self)
+        QApplication.instance().installEventFilter(self.tablet_proximity_filter)
 
     def paintEvent(self, event):
         """Handle all drawing operations"""
@@ -434,10 +471,6 @@ class MainWindow(QWidget):
         self._print_status(f"Pressure gauge visibility: {state}")
         self.update()
 
-    def _print_tablet_detected(self):
-        """Print tablet detection confirmation"""
-        self._print_status("✓ Tablet detected and active!")
-
     def _print_control_instructions(self):
         """Print keyboard control instructions on startup"""
         print(
@@ -558,15 +591,6 @@ class MainWindow(QWidget):
         # Trigger repaint
         self.update()
 
-    def _detect_tablet(self, data: dict):
-        """Detect and log first tablet input with pressure."""
-        if not self.status.tablet_detected and data["pressure"] > 0:
-            self.status.tablet_detected = True
-            self.status.active_input_type = "tablet"
-            if self.output_data:
-                self.output_data.write_marker("TabletDetected")
-            self._print_tablet_detected()
-
     def tabletOrMouseEvent(self, data: dict, is_tablet: bool = False):
         """Orchestrate input event handling for tablet or mouse.
 
@@ -577,9 +601,6 @@ class MainWindow(QWidget):
             data: Dictionary from DataCapture.capture_*_event()
             is_tablet: True for tablet events, False for mouse events
         """
-        # Tablet-specific: detect on first input
-        if is_tablet:
-            self._detect_tablet(data)
 
         # Common processing for both input types
         self._process_input_event(data)

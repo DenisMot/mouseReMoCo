@@ -15,7 +15,8 @@ class Trail:
     Modes:
     - path_length - fade based on cumulative distance traveled
 
-    Trail data structure: deque of (x, y, timestamp, cumulative_distance, pressure)
+    Trail data structure: deque of (x, y, timestamp, cumulative_distance, pressure,
+    tablet_detected)
     Each point remembers the pressure when it was recorded.
     """
 
@@ -60,8 +61,16 @@ class Trail:
             self._current_speed = 0.0
 
         # Add point with timestamp, cumulative distance, and pressure
+        tablet_detected = self.app_status and self.app_status.tablet_detected
         self.trail.append(
-            (x, y, time.time(), self.cumulative_distance, self.current_pressure)
+            (
+                x,
+                y,
+                time.time(),
+                self.cumulative_distance,
+                self.current_pressure,
+                tablet_detected,
+            )
         )
 
         # Update last position
@@ -76,8 +85,8 @@ class Trail:
         # Path-distance-based pruning
         threshold = self.get_length()
         self.trail = deque(
-            (x, y, t, d, p)
-            for x, y, t, d, p in self.trail
+            (x, y, t, d, p, tablet)
+            for x, y, t, d, p, tablet in self.trail
             if self.cumulative_distance - d <= threshold
         )
 
@@ -106,6 +115,7 @@ class Trail:
         y2: int,
         pressure: float,
         opacity: float,
+        tablet_detected: bool,
     ) -> bool:
         """Draw a single trail segment.
 
@@ -119,12 +129,12 @@ class Trail:
             x1, y1, x2, y2: Segment endpoints (int coordinates)
             pressure: Stylus pressure (0.0-1.0) for thickness scaling
             opacity: Alpha value (0.0-1.0) for fade effect
-
+            tablet_detected: Whether a tablet is detected (bool)
         Returns:
             bool: True if segment was drawn, False if skipped (thickness < 1px)
         """
         # Determine thickness and base color based on tablet detection
-        if self.app_status and not self.app_status.tablet_detected:
+        if not tablet_detected:
             # NO TABLET → 3px BLUE trail (fixed thickness, blue color)
             thickness = 3
             base_color = (0, 0, 255)  # Blue RGB
@@ -159,7 +169,7 @@ class Trail:
                 base_color = self._get_color_for_position(x2, y2)
 
         # Skip if thickness is too thin
-        if thickness < 1:
+        if thickness < 0.1:
             return False
 
         # Apply opacity fading to the color (same for both modes)
@@ -192,14 +202,15 @@ class Trail:
         if not self.visual_smoothing:
             threshold = self.get_length()
             for i in range(n - 1):
-                x1, y1, _, d1, pressure1 = trail_list[i]
-                x2, y2, _, d2, pressure2 = trail_list[i + 1]
+                x1, y1, _, d1, pressure1, tablet_detected1 = trail_list[i]
+                x2, y2, _, d2, pressure2, tablet_detected2 = trail_list[i + 1]
 
-                # Path distance from newest point
                 path_distance = self.cumulative_distance - d2
                 opacity = max(0, 1 - path_distance / threshold)
 
-                self._draw_segment(painter, x1, y1, x2, y2, pressure2, opacity)
+                self._draw_segment(
+                    painter, x1, y1, x2, y2, pressure2, opacity, tablet_detected2
+                )
             return
 
         # Kernel parameters (tunable)
@@ -220,23 +231,23 @@ class Trail:
                     idx = 0
                 if idx >= n:
                     idx = n - 1
-                xj, yj, tj, dj, pj = trail_list[idx]
+                xj, yj, tj, dj, pj, tabletj = trail_list[idx]
                 acc_x += w * xj
                 acc_y += w * yj
-            # keep timestamp, distance, pressure unchanged
-            _, _, tj, dj, pj = trail_list[i]
-            smoothed.append((acc_x, acc_y, tj, dj, pj))
+            _, _, tj, dj, pj, tablet = trail_list[i]
+            smoothed.append((acc_x, acc_y, tj, dj, pj, tablet))
 
         # Draw using smoothed coordinates but original pressures for styling
         for i in range(n - 1):
-            x1, y1, _, d1, pressure1 = smoothed[i]
-            x2, y2, _, d2, pressure2 = smoothed[i + 1]
+            x1, y1, _, d1, pressure1, tablet_detected1 = smoothed[i]
+            x2, y2, _, d2, pressure2, tablet_detected2 = smoothed[i + 1]
 
-            # Path distance from newest point
             path_distance = self.cumulative_distance - d2
             opacity = max(0, 1 - path_distance / threshold)
 
-            self._draw_segment(painter, x1, y1, x2, y2, pressure2, opacity)
+            self._draw_segment(
+                painter, x1, y1, x2, y2, pressure2, opacity, tablet_detected2
+            )
 
     def clear(self):
         """Clear all trail points and reset distance tracking"""
