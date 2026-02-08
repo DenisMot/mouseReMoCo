@@ -108,11 +108,6 @@ class WindowSetup:
         actual_width, actual_height, insets = ScreenManager.get_window_drawable_area(
             self.widget, self.usable_width, self.usable_height
         )
-        print(
-            f"\nWindow frame insets: "
-            f"Top={insets['top']}, Bottom={insets['bottom']}, "
-            f"Left={insets['left']}, Right={insets['right']}"
-        )
 
         # Recalculate radii with actual drawable area
         external_radius, internal_radius = self.config.calculate_default_circle_radii(
@@ -152,47 +147,55 @@ class WindowSetup:
         # Update widget with corrected values
         if self.widget is None:
             raise RuntimeError("Widget must be created before updating circular target")
+
         from .ui.target import CircularTargetWidget
 
         self.widget.circular_target = CircularTargetWidget(
             config=corrected_circle_config
         )
-        # self.widget.drawable_width = actual_width
-        # self.widget.drawable_height = actual_height
-        # self.widget.center_x = center_x
-        # self.widget.center_y = center_y
         self.widget.update()
 
-    def finalize_display(self):
-        """Step 9: Finalize window display"""
+    def is_lsl_available(self) -> bool:
+        """Check if LSL backend can be initialized"""
+        try:
+            import pylsl
+        except ImportError:
+            print("⚠ LSL library not available (pylsl not installed)")
+            return False
 
-        # Create OutputConfiguration after center is determined
-        self.config._output_config = OutputConfiguration(self.config)
+        # try to create a StreamOutlet to check if LSL is fully functional
+        try:
+            test_outlet = pylsl.StreamOutlet(
+                pylsl.StreamInfo("TestStream", "Markers", 1, 0, pylsl.cf_string)
+            )
+        except Exception as e:
+            print(f"⚠ LSL StreamOutlet initialization failed: {e}")
+            return False
 
-        # DON'T create backends here anymore
-        # Just assign widget references
-        if self.widget is None:
-            raise RuntimeError("Widget must be created before finalize_display()")
+        if test_outlet is None:
+            print("⚠ LSL is NOT functional")
+            return False
 
-        # Bring window to front and focus
-        self.widget.raise_()
-        self.widget.setFocus()
+        print("✓ LSL functional")
+        return True
 
     def initialize_backends(self):
         """Create output backends with finalized configuration"""
-        # Create OutputData NOW = with the final configuration
+
+        # check LSL availability and update config accordingly
+        if app_config.ENABLE_LSL:
+            self.config.is_with_lsl = self.is_lsl_available()
+
+        # Create OutputConfiguration based on final config
+        self.config._output_config = OutputConfiguration(self.config)
+
+        # Create OutputData with the final configuration
         self.output_data = OutputTablet(
             config=self.config,
             app_status=self.app_status,
             output_config=self.config._output_config,
             enable_csv=app_config.ENABLE_CSV,
             enable_lsl=app_config.ENABLE_LSL,
-        )
-
-        # Update is_with_lsl based on LSL backend availability
-        self.config.is_with_lsl = any(
-            backend.__class__.__name__ == "LSLBackend"
-            for backend in self.output_data.backends
         )
 
         # Assign output_data to widget and trail
@@ -217,12 +220,15 @@ class WindowSetup:
 
         for key, value in kwargs.items():
             if key == "index_of_difficulty":
-                # Special handling for index_of_difficulty
                 self.config.set_index_of_difficulty(value)
             elif key == "circle_perimeter":
                 # Expects tuple: (perimeter_mm, screen_resolution_ppi)
                 perimeter_mm, screen_resolution_ppi = value
                 self.config.set_circle_perimeter(perimeter_mm, screen_resolution_ppi)
+            elif key == "trail_mode":
+                self.config.trail_mode = value
+                if self.widget and self.widget.trail:
+                    self.widget.trail.set_mode(value)
             elif hasattr(self.config, key):
                 setattr(self.config, key, value)
             else:
@@ -230,15 +236,6 @@ class WindowSetup:
 
         # Update circular task derived values
         self.config._update_circular_task()
-
-        # Recreate OutputConfiguration with updated config
-        if self.config._output_config:
-            self.config._output_config = OutputConfiguration(self.config)
-
-            # Update all backends with new output_config
-            if self.output_data:
-                for backend in self.output_data.backends:
-                    backend.output_config = self.config._output_config
 
         # Recreate circle config with updated radii if needed
         corrected_circle_config = CircularTaskConfig(
@@ -259,13 +256,9 @@ class WindowSetup:
 
         # Print configuration
         print("\n" + "=" * 60)
-        print("Configuration:")
+        print("Configuration at startup:")
         print(self.config.to_string())
         print("=" * 60 + "\n")
-        if self.config._output_config:
-            print("Output Configuration:")
-            print(self.config._output_config.to_string())
-            print("=" * 60 + "\n")
 
     def setup_and_run(self, config_updates: dict | None = None):
         """Complete initialization workflow from startup to ready-to-run.
@@ -301,17 +294,9 @@ class WindowSetup:
         if config_updates:
             self.update_configuration(**config_updates)
 
-        # Step 5: Auto-calculate trail_length if not explicitly set
-        if config_updates is None or "trail_length" not in config_updates:
-            one_lap_length = int(2 * 3.14159 * self.config.internal_radius)
-            self.update_configuration(trail_length=one_lap_length)
-
-        # Step 6: Create output backends with final configuration
-        self.finalize_display()
+        # Step 5: Create output backends with final configuration
         self.initialize_backends()
 
-        # Step 7: Display and focus window
+        # Step 6: Display and focus window
         self.widget.raise_()
         self.widget.setFocus()
-
-        return self.widget
