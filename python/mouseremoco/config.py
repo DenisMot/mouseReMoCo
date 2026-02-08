@@ -239,6 +239,16 @@ class Configuration:
         self.pressure_band_width = width
         self.pressure_band_center = center
 
+    def set_external_radius(self, external_radius: int):
+        """Set external radius and update derived values"""
+        self.external_radius = external_radius
+        self._update_circular_task()
+
+    def set_internal_radius(self, internal_radius: int):
+        """Set internal radius and update derived values"""
+        self.internal_radius = internal_radius
+        self._update_circular_task()
+
     def _update_circular_task(self):
         """Update circular task derived values"""
         if self.task_string == "circular":

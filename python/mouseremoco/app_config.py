@@ -20,10 +20,17 @@ BACKGROUND_COLOR = (0, 0, 0)  # RGB black
 FRAME_UNDECORATED = False
 
 # ===== Circular Task Parameters =====
+# NOTE: The circle is always centered on the screen
 EXTERNAL_RADIUS = 150  # pixels - outer circle radius
-INTERNAL_RADIUS = 80  # pixels - inner circle radius
+INTERNAL_RADIUS = 100  # pixels - inner circle radius
 BORDER_RADIUS = 1  # pixels
-NB_CURSOR_RADII_FOR_TARGET_MARGIN = 5  # scaling factor for margin
+
+# If True, overrides EXTERNAL_RADIUS and INTERNAL_RADIUS based on screen size
+IS_TARGET_DEFAULT_FOR_SCREEN_SIZE = True
+NB_CURSOR_RADII_FOR_TARGET_MARGIN = 5  # to ensure target fits within screen (keep)
+
+# NOTE: SUPERSEDES INTERNAL_RADIUS if INDEX_OF_DIFFICULTY is set (derived at runtime)
+INDEX_OF_DIFFICULTY = None
 
 # ===== Visual Styling =====
 CURSOR_RADIUS = 16  # pixels
@@ -42,12 +49,12 @@ HIDE_TARGET_DURING_PAUSE = False
 
 # ===== Trail Configuration =====
 TRAIL_MODE = "path_length"  # Active trail mode
-TRAIL_LENGTH = None  # None = 10× cursor_radius (derived at runtime)
+TRAIL_LENGTH = None  # None = about 3/4 lap (derived at runtime)
 
 # ===== Pressure Band Configuration (0.0 - 1.0) =====
 # Band defined by a center and full width; low/high derived at runtime
-PRESSURE_BAND_CENTER = 0.5
-PRESSURE_BAND_WIDTH = 0.4
+PRESSURE_BAND_CENTER = 0.2
+PRESSURE_BAND_WIDTH = 0.1
 
 # ===== Output Backends =====
 ENABLE_CSV = True  # Enable CSV file output
@@ -62,7 +69,6 @@ LINE_HEIGHT_MM = 100
 
 # ===== Keyboard Controls =====
 # Unified command dispatch mapping using Qt.Key enum for all keys
-# Provides consistent, type-safe key binding configuration
 KEY_COMMANDS = {
     Qt.Key.Key_Q: "_quit_application",
     Qt.Key.Key_C: "_print_config",

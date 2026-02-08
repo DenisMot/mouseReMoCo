@@ -78,29 +78,14 @@ class WindowSetup:
         self.config._frame_location_x = self.target_screen_info.pos_x
         self.config._frame_location_y = self.target_screen_info.pos_y
         self.config._screen_used_id = self.target_screen_info.index
+
+        # set screen center based on screen dimensions."""
+        center_x = self.config.screen_width // 2
+        center_y = self.config.screen_height // 2
+        self.config.set_center_x(center_x)
+        self.config.set_center_y(center_y)
+
         temp_widget.close()
-
-        print(f"DEBUG state.py set_frame_geometry: insets = {insets}")
-        print(
-            f"DEBUG state.py set_frame_geometry: frame = "
-            f"{self.config._frame_width}x{self.config._frame_height}"
-        )
-
-    def calculate_initial_radii(self) -> tuple[int, int, CircularTaskConfig]:
-        """Step 2-3: Calculate initial radii and create circle config"""
-        external_radius, internal_radius = self.config.calculate_default_circle_radii(
-            screen_width=self.usable_width,
-            screen_height=self.usable_height,
-        )
-
-        circle_config = CircularTaskConfig(
-            external_radius=external_radius,
-            internal_radius=internal_radius,
-            background_color=CircularTaskConfig.rgb_to_hex(
-                self.config.background_color
-            ),
-        )
-        return external_radius, internal_radius, circle_config
 
     def create_widget(self):
         """Step 4: Create and position window widget"""
@@ -147,48 +132,17 @@ class WindowSetup:
         """set configuration values for a circular target sized on actual drawable area
         of the window"""
 
-        print("DEBUG state.py set_config_default_circle_for_frame")
-
         external_radius, internal_radius = self.config.calculate_default_circle_radii(
             screen_width=self.config.screen_width,
             screen_height=self.config.screen_height,
         )
 
-        # Update config with corrected radii and actual dimensions
-        self.config.external_radius = external_radius
-        self.config.internal_radius = internal_radius
+        # Update config with corrected radii and limits
+        self.config.set_external_radius(external_radius)
+        self.config.set_internal_radius(internal_radius)
 
-        # Calculate and set center coordinates
-        center_x = self.config.screen_width // 2
-        center_y = self.config.screen_height // 2
-        self.config.set_center_x(center_x)
-        self.config.set_center_y(center_y)
-
-        # Update derived values
-        self.config._update_circular_task()
-
-    def _update_widget(self):
-
-        print("DEBUG state.py _update_widget: creating corrected circle config with ")
-
-        # Create corrected circle config
-        corrected_circle_config = CircularTaskConfig(
-            external_radius=self.config.external_radius,
-            internal_radius=self.config.internal_radius,
-            background_color=CircularTaskConfig.rgb_to_hex(
-                self.config.background_color
-            ),
-        )
-        # Update widget with corrected values
-        if self.widget is None:
-            raise RuntimeError("Widget must be created before updating circular target")
-
-        from .ui.target import CircularTargetWidget
-
-        self.widget.circular_target = CircularTargetWidget(
-            config=corrected_circle_config
-        )
-        self.widget.update()
+        # update for an index of difficulty of 15 (should work for most screen sizes)
+        self.config.set_index_of_difficulty(15)
 
     def is_lsl_available(self) -> bool:
         """Check if LSL backend can be initialized"""
@@ -302,19 +256,33 @@ class WindowSetup:
         # LOGIC: at each step, the configuration is updated
         # and used for the next step, ensuring all components are in sync
 
-        # Step 1: Detect screens and calculate drawable dimensions
+        # Step 1: Detect screens and chose external monitor by default (2nd in list)
         self.initialize_screens()
+
+        # Step 2: Set window geometry to target screen
         self.set_frame_geometry()
 
-        # Step 2: Set circle config, with updates if provided (e.g., from command line)
-        self.set_config_default_circle_for_frame_geometry()
+        # Step 3: Update target circle
+        if app_config.IS_TARGET_DEFAULT_FOR_SCREEN_SIZE:
+            self.set_config_default_circle_for_frame_geometry()
+        if app_config.INDEX_OF_DIFFICULTY is not None:
+            self.config.set_index_of_difficulty(app_config.INDEX_OF_DIFFICULTY)
+
+        # Step 3b: Apply any user configuration updates (if provided)
         if config_updates:
             self.update_configuration(**config_updates)
 
-        # Step 3: Create window widget with config
+        # Step 4: Print configuration after screen setup and before creating widget
+        print("\n" + "=" * 60)
+        print("Configuration after initial screen setup:")
+        print(self.config.to_string())
+        print("=" * 60 + "\n")
+
+        # Step 5: Create window widget with config
         self.widget = self.create_widget()
         self.add_circular_task_to_widget()
 
+        # Step 6: Initialize output backends with final configuration
         self.initialize_backends()
 
         # Last: Display and focus the window
