@@ -1,28 +1,35 @@
-# mouseReMoCo - Wacom Tablet Test
+# mouseReMoCo
 
-Prototype of a research application for testing circular target tracing with pen tablets.
+`mouseRemMoCo` started as a PyQt6 port of the `mouseRemMoCo` Java application. 
 
-This is a Python/PyQt6 (incomplete) version of the original Java application with support for pressure-sensitive tablets.
+As PyQt6 allows for pressure-sensitive tablets to be used, `mouseRemMoCo` evolved to support pressure-sensitive input from e.g., a Wacom pen on a tablet.
 
-**Version:** 2.0.0 (Python/PyQt6)
+As of February 2026, it is a prototype application useable for scientific research on circular steering combined with pressure steering.
+
+
 
 ---
 
 ## Quick Start
 
-### 1. Clone repository and setup conda environment
+You will need to have [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed on your computer. 
 
-1. Manually create a directory named `mouseReMoCo-app` 
-2. Open a terminal and move in `mouseReMoCo-app` 
+You also need to get familiar with using shell commands (i.e., with `Terminal` on macOS/Linux or `PowerShell` on Windows).
+
+### 1. Clone GitHub repository and setup conda environment for `mouseReMoCo`
+
+1. Manually create a directory named `mouseReMoCo-folder` (e.g., `Desktop/mouseReMoCo-folder/`)
+    - do this with mouse and clicks 
+2. Open a terminal and move in `mouseReMoCo-folder` 
 3. Run the following commands:
 ```bash
     git clone --branch python-app --single-branch --depth 1 https://github.com/DenisMot/mouseReMoCo.git 
 ```
 
-You now have a copy of the `mouseReMoCo`repository in `mouseReMoCo-app`.
+You now have a copy of the `mouseReMoCo`GitHub repository in `mouseReMoCo-folder`.
 
 ```
-mouseReMoCo-app/
+mouseReMoCo-folder/
 └── mouseReMoCo/
     └── python/                   ← Python package
         └── main.py               ← Entry point
@@ -36,28 +43,28 @@ mouseReMoCo-app/
     conda activate mouseremoco
 ```
 
-You now have the `mouseremoco` conda environment set up with all dependencies installed.
+You now have the `mouseremoco` conda environment needed for the `mouseReMoCo` application.
 
 ### 3. Run Application
 
-1. Open a terminal and move in `mouseReMoCo-app`
-2. Run the application: 
-- For macOS/Linux: 
+1. Open a terminal and move in `mouseReMoCo-folder`
+2. Run the application with the following command line:
+- For macOS/Linux (path is with forward slashes): 
 ```bash
     python mouseReMoCo/python/main.py
 ```
-- For windows (path is with backslashes):
+- For Windows (path is with backslashes):
 ```bash
     python mouseReMoCo\python\main.py
 ```
 
 
-The `data.csv` and `marker.csv` files will be created in the `mouseReMoCo-app` directory after running the application, rendering the following structure:
+The `data.csv` and `marker.csv` files will be created in the `mouseReMoCo-folder` directory after running the application, rendering the following structure:
 
 ```
-mouseReMoCo-app/
+mouseReMoCo-folder/
 ├── data.csv                      ← Generated data (runtime)
-├── marker.csv                    ← Generated markers (runtime)
+├── marker.csv                    ← Generated markers (runtime) 
 └── mouseReMoCo/
     └── python/                   ← Python package
         └── main.py               ← Entry point
@@ -67,11 +74,23 @@ mouseReMoCo-app/
 
 ## Advanced: Run from a Different Data Directory
 
-You can place the launcher in any directory (e.g., experiment folder), and all output files will save there automatically. The launcher is already configured for your repository, but you need to edit the `REPO_DIR` path in the launcher script.
+The `launcher` directory contains platform-specific shell scripts that allow you to run `mouseReMoCo` in a safe ways e.g., for a research experiment. 
+
+You can place the launcher in any directory (e.g., your current experiment folder), and all output files will save there automatically, without overwriting any existing file (i.e., the launcher will archive old data with timestamps).
+
+### Launcher initialization 
+The launcher scripts need to know the path to the `main.py` file on YOUR computer. To set this up: 
+- make a copy of the launcher script you want to your `mouseReMoCo-folder` 
+- open the copy with VSCode (or a text editor of your choice) 
+- replace `REPO_DIR="/path/to/your/mouseReMoCo"`  with the actual path of `mouseReMoCo-folder` on YOUR computer (e.g., `REPO_DIR="/Users/denis/Desktop/mouseReMoCo-folder/"` or `REPO_DIR="C:\Users\Denis\Desktop\mouseReMoCo-folder\"`)
+- save the file
+
+You now have a launcher script set for YOUR computer in your `mouseReMoCo-folder`: **keep it here as a reference**, but make copies of it to run experiments in different directories.
+
 
 ### Step by step usage:
 
-1. Copy `mouseremoco.command` (macOS) or `mouseremoco.bat` (Windows) from the repository to your desired data directory (e.g., `Desktop/Experiment_1/`)
+1. Make a copy of YOUR `mouseremoco.command` (macOS) or `mouseremoco.bat` (Windows) to your desired data directory (e.g., `Desktop/Experiment_1/`)
 2. Double click the launcher to run the application
 3. Data files (`data.csv` and `marker.csv`) will be generated in the same directory as the launcher
 
@@ -94,7 +113,7 @@ Each folder keeps its own data organized and independent.
 
 ### Automatic Data Archiving
 
-When using the launcher scripts (`.command`, `.sh`, or `.bat`), the application **automatically archives your data files** with a timestamp when it closes:
+When using the launcher, the launcher **automatically archives your data files** with a timestamp when it closes:
 
 - Original files: `data.csv`, `marker.csv` (overwritten on next run)
 - Archived files: `data_2025-02-06_14-30-45.csv`, `marker_2025-02-06_14-30-45.csv` (preserved with timestamp)
@@ -126,8 +145,6 @@ This ensures you never lose data between sessions—all your experiments are aut
 | **↓ / ↑** | Decrease / Increase pressure band center |
 | **S** | Toggle trail smoothing on/off |
 | **G** | Toggle pressure band gauge visibility on/off |
-
-**Note:** Pressure band adjustment requires a tablet to be detected (first stylus press activates).
 
 ---
 
@@ -190,16 +207,17 @@ When enabled, mouseReMoCo broadcasts three LSL streams:
 | **MouseMarkers** | String | Event markers |
 | **MouseMarkersNumeric** | Integer | Numeric markers for sync (for future use) |
 
-**Data precision:** Uses double64 format for exact timestamp accuracy (avoids float32 rounding errors).
+**Data precision:** Uses double64 format for exact timestamp accuracy (avoids float32 rounding errors for large numbers like UNIX timestamps).
 
 ### Recording with LabRecorder
 
-1. Start LabRecorder (available before or after mouseReMoCo)
-2. LabRecorder automatically discovers the three streams
-3. Select them for recording
-4. Click "Start Recording"
-5. Run mouseReMoCo and perform your task
-6. Click "Stop Recording" in LabRecorder → generates `.xdf` file with synchronized data
+1. Run mouseReMoCo (so that it starts broadcasting LSL streams)
+2. Start LabRecorder (make sure it's on the same network if using a different machine)
+3. in LabRecorder, Click "update" to refresh the list of available streams
+4. in LabRecorder, Select the streams for recording
+5. in LabRecorder, Click "Start Recording"
+6. Run mouseReMoCo and perform your task
+6. in LabRecorder, Click "Stop Recording" to generate the `.xdf` file with synchronized data
 7. Close mouseReMoCo 
 
 ### LSL Metadata
@@ -217,14 +235,14 @@ All streams include the same metadata found in *.csv file header:
 ```
 python/
 ├── main.py                           ← Entry point
-├── environment.yml                   ← Conda environment (preferred)
-├── requirements.txt                  ← Pip requirements (optional)
+├── environment.yml                   ← Conda environment definition
 ├── README.md                         ← This file
 │
 ├── mouseremoco/                      ← Python package
 │   ├── __init__.py
 │   ├── app_config.py                 ← Centralized configuration (edit this!)
 │   ├── config.py                     ← Configuration classes
+│   ├── geometry.py                   ← Geometry utilities
 │   ├── screen.py                     ← Screen & tablet detection
 │   ├── types.py                      ← Lightweight shared types (`AppStatus`)
 │   ├── state.py                      ← WindowSetup and orchestration
@@ -240,11 +258,21 @@ python/
 │   │
 │   └── output/                       ← Data Output
 │       ├── backends.py               ← CSV & LSL backends
-│       └── manager.py                ← Output manager
+│       ├── manager.py                ← Output manager
+│       └── tests/                    ← Output tests
+│           └── test_lsl_backend.py
 │
-├── data.csv                          ← Generated data (runtime)
-├── marker.csv                        ← Generated markers (runtime)
-└── test-tablet.ipynb                 ← Original notebook (archive)
+├── images/                           ← Docs images
+│   ├── SampleRate-Mouse.png
+│   └── SampleRate-Tablet.png
+│
+├── launchers/                        ← Platform specific launch scripts
+│   ├── mouseremoco.bat
+│   ├── mouseremoco.command
+│   └── mouseremoco.sh
+│
+└──  notebooks/                        ← Analysis notebooks go here
+
 ```
 
 ---
@@ -277,6 +305,7 @@ ENABLE_LSL = False         # Stream to LabRecorder or other LSL receivers
 | `ENABLE_LSL` | Stream via Lab Streaming Layer | `True` |
 | `PRESSURE_BAND_CENTER` | Tablet pressure threshold | `0.5` |
 | `PRESSURE_BAND_WIDTH` | Pressure band range | `0.4` |
+| `INDEX_OF_DIFFICULTY` | Steering difficulty index | `40` |
 
 All parameters have sensible defaults. Changes take effect immediately on restart—no build required.
 
@@ -284,24 +313,17 @@ All parameters have sensible defaults. Changes take effect immediately on restar
 
 ## Tablet Detection
 
-The application automatically detects pressure-sensitive devices (e.g., Wacom tablets):
-- **First stylus press** triggers tablet detection
-- Trail color changes: **Blue (mouse) → Red (tablet)**
-- Pressure-sensitive trail thickness when using tablet
-
-Check console output for tablet detection status.
+The application automatically detects pressure-sensitive devices (e.g., Wacom tablets) when in proximity.
+- Trail color changes: **Blue (mouse) → Red/Green (tablet)**
+- Pressure-sensitive trail thickness and color when using tablet
 
 ---
 
 ## Troubleshooting
 
-### "No tablet detected - will use mouse input only"
+### No tablet detected when using a Wacom pen/tablet
 
 **Solution:** Check Wacom driver installation and tablet connectivity.
-
-### Cannot write CSV files
-
-**Solution:** Ensure write permissions in the directory where the application is running.
 
 ### Poor performance / high latency
 
@@ -314,12 +336,11 @@ Check console output for tablet detection status.
 
 
 
-
 ## Dependencies
 
-- **PyQt6** - Cross-platform GUI framework 
-- **pylsl** - Lab Streaming Layer for real-time data streaming
-- **psutil** - System monitoring
+See `environment.yml` for exact versions. Key dependencies include:
+- `PyQt6` for GUI
+- `pylsl` for Lab Streaming Layer integration
 
 ---
 
@@ -357,5 +378,6 @@ For issues, questions, or suggestions:
 ---
 
 # Acknowledgements
+- Thanks to my research colleagues for inspiring this project, with special thanks to Malo for refuelling my motivation
 - Thanks to the open-source community for libraries and tools used in this project
-- Thanks to Copilot for code suggestions and documentation help!
+- Thanks to Copilot for code suggestions and documentation help
