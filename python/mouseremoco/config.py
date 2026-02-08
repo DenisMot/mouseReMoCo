@@ -248,6 +248,8 @@ class Configuration:
             self.task_radius = (self.internal_limit + self.external_limit) / 2.0
             self.tolerance_px = self.external_limit - self.internal_limit
 
+            # Recompute the exact ID that is doable with pixel-based parameters
+            # (rounding will cause slight deviation from requested ID)
             if self.tolerance_px > 0:
                 self.index_of_difficulty = (
                     2.0 * 3.14159 * self.task_radius
@@ -269,7 +271,7 @@ class Configuration:
         w = (3.14159 * self.external_limit) / (index_of_difficulty + 3.14159)
         wn = round(2 * w)
 
-        # Update internal limit and radius
+        # Update INTERNAL limit and radius (no change to external limit/radius)
         self.internal_limit = self.external_limit - wn
         self.internal_radius = self.internal_limit - self.cursor_radius
 
