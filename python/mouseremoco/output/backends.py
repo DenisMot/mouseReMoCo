@@ -8,7 +8,6 @@ from datetime import datetime
 from ..config import OutputConfiguration
 from typing import Any
 
-
 # ===== Shared Data Schema =====
 # Single source of truth for all output formats (CSV, LSL, etc.)
 # Each field is self-contained with all its metadata, similar to LSL channel definitions
@@ -274,7 +273,7 @@ class OutputBackend(ABC):
 
 
 class CSVBackend(OutputBackend):
-    """CSV file output backend (data.csv, marker.csv) with subpixel support"""
+    """CSV file output backend (data.csv, marker.csv)"""
 
     def __init__(
         self,
@@ -338,7 +337,10 @@ class CSVBackend(OutputBackend):
         self.marker_writer.writerow(["timestamp", "unix_timestamp", "marker"])
         self.marker_file.flush()
 
-        print(f"✓ CSV Backend: Created {self.data_filename} and {self.marker_filename}")
+        print(
+            f"✓ CSV Backend initialized successfully to files: "
+            f"{self.data_filename}, {self.marker_filename}"
+        )
 
     def _push_sample(self, formatted: list):
         """Write formatted sample to CSV"""
@@ -391,7 +393,7 @@ class CSVBackend(OutputBackend):
         except Exception as e:
             print(f"ERROR closing CSV files: {e}")
 
-        print(f"✓ Closed CSV Backend ({self.data_filename} and {self.marker_filename})")
+        print("✓ Closed CSV Backend")
 
 
 class LSLBackend(OutputBackend):
@@ -416,8 +418,12 @@ class LSLBackend(OutputBackend):
             import pylsl as lsl_module  # type: ignore
 
             self.lsl = lsl_module
-            self._init_lsl()
-            print("✓ LSL Backend: Initialized successfully")
+            self._initialize_lsl_streams()
+            self.outlet_names = self.get_lsl_outlet_names()
+            print(
+                f"✓ LSL Backend initialized successfully to outlets: "
+                f"{', '.join(self.outlet_names)}"
+            )
         except ImportError:
             print("⚠ LSL library not available - LSL backend disabled")
             self.lsl = None
@@ -438,7 +444,18 @@ class LSLBackend(OutputBackend):
         root.append_child_value("timestamp_str", timestamp_str)
         return root
 
-    def _init_lsl(self):
+    def get_lsl_outlet_names(self):
+        """Return the names of all LSL outlets"""
+        outlet_names = []
+        if self.data_outlet:
+            outlet_names.append(self.data_outlet.get_info().name())
+        if self.marker_outlet:
+            outlet_names.append(self.marker_outlet.get_info().name())
+        if self.numeric_marker_outlet:
+            outlet_names.append(self.numeric_marker_outlet.get_info().name())
+        return outlet_names
+
+    def _initialize_lsl_streams(self):
         """Initialize LSL streams with metadata matching CSV format"""
         if not self.lsl:
             return
@@ -497,6 +514,8 @@ class LSLBackend(OutputBackend):
         self._add_lsl_metadata(numeric_info, config_str, timestamp_str)
 
         self.numeric_marker_outlet = self.lsl.StreamOutlet(numeric_info)
+
+        self.outlet_names = self.get_lsl_outlet_names()
 
     def _push_sample(self, formatted: list):
         """Push formatted sample to LSL stream"""

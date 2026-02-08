@@ -57,13 +57,11 @@ class Trail:
 
         elif mode_name == "path_length":
             self.config.trail_mode = "path_length"
+
             # Trail length is derived from cursor radius if not explicitly set
             if self.config.trail_length == 0 or self.config.trail_length is None:
                 one_lap_length = int(2 * 3.14159 * self.config.internal_radius)
                 self.config.trail_length = one_lap_length
-                print(
-                    f"Set trail_length to {one_lap_length}px based on internal_radius {self.config.internal_radius}px"
-                )
 
         # In all cases, clear trail and reset distance tracking
         self.clear()

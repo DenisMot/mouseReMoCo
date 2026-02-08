@@ -112,15 +112,19 @@ class Configuration:
             app_config.NB_CURSOR_RADII_FOR_TARGET_MARGIN
         )
 
-        # ===== Screen & Window Configuration =====
+        # ===== Frame geometry and screen dimensions - set during setup =====
         # These are set during setup.create_and_display()
-        self.screen_width = 0  # in pixels: drawable area width
-        self.screen_height = 0  # in pixels: drawable area height
+        self._frame_width = 0  # in pixels: total window width including frame
+        self._frame_height = 0  # in pixels: total window height including frame
         self._frame_location_x = 0
         self._frame_location_y = 0
         self._frame_insets = {"top": 0, "bottom": 0, "left": 0, "right": 0}
         self._frame_undecorated = False
-        self._used_screen_id = 0
+
+        # ===== Screen dimensions (usable area) - set during setup =====
+        self.screen_width = 0  # in pixels: drawable area width
+        self.screen_height = 0  # in pixels: drawable area height
+        self._screen_used_id = 0
 
         # ===== Circular Task Parameters =====
         self.task_string = "circular"

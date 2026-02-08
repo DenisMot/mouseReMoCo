@@ -24,8 +24,8 @@ def main():
 
     window_setup.setup_and_run(
         config_updates={
-            "trail_length": None,  # Will be calculated below
             "index_of_difficulty": 70.0,
+            "trail_mode": "path_length",  # "none", "path_length"
         }
     )
 

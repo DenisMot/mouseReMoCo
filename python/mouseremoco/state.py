@@ -51,6 +51,41 @@ class WindowSetup:
             self.app, self.target_screen_info
         )
 
+    def set_frame_geometry(self):
+        """Set window geometry to target screen with frame insets."""
+
+        if self.target_screen_info is None:
+            raise RuntimeError(
+                "initialize_screens() must be called before set_frame_geometry()"
+            )
+
+        # create a temporary widget with only the frame to measure insets
+        from PyQt6.QtWidgets import QWidget
+
+        temp_widget = QWidget()
+        temp_widget.setWindowTitle("Measuring frame insets...")
+        temp_widget.move(self.target_screen_info.pos_x, self.target_screen_info.pos_y)
+        temp_widget.show()
+        self.app.processEvents()
+        actual_width, actual_height, insets = ScreenManager.get_window_drawable_area(
+            temp_widget, self.usable_width, self.usable_height
+        )
+        self.config._frame_insets = insets
+        self.config._frame_width = actual_width
+        self.config._frame_height = actual_height
+        self.config.screen_width = actual_width
+        self.config.screen_height = actual_height
+        self.config._frame_location_x = self.target_screen_info.pos_x
+        self.config._frame_location_y = self.target_screen_info.pos_y
+        self.config._screen_used_id = self.target_screen_info.index
+        temp_widget.close()
+
+        print(f"DEBUG state.py set_frame_geometry: insets = {insets}")
+        print(
+            f"DEBUG state.py set_frame_geometry: frame = "
+            f"{self.config._frame_width}x{self.config._frame_height}"
+        )
+
     def calculate_initial_radii(self) -> tuple[int, int, CircularTaskConfig]:
         """Step 2-3: Calculate initial radii and create circle config"""
         external_radius, internal_radius = self.config.calculate_default_circle_radii(
@@ -82,68 +117,68 @@ class WindowSetup:
         widget.setWindowTitle(self.config._title)
         widget.move(self.target_screen_info.pos_x, self.target_screen_info.pos_y)
 
-        window_width = self.config._width or self.usable_width
-        window_height = self.config._height or self.usable_height
+        window_width = self.config._frame_width
+        window_height = self.config._frame_height
         widget.resize(window_width, window_height)
 
         return widget
 
-    def measure_and_correct_dimensions(self):
-        """Step 5-8: Measure frame insets and update widget with corrected dimensions"""
-        if self.target_screen_info is None:
-            raise RuntimeError(
-                "initialize_screens() must be called before "
-                + "measure_and_correct_dimensions()"
-            )
+    def add_circular_task_to_widget(self):
+        """Add circular task widget to main window"""
         if self.widget is None:
-            raise RuntimeError(
-                "create_widget() must be called before "
-                + "measure_and_correct_dimensions()"
-            )
-        # Show window to make frame insets calculable
-        self.widget.show()
-        self.app.processEvents()
+            raise RuntimeError("Widget must be created before adding task")
+        from .ui.target import CircularTargetWidget
 
-        # Measure actual drawable area
-        actual_width, actual_height, insets = ScreenManager.get_window_drawable_area(
-            self.widget, self.usable_width, self.usable_height
+        # Create corrected circle config
+        corrected_circle_config = CircularTaskConfig(
+            external_radius=self.config.external_radius,
+            internal_radius=self.config.internal_radius,
+            background_color=CircularTaskConfig.rgb_to_hex(
+                self.config.background_color
+            ),
         )
 
-        # Recalculate radii with actual drawable area
+        self.widget.circular_target = CircularTargetWidget(
+            config=corrected_circle_config
+        )
+        self.widget.update()
+
+    def set_config_default_circle_for_frame_geometry(self):
+        """set configuration values for a circular target sized on actual drawable area
+        of the window"""
+
+        print("DEBUG state.py set_config_default_circle_for_frame")
+
         external_radius, internal_radius = self.config.calculate_default_circle_radii(
-            actual_width, actual_height
+            screen_width=self.config.screen_width,
+            screen_height=self.config.screen_height,
         )
 
         # Update config with corrected radii and actual dimensions
-        self.config.screen_width = actual_width
-        self.config.screen_height = actual_height
-        # self.config.drawable_width = actual_width
-        # self.config.drawable_height = actual_height
-        self.config._frame_location_x = self.target_screen_info.pos_x
-        self.config._frame_location_y = self.target_screen_info.pos_y
-        self.config._frame_insets = insets
-        self.config._used_screen_id = self.target_screen_info.index
         self.config.external_radius = external_radius
         self.config.internal_radius = internal_radius
 
         # Calculate and set center coordinates
-        center_x = actual_width // 2
-        center_y = actual_height // 2
+        center_x = self.config.screen_width // 2
+        center_y = self.config.screen_height // 2
         self.config.set_center_x(center_x)
         self.config.set_center_y(center_y)
 
         # Update derived values
         self.config._update_circular_task()
 
+    def _update_widget(self):
+
+        print("DEBUG state.py _update_widget: creating corrected circle config with ")
+
         # Create corrected circle config
         corrected_circle_config = CircularTaskConfig(
-            external_radius=external_radius,
-            internal_radius=internal_radius,
+            external_radius=self.config.external_radius,
+            internal_radius=self.config.internal_radius,
             background_color=CircularTaskConfig.rgb_to_hex(
                 self.config.background_color
             ),
         )
-
         # Update widget with corrected values
         if self.widget is None:
             raise RuntimeError("Widget must be created before updating circular target")
@@ -157,6 +192,8 @@ class WindowSetup:
 
     def is_lsl_available(self) -> bool:
         """Check if LSL backend can be initialized"""
+        print("✓ Scouting for LSL availability...")
+
         try:
             import pylsl
         except ImportError:
@@ -216,7 +253,6 @@ class WindowSetup:
             - index_of_difficulty (calls set_index_of_difficulty internally)
             - circle_perimeter (tuple: (perimeter_mm, screen_resolution_ppi))
         """
-        from .ui.target import CircularTargetWidget
 
         for key, value in kwargs.items():
             if key == "index_of_difficulty":
@@ -236,23 +272,6 @@ class WindowSetup:
 
         # Update circular task derived values
         self.config._update_circular_task()
-
-        # Recreate circle config with updated radii if needed
-        corrected_circle_config = CircularTaskConfig(
-            external_radius=self.config.external_radius,
-            internal_radius=self.config.internal_radius,
-            background_color=CircularTaskConfig.rgb_to_hex(
-                self.config.background_color
-            ),
-        )
-
-        # Update widget
-        if self.widget is None:
-            raise RuntimeError("Widget must be created before updating circular target")
-        self.widget.circular_target = CircularTargetWidget(
-            config=corrected_circle_config
-        )
-        self.widget.update()
 
         # Print configuration
         print("\n" + "=" * 60)
@@ -280,23 +299,26 @@ class WindowSetup:
         Returns:
             The configured main window widget
         """
-        # Step 1: Detect screens and calculate dimensions
+        # LOGIC: at each step, the configuration is updated
+        # and used for the next step, ensuring all components are in sync
+
+        # Step 1: Detect screens and calculate drawable dimensions
         self.initialize_screens()
-        _, _, self.circle_config = self.calculate_initial_radii()
+        self.set_frame_geometry()
 
-        # Step 2: Create window widget
-        self.widget = self.create_widget()
-
-        # Step 3: Measure actual drawable area
-        self.measure_and_correct_dimensions()
-
-        # Step 4: Apply user configuration updates
+        # Step 2: Set circle config, with updates if provided (e.g., from command line)
+        self.set_config_default_circle_for_frame_geometry()
         if config_updates:
             self.update_configuration(**config_updates)
 
-        # Step 5: Create output backends with final configuration
+        # Step 3: Create window widget with config
+        self.widget = self.create_widget()
+        self.add_circular_task_to_widget()
+
         self.initialize_backends()
 
-        # Step 6: Display and focus window
+        # Last: Display and focus the window
+        self.widget.update()
+        self.widget.show()
         self.widget.raise_()
         self.widget.setFocus()
