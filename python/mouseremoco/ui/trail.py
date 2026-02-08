@@ -21,7 +21,7 @@ class Trail:
     """
 
     # Single source of truth for all valid trail modes
-    VALID_MODES = ["path_length"]
+    VALID_MODES = ["path_length", "None"]
 
     def __init__(self, config, app_status=None):
         """Initialize Trail with configuration reference and app status"""
@@ -36,9 +36,37 @@ class Trail:
         self._last_x = None
         self._last_y = None
         self.output_data = None
-        # Set by MainWindow after OutputData is created
-        # Visual smoothing enabled by default (draw-time only)
         self.visual_smoothing = True
+        self.set_mode(self.config.trail_mode)  # Initialize mode and related settings
+
+    def set_mode(self, mode_name: str):
+        """Switch to a new trail mode and reset trail state.
+
+        Validates mode name against VALID_MODES and clears trail points
+        and cumulative distance tracking when switching modes.
+
+        Args:
+            mode_name: Trail mode name (must be in Trail.VALID_MODES)
+        """
+        if mode_name not in self.VALID_MODES:
+            raise ValueError(f"Invalid trail mode: {mode_name}")
+
+        if mode_name == "None":
+            self.config.trail_mode = "None"
+            self.config.trail_length = 0.0
+
+        elif mode_name == "path_length":
+            self.config.trail_mode = "path_length"
+            # Trail length is derived from cursor radius if not explicitly set
+            if self.config.trail_length == 0 or self.config.trail_length is None:
+                one_lap_length = int(2 * 3.14159 * self.config.internal_radius)
+                self.config.trail_length = one_lap_length
+                print(
+                    f"Set trail_length to {one_lap_length}px based on internal_radius {self.config.internal_radius}px"
+                )
+
+        # In all cases, clear trail and reset distance tracking
+        self.clear()
 
     def add_point(self, x: float, y: float, timestamp_ms: int, call_time_ms: int):
         """Add point with subpixel coordinates and pressure tracking.
@@ -256,17 +284,3 @@ class Trail:
         self._current_speed = 0.0
         self._last_x = None
         self._last_y = None
-
-    def set_mode(self, mode_name: str):
-        """Switch to a new trail mode and reset trail state.
-
-        Validates mode name against VALID_MODES and clears trail points
-        and cumulative distance tracking when switching modes.
-
-        Args:
-            mode_name: Trail mode name (must be in Trail.VALID_MODES)
-        """
-        if mode_name not in self.VALID_MODES:
-            raise ValueError(f"Invalid trail mode: {mode_name}")
-        # Clear trail and reset distance tracking
-        self.clear()
