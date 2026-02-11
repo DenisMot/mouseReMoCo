@@ -5,6 +5,7 @@
 from abc import ABC, abstractmethod
 import csv
 from datetime import datetime
+import json
 from ..config import OutputConfiguration
 from typing import Any
 
@@ -113,7 +114,11 @@ class OutputBackend(ABC):
             else:
                 config_dict[key] = value
 
-        return ";".join([f"{k} {v}" for k, v in config_dict.items()])
+        # Make a JSON string-like representation for CSV-LSL header
+        config_str = json.dumps(config_dict)
+        return config_str
+
+        # return ";".join([f"{k}={v}" for k, v in config_dict.items()])
 
     @staticmethod
     def format_data(config):
@@ -177,12 +182,12 @@ class OutputBackend(ABC):
         if output_config:
             x, y = output_config.transform_coordinates(x, y)
 
-        # Get pressure thresholds from output_config if available            # ← NEW
-        pressure_low = 0.0  # ← NEW
-        pressure_high = 0.0  # ← NEW
-        if output_config:  # ← NEW
-            pressure_low = getattr(output_config, "pressure_band_low", 0.0)  # ← NEW
-            pressure_high = getattr(output_config, "pressure_band_high", 0.0)  # ← NEW
+        # Get pressure thresholds from output_config if available
+        pressure_low = 0.0
+        pressure_high = 0.0
+        if output_config:
+            pressure_low = getattr(output_config, "pressure_band_low", 0.0)
+            pressure_high = getattr(output_config, "pressure_band_high", 0.0)
 
         # Build raw values directly in DATA_SCHEMA field order
         raw_values = [
