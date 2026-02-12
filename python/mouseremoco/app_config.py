@@ -30,7 +30,7 @@ IS_TARGET_DEFAULT_FOR_SCREEN_SIZE = True
 NB_CURSOR_RADII_FOR_TARGET_MARGIN = 5  # to ensure target fits within screen (keep)
 
 # NOTE: SUPERSEDES INTERNAL_RADIUS if INDEX_OF_DIFFICULTY is set (derived at runtime)
-INDEX_OF_DIFFICULTY = None
+INDEX_OF_DIFFICULTY = 40
 
 # ===== Visual Styling =====
 CURSOR_RADIUS = 16  # pixels

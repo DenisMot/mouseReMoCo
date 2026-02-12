@@ -24,8 +24,10 @@ def main():
 
     window_setup.setup_and_run(
         config_updates={
-            "index_of_difficulty": 70.0,
-            "trail_mode": "path_length",  # "none", "path_length"
+            # Here, updates supersede app_config.py defaults for this run.
+            # NOTE: This is where command-line overrides could be applied in the future.
+            # "index_of_difficulty": 70.0,
+            # "trail_mode": "path_length",  # "none", "path_length"
         }
     )
 
